@@ -21,50 +21,71 @@ export default function LandingPage() {
   return (
     <main className="relative flex flex-col items-center w-full overflow-hidden">
 
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.3),transparent_70%)] dark:bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.15),transparent_70%)]" />
+      {/* === ANIMATED BACKGROUND === */}
+      <div className="absolute inset-0 -z-20 bg-gradient-to-b from-blue-200/60 via-white/50 to-transparent dark:from-blue-900/40 dark:via-gray-900/40 dark:to-transparent"></div>
 
-      {/* FLOATING TOP HEADER (ANIMATED) */}
+      {/* Animated moving blob */}
+      <div className="absolute top-[-200px] left-[-100px] w-[600px] h-[600px] rounded-full bg-blue-400/30 dark:bg-blue-700/20 blur-[120px] animate-blob-floating -z-10"></div>
+
+      <div className="absolute bottom-[-200px] right-[-100px] w-[500px] h-[500px] rounded-full bg-purple-300/30 dark:bg-purple-700/20 blur-[120px] animate-blob-floating2 -z-10"></div>
+
+
+      {/* === HEADER === */}
       <div className={clsx(
-        "fixed top-0 left-1/2 -translate-x-1/2 z-50 px-6 py-3 backdrop-blur-lg rounded-full transition-all shadow-lg border border-white/20 dark:border-gray-700",
-        showHeader ? "opacity-100 translate-y-4" : "opacity-0 -translate-y-10"
+        "fixed top-0 left-1/2 -translate-x-1/2 z-50 w-[85%] md:w-[70%] px-8 py-4 rounded-3xl backdrop-blur-2xl border shadow-lg bg-white/50 dark:bg-gray-900/40 border-white/40 dark:border-gray-600 transition-all",
+        showHeader ? "opacity-100 translate-y-4" : "opacity-0 -translate-y-12"
       )}>
-        <Link href="/create/title">
-          <Button className="font-semibold px-6 bg-blue-600 hover:bg-blue-700">
-            Créer un Ebook
-          </Button>
-        </Link>
+          
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg md:text-xl font-bold tracking-tight">
+            E-Book Factory
+          </h2>
+
+          <Link href="/create/title">
+            <Button className="px-6 rounded-xl bg-blue-600 hover:bg-blue-700">
+              Créer un Ebook
+            </Button>
+          </Link>
+        </div>
       </div>
 
 
-      {/* HERO SECTION */}
-      <section className="flex flex-col items-center text-center mt-28 px-6 max-w-3xl animate-fade-up">
-        
-        <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight leading-tight">
-          Crée ton <span className="text-blue-600 dark:text-blue-400">Ebook Premium</span> <br />
-          prêt à vendre en 30 secondes
-        </h1>
+      {/* === HERO — New Premium Layout === */}
+      <section className="flex flex-col lg:flex-row items-center gap-20 mt-32 px-6 max-w-6xl w-full">
 
-        <p className="text-lg text-gray-600 dark:text-gray-300 mt-5 max-w-2xl">
-          Génère automatiquement un ebook professionnel, designé, illustré, et accompagné d’une
-          licence de revente — idéal pour TikTok, Instagram, créateurs de contenu et infopreneurs.
-        </p>
+        {/* LEFT : TITLE */}
+        <div className="flex-1 animate-fade-left">
+          <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight leading-tight">
+            Crée ton <span className="text-blue-600 dark:text-blue-400">Ebook Premium</span> <br />
+            prêt à vendre en 30 secondes.
+          </h1>
 
-        <Link href="/create/title">
-          <Button className="mt-10 px-12 py-7 text-xl rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-300/40">
-            Commencer maintenant <ArrowRight className="ml-2" />
-          </Button>
-        </Link>
+          <p className="text-lg text-gray-600 dark:text-gray-300 mt-6 max-w-xl">
+            Génère automatiquement un ebook professionnel, illustré, designé et accompagné d’une 
+            licence de revente — parfait pour TikTok, Instagram, infopreneurs et créateurs de formations.
+          </p>
 
-        {/* MOCKUP */}
-        <div className="mt-16 w-full max-w-2xl rounded-3xl overflow-hidden border shadow-2xl bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl">
-          <div className="h-72 bg-gradient-to-br from-blue-300 to-blue-500 dark:from-blue-900 dark:to-blue-600 flex items-center justify-center transition-transform hover:scale-[1.02]">
-            <span className="text-white text-2xl font-bold opacity-90 tracking-wider">
-              Aperçu de l'Ebook (Mockup Pro)
-            </span>
+          <Link href="/create/title">
+            <Button className="mt-10 px-12 py-7 text-xl rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-300/40">
+              Créer mon ebook <ArrowRight className="ml-2" />
+            </Button>
+          </Link>
+        </div>
+
+
+        {/* RIGHT : MOCKUP */}
+        <div className="flex-1 flex justify-center animate-fade-right">
+          <div className="w-[320px] h-[460px] bg-white dark:bg-gray-900 shadow-2xl rounded-2xl border overflow-hidden transform rotate-[2deg] hover:rotate-0 transition-all duration-500">
+            <div className="h-full bg-gradient-to-br from-blue-300 to-blue-500 dark:from-blue-800 dark:to-blue-700 flex items-center justify-center">
+              <span className="text-white text-xl font-bold opacity-90">
+                Mockup Ebook Pro
+              </span>
+            </div>
           </div>
         </div>
+
       </section>
+
 
 
       {/* HOW IT WORKS */}

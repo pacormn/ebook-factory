@@ -20,3 +20,38 @@ html, body {
 .animate-fade-up {
   animation: fade-up 0.8s ease-out forwards;
 }
+
+
+@keyframes blobFloating {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(50px, -30px) scale(1.05); }
+  66% { transform: translate(-30px, 20px) scale(0.97); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+.animate-blob-floating {
+  animation: blobFloating 12s infinite ease-in-out;
+}
+
+.animate-blob-floating2 {
+  animation: blobFloating 14s infinite ease-in-out;
+}
+
+@keyframes fadeRight {
+  from { opacity: 0; transform: translateX(25px); }
+  to { opacity: 1; transform: translateX(0px); }
+}
+
+@keyframes fadeLeft {
+  from { opacity: 0; transform: translateX(-25px); }
+  to { opacity: 1; transform: translateX(0px); }
+}
+
+.animate-fade-right {
+  animation: fadeRight .9s ease-out forwards;
+}
+
+.animate-fade-left {
+  animation: fadeLeft .9s ease-out forwards;
+}
+
