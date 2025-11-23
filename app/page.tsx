@@ -1,65 +1,104 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+
+export default function HomePage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="flex flex-col items-center w-full">
+      
+      {/* HEADER */}
+      <header className="w-full flex items-center justify-between py-6 px-6 lg:px-16">
+        <h1 className="text-2xl font-bold">E-Book Factory</h1>
+        <Link href="/create/title">
+          <Button className="font-semibold">Créer un Ebook</Button>
+        </Link>
+      </header>
+
+      {/* HERO SECTION */}
+      <section className="flex flex-col items-center text-center mt-10 px-6 lg:px-0 max-w-3xl">
+        <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
+          Crée ton Ebook <span className="text-blue-600">vendable</span> en 30 secondes
+        </h1>
+
+        <p className="text-lg text-muted-foreground mt-4">
+          Génère un ebook professionnel, illustré et prêt à la vente — parfait pour TikTok,
+          Instagram et les créateurs de contenu.
+        </p>
+
+        <Link href="/create/title" className="mt-8">
+          <Button className="px-10 py-6 text-lg font-semibold flex items-center gap-2">
+            Commencer maintenant
+            <ArrowRight />
+          </Button>
+        </Link>
+
+        {/* MOCKUP PLACEHOLDER */}
+        <div className="mt-12 w-full max-w-xl h-64 bg-gradient-to-br from-blue-200 to-blue-400 rounded-xl shadow-lg animate-pulse">
+          <p className="text-white text-center pt-24 text-xl font-semibold opacity-80">
+            Aperçu Ebook (mockup à venir)
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="mt-24 px-6 max-w-5xl w-full">
+        <h2 className="text-3xl font-bold text-center mb-12">
+          Comment ça marche ?
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          
+          <div className="p-6 border rounded-xl shadow-sm">
+            <h3 className="text-xl font-semibold mb-2">1. Décris ta niche</h3>
+            <p className="text-muted-foreground">
+              Laisse notre IA comprendre ton audience et ton sujet.
+            </p>
+          </div>
+
+          <div className="p-6 border rounded-xl shadow-sm">
+            <h3 className="text-xl font-semibold mb-2">2. Choisis ton style</h3>
+            <p className="text-muted-foreground">
+              Design, police, longueur, images IA — tout est personnalisable.
+            </p>
+          </div>
+
+          <div className="p-6 border rounded-xl shadow-sm">
+            <h3 className="text-xl font-semibold mb-2">3. Génère ton ebook</h3>
+            <p className="text-muted-foreground">
+              Obtiens un ebook pro avec une licence de revente incluse.
+            </p>
+          </div>
+
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* VALUE SECTION */}
+      <section className="mt-24 px-6 max-w-5xl w-full">
+        <h2 className="text-3xl font-bold text-center mb-12">
+          Ce que tu obtiens
+        </h2>
+
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-6 text-lg">
+          <li className="p-4 border rounded-xl">📘 Ebook PDF professionnel</li>
+          <li className="p-4 border rounded-xl">🎨 Style & design personnalisable</li>
+          <li className="p-4 border rounded-xl">🖼️ Images IA (premium)</li>
+          <li className="p-4 border rounded-xl">💼 Licence de revente incluse</li>
+          <li className="p-4 border rounded-xl">📑 Sommaire structuré</li>
+          <li className="p-4 border rounded-xl">🚀 Ebook prêt à être vendu</li>
+        </ul>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="mt-24 mb-24">
+        <Link href="/create/title">
+          <Button className="px-10 py-6 text-xl font-semibold">
+            Créer mon ebook maintenant
+          </Button>
+        </Link>
+      </section>
+
+    </main>
   );
 }
