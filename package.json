@@ -17,8 +17,10 @@
     "lucide-react": "^0.554.0",
     "next": "16.0.3",
     "openai": "^6.9.1",
+    "puppeteer": "^24.31.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "stripe": "^20.0.0",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
