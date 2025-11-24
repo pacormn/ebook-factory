@@ -98,3 +98,18 @@ html, body {
   right: 10px;
   left: auto;
 }
+
+@keyframes headerFadeScale {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0px) scale(1);s
+  }
+}
+
+.header-fade-scale {
+  animation: headerFadeScale .45s ease-out forwards;
+}
