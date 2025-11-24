@@ -17,27 +17,23 @@ export default function LandingPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-const toggleTheme = () => {
-  setIsDark((prev) => {
-    const newTheme = !prev;
+  const toggleTheme = () => {
+    setIsDark((prev) => {
+      const newTheme = !prev;
 
-    if (newTheme) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+      if (newTheme) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
 
-    return newTheme;
-  });
-};
-
+      return newTheme;
+    });
+  };
 
   return (
-    // wrapper qui porte la classe dark
     <div className="w-full">
-
       <main className="relative flex flex-col items-center w-full overflow-hidden bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50">
-
         {/* === BACKGROUND === */}
         <div className="absolute inset-0 -z-20 bg-gradient-to-b from-blue-200/70 via-white/70 to-transparent dark:from-blue-900/50 dark:via-gray-900/60 dark:to-transparent" />
 
@@ -46,51 +42,50 @@ const toggleTheme = () => {
         <div className="absolute bottom-[-200px] right-[-100px] w-[500px] h-[500px] rounded-full bg-purple-300/40 dark:bg-purple-700/30 blur-[120px] animate-blob-floating2 -z-10" />
 
         {/* === HEADER GLASS FLOTTANT === */}
-<div
-  className={
-    "fixed top-0 left-1/2 -translate-x-1/2 z-50 w-[90%] md:w-[70%] px-6 md:px-8 py-4 rounded-3xl transition-all " +
-    (showHeader ? "opacity-100 translate-y-4" : "opacity-0 -translate-y-12") +
-    " " +
-    (isDark ? "glass-dark" : "glass")
-  }
->
-  <div className="flex items-center justify-between gap-4">
-    <div className="flex items-center gap-2">
-      <div className="h-8 w-8 rounded-xl bg-blue-600" />
-      <h2 className="text-lg md:text-xl font-bold tracking-tight">
-        E-Book Factory
-      </h2>
-    </div>
+        <div
+          className={
+            "fixed top-0 left-1/2 -translate-x-1/2 z-50 w-[90%] md:w-[70%] px-6 md:px-8 py-4 rounded-3xl transition-all " +
+            (showHeader ? "opacity-100 translate-y-4" : "opacity-0 -translate-y-12") +
+            " " +
+            (isDark ? "glass-dark" : "glass")
+          }
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-xl bg-blue-600" />
+              <h2 className="text-lg md:text-xl font-bold tracking-tight">
+                E-Book Factory
+              </h2>
+            </div>
 
-    <div className="flex items-center gap-3">
-      {/* Theme toggle */}
-      <button
-        onClick={toggleTheme}
-        className={
-          "flex items-center gap-1 px-3 py-2 rounded-2xl text-sm " +
-          (isDark ? "glass-dark" : "glass")
-        }
-      >
-        {isDark ? (
-          <>
-            <Sun size={16} /> <span>Light</span>
-          </>
-        ) : (
-          <>
-            <Moon size={16} /> <span>Dark</span>
-          </>
-        )}
-      </button>
+            <div className="flex items-center gap-3">
+              {/* Theme toggle */}
+              <button
+                onClick={toggleTheme}
+                className={
+                  "flex items-center gap-1 px-3 py-2 rounded-2xl text-sm " +
+                  (isDark ? "glass-dark" : "glass")
+                }
+              >
+                {isDark ? (
+                  <>
+                    <Sun size={16} /> <span>Light</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon size={16} /> <span>Dark</span>
+                  </>
+                )}
+              </button>
 
-      <Link href="/create/title">
-        <Button className="px-5 md:px-6 rounded-2xl bg-blue-600 hover:bg-blue-700">
-          Créer un Ebook
-        </Button>
-      </Link>
-    </div>
-  </div>
-</div>
-
+              <Link href="/create/title">
+                <Button className="px-5 md:px-6 rounded-2xl bg-blue-600 hover:bg-blue-700">
+                  Créer un Ebook
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
 
         {/* === HERO SECTION === */}
         <section className="flex flex-col lg:flex-row items-center gap-20 mt-32 px-6 max-w-6xl w-full">
@@ -207,22 +202,19 @@ const toggleTheme = () => {
         </footer>
 
         {/* === CTA FLOTTANT MOBILE (LIQUID GLASS) === */}
-<div className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50">
-  <Link href="/create/title">
-    <button
-      className={
-        "px-7 py-4 rounded-3xl flex items-center gap-2 shadow-xl " +
-        (isDark ? "glass-dark" : "glass")
-      }
-    >
-      <span className="text-sm font-semibold">
-        Créer mon ebook maintenant
-      </span>
-      <ArrowRight size={18} />
-    </button>
-  </Link>
-</div>
-
+        <div className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50">
+          <Link href="/create/title">
+            <button
+              className={
+                "px-7 py-4 rounded-3xl flex items-center gap-2 shadow-xl " +
+                (isDark ? "glass-dark" : "glass")
+              }
+            >
+              <span className="text-sm font-semibold">Créer mon ebook maintenant</span>
+              <ArrowRight size={18} />
+            </button>
+          </Link>
+        </div>
       </main>
     </div>
   );

@@ -23,13 +23,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <svg width="0" height="0" className="absolute">
+  <filter id="frosted">
+    <feGaussianBlur stdDeviation="20" result="blur" />
+    <feColorMatrix
+      in="blur"
+      type="matrix"
+      values="
+        1 0 0 0 0
+        0 1 0 0 0
+        0 0 1 0 0
+        0 0 0 18 -7"
+      result="goo"
+    />
+    <feBlend in="SourceGraphic" in2="goo" />
+  </filter>
+</svg>
+
         {children}
       </body>
     </html>
