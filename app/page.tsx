@@ -47,7 +47,7 @@ export default function LandingPage() {
             "fixed top-0 left-1/2 -translate-x-1/2 z-50 w-[90%] md:w-[70%] px-6 md:px-8 py-4 rounded-3xl transition-all " +
             (showHeader ? "opacity-100 translate-y-4" : "opacity-0 -translate-y-12") +
             " " +
-            (isDark ? "glass-dark" : "glass")
+            (isDark ? "glass-dark bg-gray-900/40" : "glass bg-white/30")
           }
         >
           <div className="flex items-center justify-between gap-4">
@@ -204,12 +204,13 @@ export default function LandingPage() {
         {/* === CTA FLOTTANT MOBILE (LIQUID GLASS) === */}
         <div className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50">
           <Link href="/create/title">
-            <button
-              className={
-                "px-7 py-4 rounded-3xl flex items-center gap-2 shadow-xl " +
-                (isDark ? "glass-dark" : "glass")
-              }
-            >
+          <button
+            className={
+              "px-7 py-4 rounded-3xl flex items-center gap-2 shadow-xl " +
+              (isDark ? "glass-dark bg-gray-900/40" : "glass bg-white/30")
+            }
+          >
+
               <span className="text-sm font-semibold">Créer mon ebook maintenant</span>
               <ArrowRight size={18} />
             </button>

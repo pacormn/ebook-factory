@@ -12,9 +12,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// app/layout.tsx
-
-export const metadata = {
+export const metadata: Metadata = {
   title: "Ebook Factory — Crée ton ebook en un clic",
   description:
     "Ebook Factory est l’outil le plus simple pour créer des ebooks uniques, prêts à vendre, en quelques secondes. Idéal pour les créateurs, formateurs et marketers.",
@@ -28,12 +26,14 @@ export const metadata = {
     "make money online",
     "ebook factory",
   ],
+
+  metadataBase: new URL("https://ebookfactory.fr"),
+
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
-  metadataBase: new URL("https://ebookfactory.fr"), // Modifie avec ton domaine
 
   openGraph: {
     title: "Ebook Factory — Génère ton ebook automatiquement",
@@ -64,36 +64,41 @@ export const metadata = {
   themeColor: "#0d74e7",
 };
 
-
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="fr">
+    <html lang="fr" suppressHydrationWarning>
       <head>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+        {/* Police Inter (plus propre pour UI SaaS) */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+          rel="stylesheet"
+        />
       </head>
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <svg width="0" height="0" className="absolute">
-  <filter id="frosted">
-    <feGaussianBlur stdDeviation="20" result="blur" />
-    <feColorMatrix
-      in="blur"
-      type="matrix"
-      values="
-        1 0 0 0 0
-        0 1 0 0 0
-        0 0 1 0 0
-        0 0 0 18 -7"
-      result="goo"
-    />
-    <feBlend in="SourceGraphic" in2="goo" />
-  </filter>
-</svg>
+        {/* === Liquid Glass Filter (SVG) === */}
+        <svg width="0" height="0" className="absolute pointer-events-none">
+          <filter id="frosted">
+            <feGaussianBlur stdDeviation="20" result="blur" />
+            <feColorMatrix
+              in="blur"
+              type="matrix"
+              values="
+                1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 18 -7"
+              result="goo"
+            />
+            <feBlend in="SourceGraphic" in2="goo" />
+          </filter>
+        </svg>
 
         {children}
       </body>
