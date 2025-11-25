@@ -255,6 +255,5 @@ export default function LandingPage() {
         </div>
 
       </main>
-    </div>
   );
 }
