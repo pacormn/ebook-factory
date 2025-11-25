@@ -104,7 +104,7 @@ export default function LandingPage() {
 
         {/* RIGHT : Mockup */}
         <div className="flex-1 flex justify-center">
-          <div className="relative group">
+          <div className="relative group"> 
             <div className="absolute -inset-6 rounded-3xl bg-blue-500/30 blur-3xl dark:bg-blue-800/30" />
             <div className="relative w-[320px] h-[460px] rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden transform rotate-[3deg] group-hover:rotate-0 group-hover:scale-[1.02] transition-all duration-500 bg-gradient-to-br from-blue-300 to-blue-500 dark:from-blue-800 dark:to-blue-700 flex items-center justify-center">
               <span className="text-white text-xl font-bold tracking-wide">
