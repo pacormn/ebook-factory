@@ -19,19 +19,22 @@ export default function LandingPage() {
   }, []);
 
   // === DARK MODE TOGGLE ===
-  const toggleTheme = () => {
-    setIsDark((prev) => {
-      const newTheme = !prev;
+const toggleTheme = () => {
+  setIsDark((prev) => {
+    const newTheme = !prev;
 
-      if (newTheme) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
+    if (newTheme) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
 
-      return newTheme;
-    });
-  };
+    return newTheme;
+  });
+};
+
 
   return (
     <div className="w-full">
@@ -51,12 +54,13 @@ export default function LandingPage() {
 <header className="w-full">
 
   {/* HEADER NORMAL (toujours visible en haut) */}
-  <div
-    className={
-      "transition-opacity duration-200 w-full px-6 py-6 bg-transparent " +
-      (!showHeader ? "opacity-100 relative z-30" : "opacity-0 pointer-events-none")
-    }
-  >
+<div
+  className={
+    "transition-opacity duration-200 w-full px-6 py-6 bg-transparent " +
+    (!showHeader ? "opacity-100 pointer-events-auto relative" : "opacity-0 pointer-events-none absolute")
+  }
+>
+
     <div className="flex items-center justify-between max-w-7xl mx-auto">
       <div className="flex items-center gap-2">
         <div className="h-8 w-8 rounded-xl bg-blue-600" />

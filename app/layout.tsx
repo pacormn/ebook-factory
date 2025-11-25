@@ -64,17 +64,34 @@ export const metadata: Metadata = {
   themeColor: "#0d74e7",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="fr" className="" suppressHydrationWarning>
+    <html
+      lang="fr"
+      suppressHydrationWarning
+    >
       <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-          rel="stylesheet"
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              const stored = localStorage.getItem("theme");
+              if (stored === "dark") {
+                document.documentElement.classList.add("dark");
+              }
+            `,
+          }}
         />
       </head>
 
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={
+          `${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-50`
+        }
+      >
         <svg width="0" height="0" className="absolute pointer-events-none">
           <filter id="frosted">
             <feGaussianBlur stdDeviation="20" result="blur" />
