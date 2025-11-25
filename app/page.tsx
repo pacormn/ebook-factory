@@ -226,7 +226,7 @@ export default function LandingPage() {
   <div className="grid md:grid-cols-2 gap-10 items-center">
     
     {/* Avant ------------------------------------------------ */}
-    <div className="glass p-6 rounded-3xl border border-slate-800/60 shadow-xl backdrop-blur-xl">
+    <div className="glass p-6 rounded-3xl border border-slate-800/60 shadow-xl backdrop-blur-xl justify-self-center">
       <h3 className="text-lg font-semibold text-slate-100 mb-4">Ton idée brute</h3>
 
       <div className="bg-slate-900/40 p-4 rounded-2xl border border-slate-700/50 shadow-inner text-sm text-slate-300 leading-relaxed">
