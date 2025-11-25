@@ -16,12 +16,12 @@ export default function TitlePage() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-white via-slate-50 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 bg-dynamic">
-
-      {/* BLOBS */}
-      <div className="absolute top-[-250px] left-[-150px] w-[600px] h-[600px] rounded-full bg-blue-400/40 dark:bg-blue-700/20 blur-[135px] animate-blob-floating -z-10" />
-      <div className="absolute bottom-[-250px] right-[-150px] w-[550px] h-[550px] rounded-full bg-purple-400/40 dark:bg-purple-700/20 blur-[130px] animate-blob-floating2 -z-10" />
-
+    <main className="min-h-screen bg-slate-950 text-slate-50">
+      {/* Background gradient */}
+      <div className="pointer-events-none fixed inset-0 -z-10">
+        <div className="absolute inset-x-0 top-[-200px] h-[400px] bg-gradient-to-b from-blue-500/40 via-slate-900 to-slate-950 blur-3xl" />
+      </div>
+      
       {/* HEADER BULLE */}
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] md:w-[70%] px-6 py-3 glass-bar rounded-3xl navbar-pop shadow-xl">
         <div className="flex items-center justify-between">
