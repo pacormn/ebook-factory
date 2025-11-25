@@ -213,68 +213,45 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ===================================================================================== */}
-{/*                             AVANT / APRÈS — EXEMPLE REAL FINAL                         */}
-{/* ===================================================================================== */}
 
-<section className="relative mx-auto max-w-6xl px-4 py-24">
-  
-  <h2 className="text-center text-2xl md:text-3xl font-semibold text-slate-50 mb-12">
+      <section className="max-w-6xl mx-auto px-6 mt-32">
+  <h2 className="text-center text-4xl font-bold mb-16">
     De ton idée… à un ebook professionnel ✨
   </h2>
 
-  <div className="grid md:grid-cols-2 gap-10 items-center">
-    
-    {/* Avant ------------------------------------------------ */}
-    <div className="glass p-6 rounded-3xl border border-slate-800/60 shadow-xl backdrop-blur-xl justify-self-center">
-      <h3 className="text-lg font-semibold text-slate-100 mb-4">Ton idée brute</h3>
+  {/* GRID 2 COLONNES */}
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
-      <div className="bg-slate-900/40 p-4 rounded-2xl border border-slate-700/50 shadow-inner text-sm text-slate-300 leading-relaxed">
-        “Je voudrais créer un ebook sur comment les débutants peuvent lancer un business rentable en 2025 sans argent.”
+    {/* ---- COLONNE 1 : IDÉE ---- */}
+    <div className="p-8 rounded-2xl bg-white/5 dark:bg-white/10 border border-white/10 backdrop-blur-xl">
+      <h3 className="text-lg font-semibold mb-4">Ton idée brute</h3>
+
+      <div className="p-5 rounded-xl bg-black/20 border border-white/10">
+        “Je voudrais créer un ebook sur comment les débutants peuvent lancer un
+        business rentable en 2025 sans argent.”
       </div>
 
-      <p className="text-xs text-slate-500 mt-3">
+      <p className="mt-3 text-sm text-gray-400">
         → Tu écris juste une idée comme ça.
       </p>
     </div>
 
-    {/* Arrow */}
-    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 md:translate-x-0 md:-translate-y-1/2 md:static flex justify-center md:block">
-      <div className="hidden md:block text-slate-500 text-5xl animate-pulse">→</div>
-    </div>
+    {/* ---- COLONNE 2 : RÉSULTAT ---- */}
+    <div className="p-8 rounded-2xl bg-white/5 dark:bg-white/10 border border-white/10 backdrop-blur-xl">
+      <h3 className="text-lg font-semibold mb-6">Résultat généré</h3>
 
-    {/* Après ------------------------------------------------ */}
-    <div className="glass p-6 rounded-3xl border border-slate-800/60 shadow-xl backdrop-blur-xl">
-      <h3 className="text-lg font-semibold text-slate-100 mb-4">Résultat généré</h3>
-
-      <div className="relative mx-auto h-[260px] w-[180px] mb-4">
-        
-        {/* Glow */}
-        <div className="absolute -inset-4 rounded-[22px] bg-gradient-to-br from-blue-400 via-blue-600 to-blue-800 opacity-40 blur-2xl" />
-
-        {/* Mockup */}
-        <div className="relative h-full w-full overflow-hidden rounded-[20px] border border-slate-700/70 bg-slate-950 shadow-xl">
-          
-          {/* Top bar */}
-          <div className="flex items-center justify-between border-b border-slate-700/70 px-3 py-2">
-            <span className="text-[10px] font-medium text-slate-200">
-              Ebook généré
-            </span>
-            <span className="rounded-full bg-slate-800/70 px-2 py-0.5 text-[9px] text-slate-400">
-              Business
-            </span>
-          </div>
-
-          {/* Cover */}
-          <div className="h-full w-full bg-gradient-to-br from-blue-300 to-blue-600 flex items-end p-3">
-            <span className="text-[11px] font-semibold text-white leading-tight drop-shadow">
-              Lancer un Business Digital Rentable en 2025  
-            </span>
-          </div>
+      <div className="w-full flex justify-center">
+        <div className="relative w-[300px] h-[420px] rounded-xl overflow-hidden shadow-2xl bg-gradient-to-b from-blue-400 to-blue-600">
+          <span className="absolute top-3 left-3 text-xs bg-black/40 px-2 py-1 rounded">
+            Ebook généré
+          </span>
+          <span className="absolute top-3 right-3 text-xs bg-black/40 px-2 py-1 rounded">
+            Business
+          </span>
         </div>
       </div>
 
-      <p className="text-xs text-slate-500">
+      <p className="mt-4 text-sm text-gray-400">
         → Ebook complet : 7 chapitres + plan d’action + design cohérent.
       </p>
     </div>
