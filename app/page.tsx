@@ -1,51 +1,46 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, Moon, Sun } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 
 export default function LandingPage() {
-  const [showHeader, setShowHeader] = useState(false);
-
-  // next-themes
   const { theme, setTheme } = useTheme();
 
-  useEffect(() => {
-    const onScroll = () => setShowHeader(window.scrollY > 80);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const isDark = theme === "dark";
 
   return (
     <main className="relative flex flex-col items-center w-full overflow-hidden bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50">
 
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 -z-20 bg-gradient-to-b from-blue-200/70 via-white/70 to-transparent dark:from-blue-900/50 dark:via-gray-900/60 dark:to-transparent" />
+      {/* BACKGROUND GRADIENT */}
+      <div className="absolute inset-0 -z-20 bg-gradient-to-b from-blue-200/70 via-white/80 to-transparent dark:from-blue-950/70 dark:via-gray-950/90 dark:to-transparent" />
 
       {/* BLOBS */}
       <div className="absolute top-[-200px] left-[-100px] w-[600px] h-[600px] rounded-full bg-blue-400/40 dark:bg-blue-700/30 blur-[120px] animate-blob-floating -z-10" />
       <div className="absolute bottom-[-200px] right-[-100px] w-[500px] h-[500px] rounded-full bg-purple-300/40 dark:bg-purple-700/30 blur-[120px] animate-blob-floating2 -z-10" />
 
       {/* ===================================================== */}
-      {/*                      HEADER NORMAL                    */}
+      {/* HEADER STICKY GLASS                                  */}
       {/* ===================================================== */}
-      <header className="sticky top-0 left-0 w-full z-30 px-6 py-6 bg-transparent backdrop-blur-md">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          
+      <header className="sticky top-0 z-30 w-full px-4 pt-4">
+        <div className="max-w-6xl mx-auto glass px-4 py-3 rounded-2xl flex items-center justify-between header-fade-scale">
+          {/* Logo */}
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-xl bg-blue-600" />
-            <h1 className="text-xl font-bold">E-Book Factory</h1>
+            <span className="font-semibold text-lg tracking-tight">
+              E-Book Factory
+            </span>
           </div>
 
+          {/* Actions */}
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="glass px-3 py-2 rounded-2xl flex items-center gap-1 text-sm"
+              onClick={() => setTheme(isDark ? "light" : "dark")}
+              className="flex items-center gap-1 px-3 py-2 rounded-2xl text-sm glass"
             >
-              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-              {theme === "dark" ? "Light" : "Dark"}
+              {isDark ? <Sun size={16} /> : <Moon size={16} />}
+              <span>{isDark ? "Light" : "Dark"}</span>
             </button>
 
             <Link href="/create/title">
@@ -54,207 +49,180 @@ export default function LandingPage() {
               </Button>
             </Link>
           </div>
-
         </div>
       </header>
 
-      {/* ===================================================== */}
-      {/*           HEADER FLOTTANT (quand on scrolle)          */}
-      {/* ===================================================== */}
-      {showHeader && (
-        <div
-          className="fixed top-4 left-1/2 -translate-x-1/2 z-50
-                     w-[90%] md:w-[70%] px-6 py-4 glass rounded-3xl 
-                     shadow-xl header-fade-scale"
-        >
-          <div className="flex items-center justify-between max-w-7xl mx-auto">
-
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-xl bg-blue-600" />
-              <h1 className="text-xl font-bold">E-Book Factory</h1>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="glass px-3 py-2 rounded-2xl flex items-center gap-1 text-sm"
-              >
-                {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-                {theme === "dark" ? "Light" : "Dark"}
-              </button>
-
-              <Link href="/create/title">
-                <Button className="rounded-2xl bg-blue-600 hover:bg-blue-700">
-                  Créer un Ebook
-                </Button>
-              </Link>
-            </div>
-
-          </div>
-        </div>
-      )}
+      {/* Spacer pour respirer sous le header */}
+      <div className="h-10" />
 
       {/* ===================================================== */}
-      {/*      SPACER POUR ÉVITER COLLISION HERO / HEADER       */}
+      {/* HERO SECTION                                          */}
       {/* ===================================================== */}
-      <div className="h-[90px]" />
-
-
-      {/* ===================================================== */}
-      {/*                        HERO                           */}
-      {/* ===================================================== */}
-      <section className="flex flex-col lg:flex-row items-center gap-20 mt-32 px-6 max-w-6xl w-full">
+      <section className="flex flex-col lg:flex-row items-center gap-16 px-6 max-w-6xl w-full mt-4">
         {/* LEFT */}
-        <div className="flex-1 animate-fade-left">
-          <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight leading-tight">
-            Crée ton{" "}
-            <span className="text-blue-600 dark:text-blue-400">Ebook Premium</span>{" "}
-            prêt à vendre <br className="hidden lg:block" />
-            en 30 secondes.
-          </h1>
-
-          <p className="text-lg text-gray-600 dark:text-gray-300 mt-6 max-w-xl">
-            Génère automatiquement un ebook professionnel, illustré, designé et accompagné
-            d’une licence de revente — parfait pour TikTok, Instagram, infopreneurs et créateurs de formations.
+        <div className="flex-1 space-y-6">
+          <p className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full glass">
+            🚀 Génère un produit digital revendable en quelques secondes
           </p>
 
-          <div className="mt-10 flex flex-wrap gap-4 items-center">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+            Crée ton{" "}
+            <span className="text-blue-600 dark:text-blue-400">
+              Ebook Premium
+            </span>{" "}
+            prêt à vendre en 30 secondes.
+          </h1>
+
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-xl">
+            Ebook Factory génère pour toi un ebook professionnel, structuré,
+            illustré et prêt à vendre sur TikTok, Instagram, Gumroad ou
+            n’importe quelle plateforme — sans écrire une seule ligne.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-4">
             <Link href="/create/title">
-              <Button className="px-10 py-6 text-lg rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-300/40">
-                Créer mon ebook <ArrowRight className="ml-2" />
+              <Button className="px-8 py-6 text-base sm:text-lg rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-300/40">
+                Créer mon ebook maintenant
+                <ArrowRight className="ml-2" size={18} />
               </Button>
             </Link>
-
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              Aperçu gratuit avant achat. Paye seulement si le rendu te plaît.
+            <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+              Aperçu gratuit avant achat. Tu ne payes que si le rendu te plaît.
             </span>
           </div>
-        </div>
 
-        {/* RIGHT (Mockup) */}
-        <div className="flex-1 flex justify-center animate-fade-right">
-          <div className="relative">
-            <div className="absolute -inset-6 rounded-3xl bg-blue-500/30 blur-3xl dark:bg-blue-700/30" />
-
-            <div className="relative w-[320px] h-[460px] bg-white dark:bg-gray-900 shadow-2xl rounded-2xl border overflow-hidden transform rotate-[3deg] hover:rotate-0 transition-all duration-500">
-              <div className="h-full bg-gradient-to-br from-blue-300 to-blue-500 dark:from-blue-800 dark:to-blue-700 flex items-center justify-center">
-                <span className="text-white text-xl font-bold opacity-90 tracking-wide">
-                  Mockup Ebook Pro
-                </span>
-              </div>
+          <div className="flex flex-wrap gap-4 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-green-500" />
+              <span>Licence de revente incluse</span>
             </div>
-
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-blue-500" />
+              <span>Optimisé pour les infopreneurs & créateurs de formation</span>
+            </div>
           </div>
         </div>
 
+        {/* RIGHT : Mockup */}
+        <div className="flex-1 flex justify-center">
+          <div className="relative group">
+            <div className="absolute -inset-6 rounded-3xl bg-blue-500/30 blur-3xl dark:bg-blue-800/30" />
+            <div className="relative w-[320px] h-[460px] rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden transform rotate-[3deg] group-hover:rotate-0 group-hover:scale-[1.02] transition-all duration-500 bg-gradient-to-br from-blue-300 to-blue-500 dark:from-blue-800 dark:to-blue-700 flex items-center justify-center">
+              <span className="text-white text-xl font-bold tracking-wide">
+                Aperçu Ebook Pro
+              </span>
+            </div>
+          </div>
+        </div>
       </section>
 
-        {/* ================================================================================= */}
-        {/*                               HOW IT WORKS                                       */}
-        {/* ================================================================================= */}
+      {/* ===================================================== */}
+      {/* HOW IT WORKS                                          */}
+      {/* ===================================================== */}
+      <section className="mt-32 px-6 w-full max-w-6xl">
+        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-14">
+          Comment ça marche ?
+        </h2>
 
-        <section className="mt-32 px-6 w-full max-w-6xl">
-          <h2 className="text-4xl font-bold text-center mb-14">Comment ça marche ?</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {[
-              {
-                title: "1. Décris ta niche",
-                content:
-                  "L’IA analyse ton sujet et génère plusieurs titres vendeurs automatiquement.",
-              },
-              {
-                title: "2. Personnalise ton style",
-                content:
-                  "Choisis la police, le design, la longueur, et les images IA pour créer un ebook unique.",
-              },
-              {
-                title: "3. Génère ton ebook",
-                content:
-                  "Obtiens un PDF pro + licence de revente pour le vendre immédiatement.",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="p-8 rounded-2xl bg-white/70 dark:bg-gray-800/60 backdrop-blur-xl border shadow-md transition hover:-translate-y-1 hover:shadow-xl"
-              >
-                <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
-                <p className="text-gray-600 dark:text-gray-300">{item.content}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ================================================================================= */}
-        {/*                                VALUE SECTION                                      */}
-        {/* ================================================================================= */}
-
-        <section className="mt-32 px-6 w-full max-w-6xl">
-          <h2 className="text-4xl font-bold text-center mb-14">Ce que tu obtiens</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-lg">
-            {[
-              "PDF professionnel prêt à vendre",
-              "Design premium et personnalisable",
-              "Images générées par IA (option premium)",
-              "Licence de revente incluse",
-              "Chapitres structurés et uniques",
-              "Ebook compatible TikTok, Insta, Gumroad",
-              "Sommaire + plan d’action inclus",
-              "Rendu premium idéal pour les infopreneurs",
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-4 p-5 rounded-xl bg-white/70 dark:bg-gray-800/60 backdrop-blur-xl border shadow-sm"
-              >
-                <CheckCircle2 className="text-blue-600" size={26} />
-                {item}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ================================================================================= */}
-        {/*                                    CTA FINAL                                      */}
-        {/* ================================================================================= */}
-
-        <section className="mt-32 mb-28 text-center">
-          <h2 className="text-4xl font-bold mb-6">Prêt à créer un ebook qui se vend ?</h2>
-
-          <Link href="/create/title">
-            <Button className="px-12 py-6 text-xl rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-300/40">
-              Générer mon Ebook maintenant
-            </Button>
-          </Link>
-        </section>
-
-        {/* ================================================================================= */}
-        {/*                                     FOOTER                                        */}
-        {/* ================================================================================= */}
-
-        <footer className="w-full py-10 mt-4 border-t border-white/40 dark:border-gray-800 text-center text-gray-500 dark:text-gray-400">
-          © {new Date().getFullYear()} • E-Book Factory — Tous droits réservés.
-        </footer>
-
-        {/* ================================================================================= */}
-        {/*                             CTA FLOTTANT MOBILE                                   */}
-        {/* ================================================================================= */}
-
-        <div className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50">
-          <Link href="/create/title">
-            <button
-              className={
-                "px-7 py-4 rounded-3xl flex items-center gap-2 shadow-xl " +
-                (theme === "dark" ? "glass bg-gray-900/40" : "glass bg-white/30")
-
-              }
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            {
+              title: "1. Décris ta niche",
+              content:
+                "Tu expliques ton sujet en quelques lignes : business, mindset, fitness, crypto, marketing, etc.",
+            },
+            {
+              title: "2. L’IA structure et rédige",
+              content:
+                "Ebook Factory génère un plan complet, les chapitres, le texte et les visuels (option IA images).",
+            },
+            {
+              title: "3. Tu récupères ton PDF prêt à vendre",
+              content:
+                "Télécharge ton ebook pro avec licence de revente, prêt à être vendu ou utilisé comme bonus de formation.",
+            },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="p-6 sm:p-8 rounded-2xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-white/60 dark:border-gray-800 shadow-md hover:-translate-y-1 hover:shadow-xl transition"
             >
-              <span className="text-sm font-semibold">Créer mon ebook maintenant</span>
-              <ArrowRight size={18} />
-            </button>
-          </Link>
+              <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
+              <p className="text-gray-600 dark:text-gray-300">{item.content}</p>
+            </div>
+          ))}
         </div>
+      </section>
 
-      </main>
+      {/* ===================================================== */}
+      {/* VALUE SECTION                                         */}
+      {/* ===================================================== */}
+      <section className="mt-32 px-6 w-full max-w-6xl">
+        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-14">
+          Ce que tu obtiens
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-base sm:text-lg">
+          {[
+            "PDF professionnel prêt à vendre",
+            "Design moderne et cohérent",
+            "Structure claire : chapitres, sections, sommaire",
+            "Possibilité d’ajouter des images IA (option)",
+            "Licence de revente incluse",
+            "Parfait pour TikTok, Instagram, Gumroad",
+            "Idéal comme bonus de formation ou produit d’appel",
+            "Contenu généré à partir de ta niche et de ton angle",
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 p-4 rounded-xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-white/60 dark:border-gray-800 shadow-sm"
+            >
+              <CheckCircle2 className="text-blue-600" size={24} />
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ===================================================== */}
+      {/* CTA FINAL                                             */}
+      {/* ===================================================== */}
+      <section className="mt-32 mb-28 text-center px-6 w-full max-w-3xl">
+        <h2 className="text-3xl sm:text-4xl font-bold mb-6">
+          Prêt à créer un ebook qui se vend vraiment ?
+        </h2>
+        <p className="text-gray-600 dark:text-gray-300 mb-8">
+          En quelques minutes, tu peux avoir un produit digital complet, pro, revendable,
+          qui peut devenir ton nouveau tunnel TikTok ou ton bonus de formation.
+        </p>
+
+        <Link href="/create/title">
+          <Button className="px-10 py-6 text-base sm:text-lg rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-300/40">
+            Générer mon Ebook maintenant
+          </Button>
+        </Link>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="w-full py-10 mt-4 border-t border-white/40 dark:border-gray-800 text-center text-gray-500 dark:text-gray-400 text-sm">
+        © {new Date().getFullYear()} • E-Book Factory — Tous droits réservés.
+      </footer>
+
+      {/* CTA FLOTTANT MOBILE */}
+      <div className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-40">
+        <Link href="/create/title">
+          <button
+            className={
+              "px-7 py-4 rounded-3xl flex items-center gap-2 shadow-xl " +
+              (isDark ? "glass bg-gray-900/60" : "glass bg-white/70")
+            }
+          >
+            <span className="text-sm font-semibold">
+              Créer mon ebook maintenant
+            </span>
+            <ArrowRight size={18} />
+          </button>
+        </Link>
+      </div>
+    </main>
   );
 }

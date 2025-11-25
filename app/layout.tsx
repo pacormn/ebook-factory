@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "./providers/ThemeProvider";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -65,7 +65,11 @@ export const metadata: Metadata = {
   themeColor: "#0d74e7",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
@@ -74,11 +78,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50`}
       >
-        {/* Liquid glass filter */}
+        {/* Filter for liquid glass (if you use url(#frosted) un jour) */}
         <svg width="0" height="0" className="absolute pointer-events-none">
           <filter id="frosted">
             <feGaussianBlur stdDeviation="20" result="blur" />

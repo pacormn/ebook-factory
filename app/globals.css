@@ -1,17 +1,13 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* -------------------------------------------- */
-/* FONT                                         */
-/* -------------------------------------------- */
+/* FONT */
 html, body {
   font-family: "Inter", sans-serif;
   transition: background-color .25s ease, color .25s ease;
 }
 
-/* -------------------------------------------- */
-/* REAL iOS LIQUID GLASS                        */
-/* -------------------------------------------- */
+/* REAL iOS LIQUID GLASS */
 .glass {
   position: relative;
   border-radius: 24px;
@@ -63,9 +59,7 @@ html, body {
   mix-blend-mode: overlay;
 }
 
-/* -------------------------------------------- */
-/* BLOBS                                        */
-/* -------------------------------------------- */
+/* BLOBS */
 @keyframes blobFloating {
   0% { transform: translate(0,0) scale(1); }
   33% { transform: translate(50px,-30px) scale(1.05); }
@@ -75,13 +69,11 @@ html, body {
 .animate-blob-floating { animation: blobFloating 12s infinite ease-in-out; }
 .animate-blob-floating2 { animation: blobFloating 14s infinite ease-in-out; }
 
-/* -------------------------------------------- */
-/* HEADER ANIMATION                             */
-/* -------------------------------------------- */
+/* HEADER ANIMATION (optionnel pour le header sticky) */
 @keyframes headerFadeScale {
   from {
     opacity: 0;
-    transform: scale(0.94);
+    transform: scale(0.96);
   }
   to {
     opacity: 1;
@@ -89,5 +81,5 @@ html, body {
   }
 }
 .header-fade-scale {
-  animation: headerFadeScale .28s ease-out forwards;
+  animation: headerFadeScale .25s ease-out forwards;
 }
