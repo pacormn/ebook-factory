@@ -34,7 +34,7 @@ export default function AdminPage() {
     const fetchSummary = async () => {
       try {
         const res = await fetch("/api/admin/ai-usage/summary");
-        if (!res.ok) throw new Error("Erreur API");
+        if (!res.ok) throw new Error("API ERROR");
         const json = await res.json();
         setData(json);
       } catch (e: any) {
@@ -230,5 +230,5 @@ export default function AdminPage() {
         )}
       </section>
     </main>
-  );
+  ); 
 }
