@@ -31,6 +31,9 @@ export default function LandingPage() {
             <Link href="#how-it-works" className="hover:text-slate-100 transition">
               Comment ça marche
             </Link>
+            <Link href="#examples" className="hover:text-slate-100 transition">
+              Exemples
+            </Link>
             <Link href="#pricing" className="hover:text-slate-100 transition">
               Tarifs
             </Link>
@@ -209,6 +212,76 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
+
+      {/* ===================================================================================== */}
+{/*                             AVANT / APRÈS — EXEMPLE REAL FINAL                         */}
+{/* ===================================================================================== */}
+
+<section className="relative mx-auto max-w-6xl px-4 py-24">
+  
+  <h2 className="text-center text-2xl md:text-3xl font-semibold text-slate-50 mb-12">
+    De ton idée… à un ebook professionnel ✨
+  </h2>
+
+  <div className="grid md:grid-cols-2 gap-10 items-center">
+    
+    {/* Avant ------------------------------------------------ */}
+    <div className="glass p-6 rounded-3xl border border-slate-800/60 shadow-xl backdrop-blur-xl">
+      <h3 className="text-lg font-semibold text-slate-100 mb-4">Ton idée brute</h3>
+
+      <div className="bg-slate-900/40 p-4 rounded-2xl border border-slate-700/50 shadow-inner text-sm text-slate-300 leading-relaxed">
+        “Je voudrais créer un ebook sur comment les débutants peuvent lancer un business rentable en 2025 sans argent.”
+      </div>
+
+      <p className="text-xs text-slate-500 mt-3">
+        → Tu écris juste une idée comme ça.
+      </p>
+    </div>
+
+    {/* Arrow */}
+    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 md:translate-x-0 md:-translate-y-1/2 md:static flex justify-center md:block">
+      <div className="hidden md:block text-slate-500 text-5xl animate-pulse">→</div>
+    </div>
+
+    {/* Après ------------------------------------------------ */}
+    <div className="glass p-6 rounded-3xl border border-slate-800/60 shadow-xl backdrop-blur-xl">
+      <h3 className="text-lg font-semibold text-slate-100 mb-4">Résultat généré</h3>
+
+      <div className="relative mx-auto h-[260px] w-[180px] mb-4">
+        
+        {/* Glow */}
+        <div className="absolute -inset-4 rounded-[22px] bg-gradient-to-br from-blue-400 via-blue-600 to-blue-800 opacity-40 blur-2xl" />
+
+        {/* Mockup */}
+        <div className="relative h-full w-full overflow-hidden rounded-[20px] border border-slate-700/70 bg-slate-950 shadow-xl">
+          
+          {/* Top bar */}
+          <div className="flex items-center justify-between border-b border-slate-700/70 px-3 py-2">
+            <span className="text-[10px] font-medium text-slate-200">
+              Ebook généré
+            </span>
+            <span className="rounded-full bg-slate-800/70 px-2 py-0.5 text-[9px] text-slate-400">
+              Business
+            </span>
+          </div>
+
+          {/* Cover */}
+          <div className="h-full w-full bg-gradient-to-br from-blue-300 to-blue-600 flex items-end p-3">
+            <span className="text-[11px] font-semibold text-white leading-tight drop-shadow">
+              Lancer un Business Digital Rentable en 2025  
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <p className="text-xs text-slate-500">
+        → Ebook complet : 7 chapitres + plan d’action + design cohérent.
+      </p>
+    </div>
+
+  </div>
+</section>
+
 
       {/* HOW IT WORKS */}
       <section
