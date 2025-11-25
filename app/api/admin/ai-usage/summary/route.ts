@@ -1,76 +1,51 @@
-// app/api/admin/ai-usage/summary/route.ts
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
-  if (!supabaseAdmin) {
-    return NextResponse.json(
-      { error: "Supabase non configuré côté serveur." },
-      { status: 500 }
-    );
-  }
+  const supabase = createClient();
 
   try {
-    // Totaux globaux
-    const { data: totalsRow, error: totalsError } = await supabaseAdmin
+    // 🔹 Total global
+    const { data: totalData, error: totalError } = await supabase
       .from("ai_usage")
-      .select(
-        `
-        total_tokens: sum(total_tokens),
-        total_cost_usd: sum(cost_usd),
-        total_requests: count(*)
-      `
-      )
-      .single();
+      .select("tokens_input, tokens_output");
 
-    if (totalsError) throw totalsError;
+    if (totalError) throw totalError;
 
-    // Stats par modèle
-    const { data: byModel, error: byModelError } = await supabaseAdmin
-      .from("ai_usage")
-      .select(
-        `
-        model,
-        total_tokens: sum(total_tokens),
-        total_cost_usd: sum(cost_usd),
-        total_requests: count(*)
-      `
-      )
-      .group("model");
+    const total_requests = totalData.length;
+    const total_tokens_input = totalData.reduce((t, r) => t + r.tokens_input, 0);
+    const total_tokens_output = totalData.reduce((t, r) => t + r.tokens_output, 0);
 
-    if (byModelError) throw byModelError;
+    // 🔹 Regroupement par modèle — version JS, pas SQL
+    const modelMap: Record<string, any> = {};
 
-    // Stats quotidiennes (30 derniers jours)
-    const { data: daily, error: dailyError } = await supabaseAdmin
-      .from("ai_usage")
-      .select(
-        `
-        day: date_trunc('day', created_at),
-        total_tokens: sum(total_tokens),
-        total_cost_usd: sum(cost_usd),
-        total_requests: count(*)
-      `
-      )
-      .group("day")
-      .order("day", { ascending: true })
-      .limit(30);
+    for (const row of totalData) {
+      if (!modelMap[row.model]) {
+        modelMap[row.model] = {
+          model: row.model,
+          requests: 0,
+          tokens_input: 0,
+          tokens_output: 0,
+        };
+      }
 
-    if (dailyError) throw dailyError;
+      modelMap[row.model].requests++;
+      modelMap[row.model].tokens_input += row.tokens_input;
+      modelMap[row.model].tokens_output += row.tokens_output;
+    }
+
+    const by_model = Object.values(modelMap);
 
     return NextResponse.json({
-      totals: totalsRow || {
-        total_tokens: 0,
-        total_cost_usd: 0,
-        total_requests: 0,
+      total: {
+        requests: total_requests,
+        tokens_input: total_tokens_input,
+        tokens_output: total_tokens_output,
       },
-      byModel: byModel || [],
-      daily: daily || [],
+      by_model,
     });
-  } catch (e) {
-    console.error("[/api/admin/ai-usage/summary] error", e);
-    return NextResponse.json(
-      { error: "Erreur lors de la récupération des stats." },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    console.error("API ERROR:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
