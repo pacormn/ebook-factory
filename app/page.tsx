@@ -245,7 +245,8 @@ export default function LandingPage() {
             <button
               className={
                 "px-7 py-4 rounded-3xl flex items-center gap-2 shadow-xl " +
-                (isDark ? "glass-dark bg-gray-900/40" : "glass bg-white/30")
+                (theme === "dark" ? "glass bg-gray-900/40" : "glass bg-white/30")
+
               }
             >
               <span className="text-sm font-semibold">Créer mon ebook maintenant</span>
