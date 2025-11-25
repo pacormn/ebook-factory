@@ -6,24 +6,64 @@ html, body {
   font-family: "Inter", sans-serif;
 }
 
-/* TRUE LIQUID GLASS (iOS-like) */
+/* REAL iOS LIQUID GLASS */
 .glass {
-  background: rgba(255, 255, 255, 0.18);
+  position: relative;
   border-radius: 24px;
+  overflow: hidden;
+
+  /* base translucency */
+  background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(25px) saturate(180%);
-  -webkit-backdrop-filter: blur(25px) saturate(180%);
-  box-shadow: 
-    0 4px 30px rgba(0, 0, 0, 0.1),
-    inset 0 0 0.5px rgba(255, 255, 255, 0.5);
+  
+  /* strong blur + refraction */
+  backdrop-filter: blur(40px) saturate(250%);
+  -webkit-backdrop-filter: blur(40px) saturate(250%);
+
+  /* soft shadow */
+  box-shadow:
+    0 4px 25px rgba(0, 0, 0, 0.18),
+    inset 0 0 0.6px rgba(255, 255, 255, 0.45);
 }
 
+/* internal light gradient (iOS feel) */
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.25) 0%,
+    rgba(255,255,255,0.10) 20%,
+    rgba(255,255,255,0.05) 60%,
+    rgba(255,255,255,0.02) 100%
+  );
+  mix-blend-mode: soft-light;
+}
+
+/* dark mode */
 .dark .glass {
-  background: rgba(20, 20, 20, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(15, 15, 15, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 4px 25px rgba(0, 0, 0, 0.35),
+    inset 0 0 0.6px rgba(255, 255, 255, 0.2);
 }
 
-/* BLOBS */
+.dark .glass::before {
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.13) 0%,
+    rgba(255,255,255,0.04) 50%,
+    rgba(255,255,255,0.02) 100%
+  );
+  mix-blend-mode: overlay;
+}
+
+/* -------------------------------------------- */
+/* BLOBS                                        */
+/* -------------------------------------------- */
 @keyframes blobFloating {
   0% { transform: translate(0,0) scale(1); }
   33% { transform: translate(50px,-30px) scale(1.05); }
@@ -32,3 +72,20 @@ html, body {
 }
 .animate-blob-floating { animation: blobFloating 12s infinite ease-in-out; }
 .animate-blob-floating2 { animation: blobFloating 14s infinite ease-in-out; }
+
+/* -------------------------------------------- */
+/* HEADER ANIMATION FIX                         */
+/* -------------------------------------------- */
+@keyframes headerFadeScale {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.header-fade-scale {
+  animation: headerFadeScale .28s ease-out forwards;
+}

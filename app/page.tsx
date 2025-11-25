@@ -52,41 +52,28 @@ export default function LandingPage() {
 {/* === HEADER DYNAMIQUE === */}
 <div
   className={
-    "transition-all duration-500 will-change-transform " +
+    "transition-all duration-300 will-change-transform " +
     (showHeader
-      ? // MODE SCROLL → bulle flottante
-        "fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] md:w-[70%] px-6 py-3 rounded-3xl shadow-xl header-fade-scale " +
-        (isDark ? "glass-dark" : "glass")
-      : // MODE NORMAL → header classique
-        "w-full px-6 py-6 sticky top-0 z-20"
+      ? // HEADER FLOTTANT — NO horizontal movement
+        "fixed top-4 left-1/2 -translate-x-1/2 z-40 w-[90%] md:w-[70%] px-6 py-4 rounded-3xl shadow-xl glass header-fade-scale"
+      : // HEADER NORMAL — KEEP SAME LEFT + TRANSLATE TO PREVENT GLITCH
+        "absolute top-0 left-1/2 -translate-x-1/2 w-full px-6 py-6"
     )
   }
 >
   <div className="flex items-center justify-between max-w-7xl mx-auto">
-    {/* LOGO */}
     <div className="flex items-center gap-2">
       <div className="h-8 w-8 rounded-xl bg-blue-600" />
       <h1 className="text-xl font-bold">E-Book Factory</h1>
     </div>
 
-    {/* ACTIONS */}
     <div className="flex items-center gap-3">
       <button
         onClick={toggleTheme}
-        className={
-          "flex items-center gap-1 px-3 py-2 rounded-2xl text-sm transition " +
-          (isDark ? "glass-dark" : "glass")
-        }
+        className="glass px-3 py-2 rounded-2xl flex items-center gap-1 text-sm"
       >
-        {isDark ? (
-          <>
-            <Sun size={16} /> <span>Light</span>
-          </>
-        ) : (
-          <>
-            <Moon size={16} /> <span>Dark</span>
-          </>
-        )}
+        {isDark ? <Sun size={16} /> : <Moon size={16} />}
+        {isDark ? "Light" : "Dark"}
       </button>
 
       <Link href="/create/title">
@@ -97,6 +84,7 @@ export default function LandingPage() {
     </div>
   </div>
 </div>
+
 
 
         </header>
