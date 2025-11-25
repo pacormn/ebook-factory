@@ -4,81 +4,80 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 
 export default function LandingPage() {
   const [showHeader, setShowHeader] = useState(false);
-  const [isDark, setIsDark] = useState(false);
 
-  // === SCROLL HEADER DETECTION ===
+  // next-themes
+  const { theme, setTheme } = useTheme();
+
   useEffect(() => {
-    const handleScroll = () => {
-      setShowHeader(window.scrollY > 80);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setShowHeader(window.scrollY > 80);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // === DARK MODE TOGGLE ===
-const toggleTheme = () => {
-  setIsDark((prev) => {
-    const newTheme = !prev;
-
-    if (newTheme) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-
-    return newTheme;
-  });
-};
-
-
   return (
-    <div className="w-full">
-      <main className="relative flex flex-col items-center w-full overflow-hidden bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50">
+    <main className="relative flex flex-col items-center w-full overflow-hidden bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50">
 
-        {/* === BACKGROUND === */}
-        <div className="absolute inset-0 -z-20 bg-gradient-to-b from-blue-200/70 via-white/70 to-transparent dark:from-blue-900/50 dark:via-gray-900/60 dark:to-transparent" />
+      {/* BACKGROUND */}
+      <div className="absolute inset-0 -z-20 bg-gradient-to-b from-blue-200/70 via-white/70 to-transparent dark:from-blue-900/50 dark:via-gray-900/60 dark:to-transparent" />
 
-        {/* Blobs */}
-        <div className="absolute top-[-200px] left-[-100px] w-[600px] h-[600px] rounded-full bg-blue-400/40 dark:bg-blue-700/30 blur-[120px] animate-blob-floating -z-10" />
-        <div className="absolute bottom-[-200px] right-[-100px] w-[500px] h-[500px] rounded-full bg-purple-300/40 dark:bg-purple-700/30 blur-[120px] animate-blob-floating2 -z-10" />
+      {/* BLOBS */}
+      <div className="absolute top-[-200px] left-[-100px] w-[600px] h-[600px] rounded-full bg-blue-400/40 dark:bg-blue-700/30 blur-[120px] animate-blob-floating -z-10" />
+      <div className="absolute bottom-[-200px] right-[-100px] w-[500px] h-[500px] rounded-full bg-purple-300/40 dark:bg-purple-700/30 blur-[120px] animate-blob-floating2 -z-10" />
 
-        {/* ================================================================================= */}
-        {/*                                      HEADER                                      */}
-        {/* ================================================================================= */}
+      {/* HEADER NORMAL */}
+      <header className="sticky top-0 left-0 w-full z-30 px-6 py-6 bg-transparent backdrop-blur-md">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          {/* logo */}
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-xl bg-blue-600" />
+            <h1 className="text-xl font-bold">E-Book Factory</h1>
+          </div>
 
-<header className="w-full">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="glass px-3 py-2 rounded-2xl flex items-center gap-1 text-sm"
+            >
+              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+              {theme === "dark" ? "Light" : "Dark"}
+            </button>
 
-  {/* HEADER NORMAL (toujours visible en haut) */}
-<div
-  className={
-    "transition-opacity duration-200 w-full px-6 py-6 bg-transparent " +
-    (!showHeader ? "opacity-100 pointer-events-auto relative" : "opacity-0 pointer-events-none absolute")
-  }
->
+            <Link href="/create/title">
+              <Button className="rounded-2xl bg-blue-600 hover:bg-blue-700">
+                Créer un Ebook
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </header>
 
-    <div className="flex items-center justify-between max-w-7xl mx-auto">
-      <div className="flex items-center gap-2">
-        <div className="h-8 w-8 rounded-xl bg-blue-600" />
-        <h1 className="text-xl font-bold">E-Book Factory</h1>
-      </div>
-
-      <div className="flex items-center gap-3">
-        <button
-          onClick={toggleTheme}
-          className="glass px-3 py-2 rounded-2xl flex items-center gap-1 text-sm"
+      {/* HEADER FLOTTANT */}
+      {showHeader && (
+        <div
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] md:w-[70%] px-6 py-4 glass rounded-3xl shadow-xl header-fade-scale"
         >
-          {isDark ? <Sun size={16} /> : <Moon size={16} />}
-          {isDark ? "Light" : "Dark"}
-        </button>
+          <div className="flex items-center justify-between max-w-7xl mx-auto">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-xl bg-blue-600" />
+              <h1 className="text-xl font-bold">E-Book Factory</h1>
+            </div>
 
-        <Link href="/create/title">
-          <Button className="px-5 rounded-2xl bg-blue-600 hover:bg-blue-700">
-            Créer un Ebook
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="glass px-3 py-2 rounded-2xl flex items-center gap-1 text-sm"
+              >
+                {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+                {theme === "dark" ? "Light" : "Dark"}
+              </button>
+
+              <Link href="/create/title">
+                <Button className="rounded-2xl bg-blue-600 hover:bg-blue-700">
+                  Créer un Ebook
           </Button>
         </Link>
       </div>
