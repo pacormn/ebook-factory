@@ -28,10 +28,12 @@ export default function LandingPage() {
       <div className="absolute top-[-200px] left-[-100px] w-[600px] h-[600px] rounded-full bg-blue-400/40 dark:bg-blue-700/30 blur-[120px] animate-blob-floating -z-10" />
       <div className="absolute bottom-[-200px] right-[-100px] w-[500px] h-[500px] rounded-full bg-purple-300/40 dark:bg-purple-700/30 blur-[120px] animate-blob-floating2 -z-10" />
 
-      {/* HEADER NORMAL */}
+      {/* ===================================================== */}
+      {/*                      HEADER NORMAL                    */}
+      {/* ===================================================== */}
       <header className="sticky top-0 left-0 w-full z-30 px-6 py-6 bg-transparent backdrop-blur-md">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          {/* logo */}
+          
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-xl bg-blue-600" />
             <h1 className="text-xl font-bold">E-Book Factory</h1>
@@ -52,15 +54,21 @@ export default function LandingPage() {
               </Button>
             </Link>
           </div>
+
         </div>
       </header>
 
-      {/* HEADER FLOTTANT */}
+      {/* ===================================================== */}
+      {/*           HEADER FLOTTANT (quand on scrolle)          */}
+      {/* ===================================================== */}
       {showHeader && (
         <div
-          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] md:w-[70%] px-6 py-4 glass rounded-3xl shadow-xl header-fade-scale"
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-50
+                     w-[90%] md:w-[70%] px-6 py-4 glass rounded-3xl 
+                     shadow-xl header-fade-scale"
         >
           <div className="flex items-center justify-between max-w-7xl mx-auto">
+
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-xl bg-blue-600" />
               <h1 className="text-xl font-bold">E-Book Factory</h1>
@@ -78,103 +86,68 @@ export default function LandingPage() {
               <Link href="/create/title">
                 <Button className="rounded-2xl bg-blue-600 hover:bg-blue-700">
                   Créer un Ebook
-          </Button>
-        </Link>
-      </div>
-    </div>
-  </div>
-
-  {/* Spacer pour éviter les collisions */}
-  <div className="h-[95px]" />
-
-  {/* HEADER FLOTTANT EN SCROLL */}
-  {showHeader && (
-    <div
-      className="
-        fixed top-4 left-1/2 -translate-x-1/2 
-        z-50 w-[90%] md:w-[70%] px-6 py-4 
-        rounded-3xl shadow-xl glass 
-        header-fade-scale"
-    >
-      <div className="flex items-center justify-between max-w-7xl mx-auto">
-
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-xl bg-blue-600" />
-          <h1 className="text-xl font-bold">E-Book Factory</h1>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={toggleTheme}
-            className="glass px-3 py-2 rounded-2xl flex items-center gap-1 text-sm"
-          >
-            {isDark ? <Sun size={16} /> : <Moon size={16} />}
-            {isDark ? "Light" : "Dark"}
-          </button>
-
-          <Link href="/create/title">
-            <Button className="px-5 rounded-2xl bg-blue-600 hover:bg-blue-700">
-              Créer un Ebook
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </div>
-  )}
-
-</header>
-
-
-
-        {/* ================================================================================= */}
-        {/*                                      HERO                                         */}
-        {/* ================================================================================= */}
-
-        <section className="flex flex-col lg:flex-row items-center gap-20 mt-32 px-6 max-w-6xl w-full">
-          {/* LEFT */}
-          <div className="flex-1 animate-fade-left">
-            <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight leading-tight">
-              Crée ton{" "}
-              <span className="text-blue-600 dark:text-blue-400">Ebook Premium</span>{" "}
-              prêt à vendre <br className="hidden lg:block" />
-              en 30 secondes.
-            </h1>
-
-            <p className="text-lg text-gray-600 dark:text-gray-300 mt-6 max-w-xl">
-              Génère automatiquement un ebook professionnel, illustré, designé et accompagné
-              d’une licence de revente — parfait pour TikTok, Instagram, infopreneurs et créateurs de formations.
-            </p>
-
-            <div className="mt-10 flex flex-wrap gap-4 items-center">
-              <Link href="/create/title">
-                <Button className="px-10 py-6 text-lg rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-300/40">
-                  Créer mon ebook <ArrowRight className="ml-2" />
                 </Button>
               </Link>
-
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                Aperçu gratuit avant achat. Paye seulement si le rendu te plaît.
-              </span>
             </div>
+
           </div>
+        </div>
+      )}
 
-          {/* RIGHT (Mockup) */}
-          <div className="flex-1 flex justify-center animate-fade-right">
-            <div className="relative">
-              {/* Halo */}
-              <div className="absolute -inset-6 rounded-3xl bg-blue-500/30 blur-3xl dark:bg-blue-700/30" />
+      {/* ===================================================== */}
+      {/*      SPACER POUR ÉVITER COLLISION HERO / HEADER       */}
+      {/* ===================================================== */}
+      <div className="h-[90px]" />
 
-              {/* Mockup */}
-              <div className="relative w-[320px] h-[460px] bg-white dark:bg-gray-900 shadow-2xl rounded-2xl border overflow-hidden transform rotate-[3deg] hover:rotate-0 transition-all duration-500">
-                <div className="h-full bg-gradient-to-br from-blue-300 to-blue-500 dark:from-blue-800 dark:to-blue-700 flex items-center justify-center">
-                  <span className="text-white text-xl font-bold opacity-90 tracking-wide">
-                    Mockup Ebook Pro
-                  </span>
-                </div>
+
+      {/* ===================================================== */}
+      {/*                        HERO                           */}
+      {/* ===================================================== */}
+      <section className="flex flex-col lg:flex-row items-center gap-20 mt-32 px-6 max-w-6xl w-full">
+        {/* LEFT */}
+        <div className="flex-1 animate-fade-left">
+          <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight leading-tight">
+            Crée ton{" "}
+            <span className="text-blue-600 dark:text-blue-400">Ebook Premium</span>{" "}
+            prêt à vendre <br className="hidden lg:block" />
+            en 30 secondes.
+          </h1>
+
+          <p className="text-lg text-gray-600 dark:text-gray-300 mt-6 max-w-xl">
+            Génère automatiquement un ebook professionnel, illustré, designé et accompagné
+            d’une licence de revente — parfait pour TikTok, Instagram, infopreneurs et créateurs de formations.
+          </p>
+
+          <div className="mt-10 flex flex-wrap gap-4 items-center">
+            <Link href="/create/title">
+              <Button className="px-10 py-6 text-lg rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-300/40">
+                Créer mon ebook <ArrowRight className="ml-2" />
+              </Button>
+            </Link>
+
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              Aperçu gratuit avant achat. Paye seulement si le rendu te plaît.
+            </span>
+          </div>
+        </div>
+
+        {/* RIGHT (Mockup) */}
+        <div className="flex-1 flex justify-center animate-fade-right">
+          <div className="relative">
+            <div className="absolute -inset-6 rounded-3xl bg-blue-500/30 blur-3xl dark:bg-blue-700/30" />
+
+            <div className="relative w-[320px] h-[460px] bg-white dark:bg-gray-900 shadow-2xl rounded-2xl border overflow-hidden transform rotate-[3deg] hover:rotate-0 transition-all duration-500">
+              <div className="h-full bg-gradient-to-br from-blue-300 to-blue-500 dark:from-blue-800 dark:to-blue-700 flex items-center justify-center">
+                <span className="text-white text-xl font-bold opacity-90 tracking-wide">
+                  Mockup Ebook Pro
+                </span>
               </div>
             </div>
+
           </div>
-        </section>
+        </div>
+
+      </section>
 
         {/* ================================================================================= */}
         {/*                               HOW IT WORKS                                       */}
