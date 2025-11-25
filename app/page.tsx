@@ -1,227 +1,323 @@
-"use client";
-
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Moon, Sun } from "lucide-react";
+import { ArrowRight, CheckCircle2, Sparkles, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "next-themes";
 
 export default function LandingPage() {
-  const { theme, setTheme } = useTheme();
-  const isDark = theme === "dark";
-
   return (
-    <main className="relative flex flex-col items-center w-full overflow-hidden bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50">
+    <main className="min-h-screen bg-slate-950 text-slate-50">
+      {/* Background gradient */}
+      <div className="pointer-events-none fixed inset-0 -z-10">
+        <div className="absolute inset-x-0 top-[-200px] h-[400px] bg-gradient-to-b from-blue-500/40 via-slate-900 to-slate-950 blur-3xl" />
+      </div>
 
-      {/* BACKGROUND GRADIENT */}
-      <div className="absolute inset-0 -z-20 bg-gradient-to-b from-blue-200/70 via-white/80 to-transparent dark:from-blue-950/70 dark:via-gray-950/90 dark:to-transparent" />
-
-      {/* BLOBS */}
-      <div className="absolute top-[-200px] left-[-100px] w-[600px] h-[600px] rounded-full bg-blue-400/40 dark:bg-blue-700/30 blur-[120px] animate-blob-floating -z-10" />
-      <div className="absolute bottom-[-200px] right-[-100px] w-[500px] h-[500px] rounded-full bg-purple-300/40 dark:bg-purple-700/30 blur-[120px] animate-blob-floating2 -z-10" />
-
-      {/* ===================================================== */}
-      {/* HEADER STICKY GLASS                                  */}
-      {/* ===================================================== */}
-      <header className="sticky top-0 z-30 w-full px-4 pt-4">
-        <div className="max-w-6xl mx-auto glass px-4 py-3 rounded-2xl flex items-center justify-between header-fade-scale">
+      {/* HEADER */}
+      <header className="sticky top-0 z-30 border-b border-slate-800/60 bg-slate-950/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-xl bg-blue-600" />
-            <span className="font-semibold text-lg tracking-tight">
-              E-Book Factory
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 text-xs font-bold">
+              EF
+            </div>
+            <span className="text-sm font-semibold tracking-tight text-slate-100">
+              Ebook Factory
             </span>
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setTheme(isDark ? "light" : "dark")}
-              className="flex items-center gap-1 px-3 py-2 rounded-2xl text-sm glass"
-            >
-              {isDark ? <Sun size={16} /> : <Moon size={16} />}
-              <span>{isDark ? "Light" : "Dark"}</span>
-            </button>
+          {/* Nav + CTA */}
+          <div className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
+            <Link href="#features" className="hover:text-slate-100 transition">
+              Fonctionnalités
+            </Link>
+            <Link href="#how-it-works" className="hover:text-slate-100 transition">
+              Comment ça marche
+            </Link>
+            <Link href="#pricing" className="hover:text-slate-100 transition">
+              Tarifs
+            </Link>
+
+            <div className="h-6 w-px bg-slate-700/70" />
 
             <Link href="/create/title">
-              <Button className="rounded-2xl bg-blue-600 hover:bg-blue-700">
-                Créer un Ebook
+              <Button className="rounded-xl bg-blue-600 px-5 text-sm font-medium hover:bg-blue-700">
+                Créer un ebook
+              </Button>
+            </Link>
+          </div>
+
+          {/* CTA mobile simple */}
+          <div className="flex items-center gap-3 md:hidden">
+            <Link href="/create/title">
+              <Button className="rounded-xl bg-blue-600 px-4 text-xs font-medium hover:bg-blue-700">
+                Commencer
               </Button>
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Spacer */}
-      <div className="h-10" />
-
-      {/* ===================================================== */}
-      {/* HERO SECTION                                          */}
-      {/* ===================================================== */}
-      <section className="flex flex-col lg:flex-row items-center gap-16 px-6 max-w-6xl w-full mt-4">
-        {/* LEFT */}
+      {/* HERO */}
+      <section className="mx-auto flex max-w-6xl flex-col gap-12 px-4 pb-20 pt-16 md:flex-row md:items-center md:pt-20">
+        {/* LEFT TEXT */}
         <div className="flex-1 space-y-6">
-          <p className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full glass">
-            🚀 Génère un produit digital revendable en quelques secondes
-          </p>
+          <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-100">
+            <Sparkles className="h-3 w-3" />
+            <span>Générateur d&apos;ebooks prêt à vendre</span>
+          </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-            Crée ton{" "}
-            <span className="text-blue-600 dark:text-blue-400">
-              Ebook Premium
-            </span>{" "}
-            prêt à vendre en 30 secondes.
+          <h1 className="text-balance text-4xl font-semibold leading-tight tracking-tight text-slate-50 md:text-5xl lg:text-6xl">
+            Crée un <span className="text-blue-400">ebook premium</span>{" "}
+            qui se vend pendant que tu dors.
           </h1>
 
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-xl">
-            Ebook Factory génère pour toi un ebook professionnel, structuré,
-            illustré et prêt à vendre sur TikTok, Instagram, Gumroad ou
-            n’importe quelle plateforme — sans écrire une seule ligne.
+          <p className="max-w-xl text-sm text-slate-300 md:text-base">
+            Ebook Factory transforme une simple idée en ebook complet, structuré et
+            designé. Aucun design, aucune mise en page, aucune galère : tu obtiens
+            un PDF prêt à vendre sur TikTok, Instagram, Gumroad et plus encore.
           </p>
 
+          {/* CTA row */}
           <div className="flex flex-wrap items-center gap-4">
             <Link href="/create/title">
-              <Button className="px-8 py-6 text-base sm:text-lg rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-300/40">
-                Créer mon ebook maintenant
-                <ArrowRight className="ml-2" size={18} />
+              <Button className="group rounded-2xl bg-blue-600 px-7 py-5 text-sm font-medium shadow-lg shadow-blue-600/40 hover:bg-blue-700 md:text-base">
+                Générer mon ebook
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Button>
             </Link>
-            <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-              Aperçu gratuit avant achat. Tu ne payes que si le rendu te plaît.
+
+            <div className="flex flex-col text-xs text-slate-400 md:text-sm">
+              <span>Aperçu gratuit avant achat</span>
+              <span>Paye uniquement si le résultat te plaît.</span>
+            </div>
+          </div>
+
+          {/* Social proof */}
+          <div className="flex flex-wrap items-center gap-4 pt-4 text-xs text-slate-400 md:text-sm">
+            <div className="flex items-center gap-1.5">
+              <Star className="h-4 w-4 text-yellow-400" />
+              <span>Créateurs, infopreneurs & agences déjà conquis.</span>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT MOCKUP */}
+        <div className="flex flex-1 justify-center">
+          <div className="relative h-[360px] w-[260px] md:h-[420px] md:w-[300px]">
+            {/* Glow */}
+            <div className="absolute -inset-6 rounded-[32px] bg-blue-500/40 blur-3xl" />
+
+            {/* Mockup card */}
+            <div className="relative flex h-full w-full flex-col overflow-hidden rounded-[26px] border border-slate-700/70 bg-gradient-to-b from-slate-900 to-slate-950 shadow-2xl">
+              {/* Top bar */}
+              <div className="flex items-center justify-between border-b border-slate-700/70 px-4 py-3">
+                <span className="text-xs font-medium text-slate-200">
+                  Ebook généré
+                </span>
+                <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-medium text-emerald-300">
+                  Prêt à vendre
+                </span>
+              </div>
+
+              {/* Body */}
+              <div className="flex flex-1 flex-col gap-4 px-4 py-4">
+                <div className="space-y-2">
+                  <div className="inline-flex rounded-full bg-blue-500/15 px-3 py-1 text-[10px] font-medium text-blue-200">
+                    GUIDE ULTIME
+                  </div>
+                  <h2 className="text-sm font-semibold text-slate-50">
+                    10 stratégies pour lancer ton business digital sans budget
+                  </h2>
+                  <p className="text-[11px] leading-relaxed text-slate-300/90">
+                    Découvre les bases pour lancer une offre digitale rentable,
+                    même si tu pars de zéro et que tu n&apos;as pas encore de communauté.
+                  </p>
+                </div>
+
+                <div className="mt-2 space-y-2 text-[11px] text-slate-200/90">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-[2px] h-3.5 w-3.5 text-emerald-400" />
+                    <span>Chapitres structurés automatiquement</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-[2px] h-3.5 w-3.5 text-emerald-400" />
+                    <span>Design cohérent et professionnel</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-[2px] h-3.5 w-3.5 text-emerald-400" />
+                    <span>Licence de revente incluse</span>
+                  </div>
+                </div>
+
+                <div className="mt-auto rounded-2xl bg-slate-900/70 px-3 py-2 text-[10px] text-slate-300">
+                  <div className="flex items-center justify-between">
+                    <span>Format : PDF haute qualité</span>
+                    <span className="text-[11px] font-semibold text-blue-300">
+                      52 pages
+                    </span>
+                  </div>
+                  <div className="mt-1 text-[10px] text-slate-400">
+                    Exportable sur Gumroad, Shopify, Notion, etc.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section
+        id="features"
+        className="mx-auto max-w-6xl px-4 pb-20 pt-6 md:pt-4"
+      >
+        <div className="mb-10 space-y-2 text-center">
+          <h2 className="text-2xl font-semibold text-slate-50 md:text-3xl">
+            Tout ce dont tu as besoin pour vendre ton prochain ebook.
+          </h2>
+          <p className="text-sm text-slate-400 md:text-base">
+            Ebook Factory s&apos;occupe de la rédaction, de la structure et du
+            design. Tu n&apos;as plus qu&apos;à vendre.
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {[
+            {
+              title: "Contenu structuré",
+              desc: "Chapitres, sous-parties, exemples, call-to-action… tout est généré pour que ton ebook se lise facilement.",
+            },
+            {
+              title: "Design propre",
+              desc: "Mise en page professionnelle, hiérarchie visuelle claire, typographie lisible sur mobile comme sur desktop.",
+            },
+            {
+              title: "Prêt à vendre",
+              desc: "Tu reçois un PDF immédiatement exploitable sur Gumroad, Shopify, système d’affiliation ou tunnel de vente.",
+            },
+          ].map((item) => (
+            <div
+              key={item.title}
+              className="flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
+            >
+              <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/15 text-blue-300">
+                <Sparkles className="h-4 w-4" />
+              </div>
+              <h3 className="text-sm font-semibold text-slate-50 md:text-base">
+                {item.title}
+              </h3>
+              <p className="text-xs text-slate-400 md:text-sm">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section
+        id="how-it-works"
+        className="mx-auto max-w-6xl px-4 pb-20 pt-4 md:pt-2"
+      >
+        <div className="mb-10 text-center">
+          <h2 className="text-2xl font-semibold text-slate-50 md:text-3xl">
+            3 étapes. Moins d&apos;une minute.
+          </h2>
+          <p className="mt-2 text-sm text-slate-400 md:text-base">
+            Tu n&apos;as besoin que d&apos;une idée de thème ou d&apos;une niche.
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {[
+            {
+              step: "01",
+              title: "Décris ton idée",
+              desc: "Explique rapidement ta niche, ton angle ou ton audience. Ebook Factory propose des titres vendeurs automatiquement.",
+            },
+            {
+              step: "02",
+              title: "Personnalise les réglages",
+              desc: "Choisis le ton, la longueur, le niveau de profondeur, et laisse l’IA générer le contenu et la structure.",
+            },
+            {
+              step: "03",
+              title: "Prévisualise, puis télécharge",
+              desc: "Tu vois l’aperçu avant d’acheter. Si ça te convient, tu récupères ton PDF pro + licence de revente.",
+            },
+          ].map((item) => (
+            <div
+              key={item.step}
+              className="flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-6"
+            >
+              <span className="text-xs font-semibold text-blue-300">
+                Étape {item.step}
+              </span>
+              <h3 className="text-sm font-semibold text-slate-50 md:text-base">
+                {item.title}
+              </h3>
+              <p className="text-xs text-slate-400 md:text-sm">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* PRICING */}
+      <section id="pricing" className="mx-auto max-w-6xl px-4 pb-24 pt-4">
+        <div className="mb-10 text-center">
+          <h2 className="text-2xl font-semibold text-slate-50 md:text-3xl">
+            Une seule fois, réutilisable à l’infini.
+          </h2>
+          <p className="mt-2 text-sm text-slate-400 md:text-base">
+            Crée autant d&apos;offres que tu veux à partir de chaque ebook généré.
+          </p>
+        </div>
+
+        <div className="mx-auto max-w-md rounded-3xl border border-blue-500/40 bg-slate-900/80 p-6 shadow-[0_0_60px_rgba(37,99,235,0.35)]">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="text-xs font-medium uppercase tracking-wide text-blue-300">
+                Offre créateur
+              </p>
+              <p className="text-sm text-slate-300">
+                Parfait pour infopreneurs, agences et vendeurs TikTok.
+              </p>
+            </div>
+            <span className="rounded-full bg-blue-500/20 px-3 py-1 text-[11px] font-medium text-blue-100">
+              Licence de revente incluse
             </span>
           </div>
 
-          <div className="flex flex-wrap gap-4 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-green-500" />
-              <span>Licence de revente incluse</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-blue-500" />
-              <span>Optimisé pour les infopreneurs & créateurs</span>
-            </div>
+          <div className="mb-5 flex items-baseline gap-1">
+            <span className="text-3xl font-semibold text-slate-50">X €</span>
+            <span className="text-xs text-slate-400">par ebook généré</span>
           </div>
-        </div>
 
-        {/* RIGHT : Mockup */}
-        <div className="flex-1 flex justify-center">
-          <div className="relative group"> 
-            <div className="absolute -inset-6 rounded-3xl bg-blue-500/30 blur-3xl dark:bg-blue-800/30" />
-            <div className="relative w-[320px] h-[460px] rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden transform rotate-[3deg] group-hover:rotate-0 group-hover:scale-[1.02] transition-all duration-500 bg-gradient-to-br from-blue-300 to-blue-500 dark:from-blue-800 dark:to-blue-700 flex items-center justify-center">
-              <span className="text-white text-xl font-bold tracking-wide">
-                Aperçu Ebook Pro
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
+          <ul className="mb-6 space-y-2 text-sm text-slate-300">
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+              Aperçu complet avant paiement
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+              PDF haute qualité, prêt à vendre
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+              Aucun abonnement, tu paies quand tu vends
+            </li>
+          </ul>
 
-      {/* ===================================================== */}
-      {/* HOW IT WORKS                                          */}
-      {/* ===================================================== */}
-      <section className="mt-32 px-6 w-full max-w-6xl">
-        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-14">
-          Comment ça marche ?
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              title: "1. Décris ta niche",
-              content:
-                "Tu expliques ton sujet en quelques lignes : business, mindset, fitness, crypto, marketing, etc.",
-            },
-            {
-              title: "2. L’IA structure et rédige",
-              content:
-                "Ebook Factory génère un plan complet, les chapitres, le texte et les visuels (option IA images).",
-            },
-            {
-              title: "3. Tu récupères ton PDF prêt à vendre",
-              content:
-                "Télécharge ton ebook pro avec licence de revente.",
-            },
-          ].map((item, i) => (
-            <div
-              key={i}
-              className="p-6 sm:p-8 rounded-2xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-white/60 dark:border-gray-800 shadow-md hover:-translate-y-1 hover:shadow-xl transition"
-            >
-              <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
-              <p className="text-gray-600 dark:text-gray-300">{item.content}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ===================================================== */}
-      {/* VALUE SECTION                                         */}
-      {/* ===================================================== */}
-      <section className="mt-32 px-6 w-full max-w-6xl">
-        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-14">
-          Ce que tu obtiens
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-base sm:text-lg">
-          {[
-            "PDF professionnel prêt à vendre",
-            "Design moderne cohérent",
-            "Chapitres + sommaire automatique",
-            "Images IA (option premium)",
-            "Licence de revente incluse",
-            "Optimisé TikTok / Insta / Gumroad",
-            "Idéal comme bonus de formation",
-            "Contenu généré selon ta niche",
-          ].map((item, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-3 p-4 rounded-xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-white/60 dark:border-gray-800 shadow-sm"
-            >
-              <CheckCircle2 className="text-blue-600" size={24} />
-              <span>{item}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ===================================================== */}
-      {/* CTA FINAL                                             */}
-      {/* ===================================================== */}
-      <section className="mt-32 mb-28 text-center px-6 w-full max-w-3xl">
-        <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-          Prêt à créer un ebook qui se vend vraiment ?
-        </h2>
-        <p className="text-gray-600 dark:text-gray-300 mb-8">
-          En quelques minutes, tu peux avoir un produit digital complet,
-          professionnel et revendable.
-        </p>
-
-        <Link href="/create/title">
-          <Button className="px-10 py-6 text-base sm:text-lg rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-300/40">
-            Générer mon Ebook maintenant
+          <Button className="w-full rounded-2xl bg-blue-600 py-5 text-sm font-medium hover:bg-blue-700">
+            Générer mon premier ebook
           </Button>
-        </Link>
+
+          <p className="mt-3 text-center text-[11px] text-slate-400">
+            Tu peux commencer par un seul ebook. Tu reviendras pour les suivants. 😉
+          </p>
+        </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="w-full py-10 mt-4 border-t border-white/40 dark:border-gray-800 text-center text-gray-500 dark:text-gray-400 text-sm">
-        © {new Date().getFullYear()} • E-Book Factory — Tous droits réservés.
+      <footer className="border-t border-slate-800/80 bg-slate-950/90 py-6 text-center text-xs text-slate-500 md:text-sm">
+        © {new Date().getFullYear()} • Ebook Factory — Tous droits réservés.
       </footer>
-
-      {/* CTA FLOTTANT MOBILE */}
-      <div className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-40">
-        <Link href="/create/title">
-          <button
-            className={
-              "px-7 py-4 rounded-3xl flex items-center gap-2 shadow-xl " +
-              (isDark ? "glass bg-gray-900/60" : "glass bg-white/70")
-            }
-          >
-            <span className="text-sm font-semibold">
-              Créer mon ebook maintenant
-            </span>
-            <ArrowRight size={18} />
-          </button>
-        </Link>
-      </div>
     </main>
   );
 }
