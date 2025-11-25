@@ -7,7 +7,6 @@ import { useTheme } from "next-themes";
 
 export default function LandingPage() {
   const { theme, setTheme } = useTheme();
-
   const isDark = theme === "dark";
 
   return (
@@ -52,7 +51,7 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Spacer pour respirer sous le header */}
+      {/* Spacer */}
       <div className="h-10" />
 
       {/* ===================================================== */}
@@ -98,7 +97,7 @@ export default function LandingPage() {
             </div>
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-blue-500" />
-              <span>Optimisé pour les infopreneurs & créateurs de formation</span>
+              <span>Optimisé pour les infopreneurs & créateurs</span>
             </div>
           </div>
         </div>
@@ -139,7 +138,7 @@ export default function LandingPage() {
             {
               title: "3. Tu récupères ton PDF prêt à vendre",
               content:
-                "Télécharge ton ebook pro avec licence de revente, prêt à être vendu ou utilisé comme bonus de formation.",
+                "Télécharge ton ebook pro avec licence de revente.",
             },
           ].map((item, i) => (
             <div
@@ -164,13 +163,13 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-base sm:text-lg">
           {[
             "PDF professionnel prêt à vendre",
-            "Design moderne et cohérent",
-            "Structure claire : chapitres, sections, sommaire",
-            "Possibilité d’ajouter des images IA (option)",
+            "Design moderne cohérent",
+            "Chapitres + sommaire automatique",
+            "Images IA (option premium)",
             "Licence de revente incluse",
-            "Parfait pour TikTok, Instagram, Gumroad",
-            "Idéal comme bonus de formation ou produit d’appel",
-            "Contenu généré à partir de ta niche et de ton angle",
+            "Optimisé TikTok / Insta / Gumroad",
+            "Idéal comme bonus de formation",
+            "Contenu généré selon ta niche",
           ].map((item, i) => (
             <div
               key={i}
@@ -191,8 +190,8 @@ export default function LandingPage() {
           Prêt à créer un ebook qui se vend vraiment ?
         </h2>
         <p className="text-gray-600 dark:text-gray-300 mb-8">
-          En quelques minutes, tu peux avoir un produit digital complet, pro, revendable,
-          qui peut devenir ton nouveau tunnel TikTok ou ton bonus de formation.
+          En quelques minutes, tu peux avoir un produit digital complet,
+          professionnel et revendable.
         </p>
 
         <Link href="/create/title">
