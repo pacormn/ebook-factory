@@ -258,6 +258,100 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ===================================================================================== */}
+{/*                             EXEMPLES D’EBOOKS GÉNÉRÉS                                 */}
+{/* ===================================================================================== */}
+
+<section
+  id="examples"
+  className="mx-auto max-w-6xl px-4 pt-8 pb-24"
+>
+  <div className="mb-10 text-center">
+    <h2 className="text-2xl font-semibold text-slate-50 md:text-3xl">
+      Exemples d’ebooks générés
+    </h2>
+    <p className="mt-2 text-sm text-slate-400 md:text-base max-w-lg mx-auto">
+      Voici le type de rendu professionnel que tu peux obtenir automatiquement
+      avec Ebook Factory en moins d’une minute.
+    </p>
+  </div>
+
+  <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    {[
+      {
+        tag: "Business",
+        title: "Lancer un business digital rentable en 2025",
+        gradient: "from-blue-400 via-blue-600 to-blue-800",
+      },
+      {
+        tag: "Fitness",
+        title: "Programme 30 jours — Transformation totale",
+        gradient: "from-emerald-400 via-emerald-600 to-emerald-800",
+      },
+      {
+        tag: "Mindset",
+        title: "10 habitudes pour une discipline inébranlable",
+        gradient: "from-purple-400 via-purple-600 to-purple-800",
+      },
+      {
+        tag: "Finance",
+        title: "Commencer à investir avec 0€",
+        gradient: "from-yellow-400 via-amber-500 to-orange-600",
+      },
+      {
+        tag: "Cuisine",
+        title: "50 recettes healthy prêtes en 10 minutes",
+        gradient: "from-pink-400 via-rose-500 to-red-600",
+      },
+      {
+        tag: "Productivité",
+        title: "Système anti-procrastination en 7 jours",
+        gradient: "from-cyan-400 via-indigo-500 to-blue-800",
+      },
+    ].map((ebook, i) => (
+      <div
+        key={i}
+        className="group relative flex flex-col rounded-3xl border border-slate-800 bg-slate-900/60 p-5 shadow-lg transition hover:-translate-y-1 hover:shadow-blue-500/20"
+      >
+        {/* Mockup card */}
+        <div className="relative mx-auto mb-4 h-[260px] w-[180px]">
+          {/* Glow */}
+          <div className={`absolute -inset-4 rounded-[22px] bg-gradient-to-br ${ebook.gradient} opacity-40 blur-2xl group-hover:opacity-60 transition`} />
+
+          {/* Card */}
+          <div className="relative h-full w-full overflow-hidden rounded-[20px] border border-slate-700/70 bg-slate-950 shadow-xl">
+            {/* Top bar */}
+            <div className="flex items-center justify-between border-b border-slate-700/70 px-3 py-2">
+              <span className="text-[10px] font-medium text-slate-200">
+                Ebook
+              </span>
+              <span className="rounded-full bg-slate-800/70 px-2 py-0.5 text-[9px] text-slate-400">
+                {ebook.tag}
+              </span>
+            </div>
+
+            {/* Cover */}
+            <div
+              className={`h-full w-full bg-gradient-to-br ${ebook.gradient} flex items-end p-3`}
+            >
+              <span className="text-[11px] font-semibold text-white leading-tight drop-shadow">
+                {ebook.title}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Title below */}
+        <h3 className="text-sm font-semibold text-slate-50">
+          {ebook.title}
+        </h3>
+        <p className="text-xs text-slate-400">{ebook.tag}</p>
+      </div>
+    ))}
+  </div>
+</section>
+
+
       {/* PRICING */}
       <section id="pricing" className="mx-auto max-w-6xl px-4 pb-24 pt-4">
         <div className="mb-10 text-center">
