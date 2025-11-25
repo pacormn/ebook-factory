@@ -64,7 +64,7 @@ export const metadata: Metadata = {
   themeColor: "#0d74e7",
 };
 
-eexport default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className="" suppressHydrationWarning>
       <head>
