@@ -3,83 +3,81 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 export async function GET() {
-  try {
-    // Vérif de config
-    if (!supabaseAdmin) {
-      return NextResponse.json(
-        { error: "Supabase admin client non configuré (env manquantes)." },
-        { status: 500 }
-      );
-    }
+  if (!supabaseAdmin) {
+    return NextResponse.json(
+      { error: "Supabase non configuré." },
+      { status: 500 }
+    );
+  }
 
-    // On récupère toutes les lignes nécessaires
-    const { data, error } = await supabaseAdmin
+  try {
+    // ---- TOTALS ----
+    const { data: rows, error } = await supabaseAdmin
       .from("ai_usage")
-      .select("model, prompt_tokens, completion_tokens, total_tokens, cost_usd");
+      .select("*");
 
     if (error) throw error;
-    if (!data || data.length === 0) {
-      return NextResponse.json({
-        total: {
-          requests: 0,
-          total_tokens: 0,
-          total_cost_usd: 0,
-        },
-        by_model: [],
-      });
-    }
 
-    // === TOTAL GLOBAL ===
-    const total_requests = data.length;
-    const total_tokens = data.reduce(
-      (acc, row) => acc + (row.total_tokens || 0),
-      0
-    );
-    const total_cost_usd = data.reduce(
-      (acc, row) => acc + Number(row.cost_usd || 0),
-      0
-    );
+    const totals = {
+      total_requests: rows.length,
+      total_tokens: rows.reduce((a, r) => a + (r.total_tokens || 0), 0),
+      total_cost_usd: rows.reduce((a, r) => a + (r.cost_usd || 0), 0),
+    };
 
-    // === GROUP BY MODEL (en JS) ===
-    const modelStats: Record<
-      string,
-      {
-        model: string;
-        requests: number;
-        total_tokens: number;
-        total_cost_usd: number;
-      }
-    > = {};
+    // ---- BY MODEL ----
+    const byModelMap: Record<string, any> = {};
 
-    for (const row of data) {
-      const model = row.model || "unknown";
-
-      if (!modelStats[model]) {
-        modelStats[model] = {
-          model,
-          requests: 0,
+    rows.forEach((r) => {
+      if (!byModelMap[r.model]) {
+        byModelMap[r.model] = {
+          model: r.model,
+          total_requests: 0,
           total_tokens: 0,
           total_cost_usd: 0,
         };
       }
+      byModelMap[r.model].total_requests++;
+      byModelMap[r.model].total_tokens += r.total_tokens || 0;
+      byModelMap[r.model].total_cost_usd += r.cost_usd || 0;
+    });
 
-      modelStats[model].requests += 1;
-      modelStats[model].total_tokens += row.total_tokens || 0;
-      modelStats[model].total_cost_usd += Number(row.cost_usd || 0);
-    }
+    const byModel = Object.values(byModelMap);
+
+    // ---- DAILY STATS (30 jours) ----
+    const today = new Date();
+    const past30 = new Date();
+    past30.setDate(today.getDate() - 30);
+
+    const dailyMap: Record<string, any> = {};
+
+    rows.forEach((r) => {
+      const day = new Date(r.created_at).toISOString().split("T")[0];
+      if (!dailyMap[day]) {
+        dailyMap[day] = {
+          day,
+          total_requests: 0,
+          total_tokens: 0,
+          total_cost_usd: 0,
+        };
+      }
+      dailyMap[day].total_requests++;
+      dailyMap[day].total_tokens += r.total_tokens || 0;
+      dailyMap[day].total_cost_usd += r.cost_usd || 0;
+    });
+
+    const daily = Object.values(dailyMap)
+      .filter((d: any) => new Date(d.day) >= past30)
+      .sort((a: any, b: any) => new Date(a.day) > new Date(b.day) ? 1 : -1);
 
     return NextResponse.json({
-      total: {
-        requests: total_requests,
-        total_tokens,
-        total_cost_usd,
-      },
-      by_model: Object.values(modelStats),
+      totals,
+      byModel,
+      daily,
     });
-  } catch (err: any) {
-    console.error("[AI USAGE SUMMARY ERROR]", err);
+  } catch (e) {
+    console.error(e);
     return NextResponse.json(
-      { error: err?.message || "Erreur interne" },
+      { error: "Erreur serveur admin summary." },
       { status: 500 }
     );
   }
