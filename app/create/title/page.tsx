@@ -16,14 +16,11 @@ export default function TitlePage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden">
+    <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-white via-slate-50 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 bg-dynamic">
 
-      {/* ======= BACKGROUND DYNAMIQUE ======= */}
-      <div className="absolute inset-0 -z-20 bg-gradient-to-br from-blue-500/20 via-transparent to-purple-500/20" />
-
-      {/* Radial lights */}
-      <div className="absolute -top-[20%] -left-[20%] w-[600px] h-[600px] rounded-full bg-blue-400/40 blur-[150px] opacity-70 -z-10" />
-      <div className="absolute top-[20%] right-[0%] w-[500px] h-[500px] rounded-full bg-purple-500/30 blur-[140px] opacity-60 -z-10" />
+      {/* BLOBS */}
+      <div className="absolute top-[-250px] left-[-150px] w-[600px] h-[600px] rounded-full bg-blue-400/40 dark:bg-blue-700/20 blur-[135px] animate-blob-floating -z-10" />
+      <div className="absolute bottom-[-250px] right-[-150px] w-[550px] h-[550px] rounded-full bg-purple-400/40 dark:bg-purple-700/20 blur-[130px] animate-blob-floating2 -z-10" />
 
       {/* HEADER BULLE */}
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] md:w-[70%] px-6 py-3 glass-bar rounded-3xl navbar-pop shadow-xl">
