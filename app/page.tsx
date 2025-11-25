@@ -49,54 +49,55 @@ export default function LandingPage() {
         {/* ================================================================================= */}
 
         <header className="w-full">
-          {/* === HEADER DYNAMIQUE === */}
-          <div
-            className={
-              "transition-all duration-500 will-change-transform " +
-              (showHeader
-                ? // MODE SCROLL → Header flottant, glass, animé
-                  "fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] md:w-[70%] px-6 py-3 rounded-3xl shadow-xl header-fade-scale " +
-                  (isDark ? "glass-dark bg-gray-900/40" : "glass bg-white/30")
-                : // MODE NORMAL → FULL WIDTH, collé en haut de la page
-                  "relative w-full px-6 py-6"
-              )
-            }
-          >
-            <div className="flex items-center justify-between max-w-7xl mx-auto">
-              {/* LOGO */}
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-xl bg-blue-600" />
-                <h1 className="text-xl font-bold">E-Book Factory</h1>
-              </div>
-          
-              {/* ACTIONS */}
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={toggleTheme}
-                  className={
-                    "flex items-center gap-1 px-3 py-2 rounded-2xl text-sm transition " +
-                    (isDark ? "glass-dark bg-gray-900/40" : "glass bg-white/30")
-                  }
-                >
-                  {isDark ? (
-                    <>
-                      <Sun size={16} /> <span>Light</span>
-                    </>
-                  ) : (
-                    <>
-                      <Moon size={16} /> <span>Dark</span>
-                    </>
-                  )}
-                </button>
-                
-                <Link href="/create/title">
-                  <Button className="px-5 md:px-6 rounded-2xl bg-blue-600 hover:bg-blue-700">
-                    Créer un Ebook
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
+{/* === HEADER DYNAMIQUE === */}
+<div
+  className={
+    "transition-all duration-500 will-change-transform " +
+    (showHeader
+      ? // MODE SCROLL → bulle flottante
+        "fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] md:w-[70%] px-6 py-3 rounded-3xl shadow-xl header-fade-scale " +
+        (isDark ? "glass-dark" : "glass")
+      : // MODE NORMAL → header classique
+        "w-full px-6 py-6 sticky top-0 z-20"
+    )
+  }
+>
+  <div className="flex items-center justify-between max-w-7xl mx-auto">
+    {/* LOGO */}
+    <div className="flex items-center gap-2">
+      <div className="h-8 w-8 rounded-xl bg-blue-600" />
+      <h1 className="text-xl font-bold">E-Book Factory</h1>
+    </div>
+
+    {/* ACTIONS */}
+    <div className="flex items-center gap-3">
+      <button
+        onClick={toggleTheme}
+        className={
+          "flex items-center gap-1 px-3 py-2 rounded-2xl text-sm transition " +
+          (isDark ? "glass-dark" : "glass")
+        }
+      >
+        {isDark ? (
+          <>
+            <Sun size={16} /> <span>Light</span>
+          </>
+        ) : (
+          <>
+            <Moon size={16} /> <span>Dark</span>
+          </>
+        )}
+      </button>
+
+      <Link href="/create/title">
+        <Button className="px-5 md:px-6 rounded-2xl bg-blue-600 hover:bg-blue-700">
+          Créer un Ebook
+        </Button>
+      </Link>
+    </div>
+  </div>
+</div>
+
 
         </header>
 

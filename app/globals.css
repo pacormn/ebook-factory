@@ -102,13 +102,18 @@ html, body {
 @keyframes headerFadeScale {
   from {
     opacity: 0;
-    transform: translate(-50%, -10px) scale(0.96);
+    transform: scale(0.96);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0px) scale(1);
+    transform: scale(1);
   }
 }
+
+.header-fade-scale {
+  animation: headerFadeScale .35s ease-out forwards;
+}
+
 
 .header-fade-scale {
   animation: headerFadeScale .45s ease-out forwards;
