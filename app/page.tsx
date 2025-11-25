@@ -48,46 +48,50 @@ export default function LandingPage() {
         {/*                                      HEADER                                      */}
         {/* ================================================================================= */}
 
-        <header className="w-full">
+<header className="w-full">
 
-  {/* HEADER NORMAL (TOUJOURS visible en haut) */}
-  {!showHeader && (
-    <div className="w-full sticky top-0 z-40 bg-transparent px-6 py-6">
-      <div className="flex items-center justify-between max-w-7xl mx-auto">
-        
-        {/* LOGO */}
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-xl bg-blue-600" />
-          <h1 className="text-xl font-bold">E-Book Factory</h1>
-        </div>
+  {/* HEADER NORMAL (toujours visible en haut) */}
+  <div
+    className={
+      "transition-opacity duration-200 w-full px-6 py-6 bg-transparent " +
+      (!showHeader ? "opacity-100 relative z-30" : "opacity-0 pointer-events-none")
+    }
+  >
+    <div className="flex items-center justify-between max-w-7xl mx-auto">
+      <div className="flex items-center gap-2">
+        <div className="h-8 w-8 rounded-xl bg-blue-600" />
+        <h1 className="text-xl font-bold">E-Book Factory</h1>
+      </div>
 
-        {/* ACTIONS */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={toggleTheme}
-            className="glass px-3 py-2 rounded-2xl flex items-center gap-1 text-sm"
-          >
-            {isDark ? <Sun size={16} /> : <Moon size={16} />}
-            {isDark ? "Light" : "Dark"}
-          </button>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={toggleTheme}
+          className="glass px-3 py-2 rounded-2xl flex items-center gap-1 text-sm"
+        >
+          {isDark ? <Sun size={16} /> : <Moon size={16} />}
+          {isDark ? "Light" : "Dark"}
+        </button>
 
-          <Link href="/create/title">
-            <Button className="px-5 rounded-2xl bg-blue-600 hover:bg-blue-700">
-              Créer un Ebook
-            </Button>
-          </Link>
-        </div>
-
+        <Link href="/create/title">
+          <Button className="px-5 rounded-2xl bg-blue-600 hover:bg-blue-700">
+            Créer un Ebook
+          </Button>
+        </Link>
       </div>
     </div>
-  )}
+  </div>
 
-  {/* HEADER FLOTTANT (quand on scrolle) */}
+  {/* Spacer pour éviter les collisions */}
+  <div className="h-[95px]" />
+
+  {/* HEADER FLOTTANT EN SCROLL */}
   {showHeader && (
     <div
-      className="fixed top-4 left-1/2 -translate-x-1/2 z-50
-                 w-[90%] md:w-[70%] px-6 py-4 rounded-3xl 
-                 shadow-xl glass header-fade-scale"
+      className="
+        fixed top-4 left-1/2 -translate-x-1/2 
+        z-50 w-[90%] md:w-[70%] px-6 py-4 
+        rounded-3xl shadow-xl glass 
+        header-fade-scale"
     >
       <div className="flex items-center justify-between max-w-7xl mx-auto">
 
@@ -111,12 +115,12 @@ export default function LandingPage() {
             </Button>
           </Link>
         </div>
-
       </div>
     </div>
   )}
 
 </header>
+
 
 
         {/* ================================================================================= */}

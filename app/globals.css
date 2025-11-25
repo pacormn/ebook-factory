@@ -1,32 +1,34 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* FONT */
+/* -------------------------------------------- */
+/* FONT                                         */
+/* -------------------------------------------- */
 html, body {
   font-family: "Inter", sans-serif;
+  transition: background-color .25s ease, color .25s ease;
 }
 
-/* REAL iOS LIQUID GLASS */
+/* -------------------------------------------- */
+/* REAL iOS LIQUID GLASS                        */
+/* -------------------------------------------- */
 .glass {
   position: relative;
   border-radius: 24px;
   overflow: hidden;
 
-  /* base translucency */
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  
-  /* strong blur + refraction */
+
   backdrop-filter: blur(40px) saturate(250%);
   -webkit-backdrop-filter: blur(40px) saturate(250%);
 
-  /* soft shadow */
   box-shadow:
     0 4px 25px rgba(0, 0, 0, 0.18),
     inset 0 0 0.6px rgba(255, 255, 255, 0.45);
 }
 
-/* internal light gradient (iOS feel) */
+/* internal gradient */
 .glass::before {
   content: "";
   position: absolute;
@@ -74,12 +76,12 @@ html, body {
 .animate-blob-floating2 { animation: blobFloating 14s infinite ease-in-out; }
 
 /* -------------------------------------------- */
-/* HEADER ANIMATION FIX                         */
+/* HEADER ANIMATION                             */
 /* -------------------------------------------- */
 @keyframes headerFadeScale {
   from {
     opacity: 0;
-    transform: scale(0.92);
+    transform: scale(0.94);
   }
   to {
     opacity: 1;

@@ -64,25 +64,17 @@ export const metadata: Metadata = {
   themeColor: "#0d74e7",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+eexport default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html lang="fr" className="" suppressHydrationWarning>
       <head>
-        {/* Police Inter (plus propre pour UI SaaS) */}
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
           rel="stylesheet"
         />
       </head>
 
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {/* === Liquid Glass Filter (SVG) === */}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <svg width="0" height="0" className="absolute pointer-events-none">
           <filter id="frosted">
             <feGaussianBlur stdDeviation="20" result="blur" />
