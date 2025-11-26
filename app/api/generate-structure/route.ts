@@ -27,18 +27,29 @@ export async function POST(req: Request) {
 
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-    const prompt = `
-Génère une structure d'ebook en JSON strict :
+const prompt = `
+Tu génères une structure complète d'ebook en suivant STRICTEMENT ce format JSON :
 
 {
+  "title": "Titre de l’ebook",
   "chapters": [
-    { "title": "Introduction" },
-    { "title": "Chapitre 1" },
-    { "title": "Chapitre 2" }
+    {
+      "title": "Titre du chapitre",
+      "sections": [
+        { "title": "Sous-partie 1" },
+        { "title": "Sous-partie 2" },
+        { "title": "Sous-partie 3" }
+      ]
+    }
   ]
 }
 
-Titre : "${title}"
+Règles OBLIGATOIRES :
+- Génère entre 8 et 12 chapitres.
+- Chaque chapitre DOIT contenir entre 3 et 6 sections.
+- Le JSON doit être strict, propre, valide, sans texte autour.
+
+Titre de l’ebook : "${title}"
 `;
 
     const completion = await client.chat.completions.create({
