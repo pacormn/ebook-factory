@@ -48,10 +48,10 @@ export default function StructurePage() {
       try {
         const result = await generateStructure(title);
 
-        const formatted = result.map((c: any) => ({
-          id: crypto.randomUUID(),
-          title: c.title,
-        }));
+const formatted = result.map((c: any) => ({
+  id: crypto.randomUUID(),
+  title: c.title,
+}));
 
         setChapters(formatted);
         setLocalChapters(formatted);

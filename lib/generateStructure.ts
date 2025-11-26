@@ -5,12 +5,8 @@ export async function generateStructure(title: string) {
     body: JSON.stringify({ title }),
   });
 
-  if (!res.ok) {
-    const txt = await res.text();
-    console.error("Erreur API :", txt);
-    return [];
-  }
+  console.log("RESPONSE STATUS:", res.status);
 
   const data = await res.json();
-  return data.chapters ?? [];
+  return data.chapters ?? []; // ← seul endroit important
 }
