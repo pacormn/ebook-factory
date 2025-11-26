@@ -8,27 +8,46 @@ const client = new OpenAI({
 
 export async function generateStructure(title: string) {
   const prompt = `
-  Tu es un expert en création d’ebooks marketing. 
-  Génère une structure complète et professionnelle d’un ebook intitulé : "${title}".
+  Génère une structure d'ebook en JSON strict :
+  {
+    "chapters": [
+      { "title": "..." },
+      { "title": "..." }
+    ]
+  }
 
-  Format JSON strict :
-  [
-    { "title": "Chapitre 1" },
-    { "title": "Chapitre 2" },
-    ...
-  ]
+  Titre : "${title}"
   `;
 
   const completion = await client.chat.completions.create({
     model: "gpt-4.1",
     response_format: { type: "json_object" },
     messages: [
-      { role: "system", content: "Tu renvoies toujours du JSON valide." },
+      { role: "system", content: "Tu renvoies toujours un JSON valide." },
       { role: "user", content: prompt }
     ]
   });
 
-  const json = JSON.parse(completion.choices[0].message.content);
+    const msg = completion.choices[0].message;
+  
+    // 1. Si OpenAI a déjà parsé le JSON automatiquement
+    if ("parsed" in msg && msg.parsed) {
+      return (msg as any).parsed;
+    }
+    
+    // 2. Si le JSON est dans msg.content[0].text
+    if (Array.isArray(msg.content)) {
+      const text = msg.content[0]?.text;
+    
+      if (typeof text === "string") {
+        try {
+          return JSON.parse(text);
+        } catch (e) {
+          console.error("Erreur JSON parse:", text);
+        }
+      }
+    }
 
-  return json;
+// 3. fallback
+return msg.content;
 }
