@@ -625,20 +625,54 @@ export default function AdminPage() {
 
             {/* GRAPH + RÉPARTITION ENDPOINT */}
             <div className="grid gap-6 lg:grid-cols-2 mt-6">
-{/* === Graphique d’activité quotidienne — Version PRO Max === */}
-<div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
-  <p className="text-xs uppercase tracking-[0.16em] text-slate-500 mb-4">
-    Activité quotidienne
-    <span className="text-[10px] text-slate-500"> (30j)</span>
-  </p>
+              {/* ACTIVITÉ QUOTIDIENNE */}
+              <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
+                <p className="text-xs uppercase tracking-[0.16em] text-slate-500 mb-4 flex items-center gap-2">
+                  Activité quotidienne
+                  <span className="text-[10px] text-slate-500">
+                    (30 derniers jours)
+                  </span>
+                </p>
 
-{/* Sécurisé, propre, PRO */}
-{daily.length === 0 && (
-  <p className="text-xs text-slate-500">Pas de données.</p>
-)}
+                {data.daily.length === 0 && (
+                  <p className="text-xs text-slate-500">
+                    Pas encore de trafic enregistré.
+                  </p>
+                )}
 
-{daily.length > 0 && <GraphActivityPro data={daily} />}
-</div>
+                {data.daily.length > 0 && (
+                  <div className="relative h-40 flex items-end gap-1">
+                    {data.daily.map((d, idx) => {
+                      const maxReq = Math.max(
+                        ...data.daily.map((x) => x.total_requests || 1)
+                      );
+                      const height = Math.max(
+                        6,
+                        (d.total_requests / maxReq) * 100
+                      );
+
+                      const dateObj = new Date(d.day);
+                      const label = `${dateObj.getDate()}/${
+                        dateObj.getMonth() + 1
+                      }`;
+
+                      return (
+                        <div
+                          key={d.day + idx}
+                          className="flex-1 flex flex-col items-center gap-1"
+                        >
+                          <div className="w-full rounded-full bg-gradient-to-t from-blue-500/30 via-blue-500 to-purple-500/90 shadow-[0_0_12px_rgba(56,189,248,0.45)]"
+                            style={{ height: `${height}%` }}
+                          />
+                          <span className="text-[9px] text-slate-500">
+                            {label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
 
               {/* Répartition par endpoint */}
               <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
