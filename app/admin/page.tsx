@@ -205,7 +205,7 @@ export default function AdminPage() {
               setNotifications((prev) =>
                 prev.filter((n) => n.id !== notifId)
               );
-            }, 5000);
+            }, 10000);
           }
         }
       } catch (e) {
@@ -226,7 +226,7 @@ export default function AdminPage() {
 
   const liveStatusText = useMemo(() => {
     if (!latest) return "En attente de la première requête...";
-    return `Dernière requête : ${latest.endpoint ?? "inconnu"} • ${
+    return `Last : ${latest.endpoint ?? "inconnu"} • ${
       latest.total_tokens
     } tokens`;
   }, [latest]);
