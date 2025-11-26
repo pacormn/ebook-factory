@@ -32,7 +32,7 @@ export async function generateStructure(title: string) {
 
   // 1) JSON auto-parsé
   if ("parsed" in msg && msg.parsed) {
-    return msg.parsed.chapters ?? [];
+    return (msg.parsed as any)?.chapters ?? [];
   }
 
   // 2) JSON dans msg.content[0].text
