@@ -2,18 +2,17 @@
 
 import OpenAI from "openai";
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function generateStructure(title: string) {
-console.log("Generating for :", title);
   const prompt = `
   Génère une structure d'ebook en JSON strict :
+
   {
     "chapters": [
-      { "title": "..." },
-      { "title": "..." }
+      { "title": "Introduction" },
+      { "title": "Chapitre 1" },
+      { "title": "Chapitre 2" }
     ]
   }
 
@@ -29,27 +28,25 @@ console.log("Generating for :", title);
     ]
   });
 
-    const msg = completion.choices[0].message;
+  const msg = completion.choices[0].message;
 
-    // 1. Si OpenAI a déjà parsé le JSON automatiquement
-    if ("parsed" in msg && msg.parsed) {
-      return (msg as any).parsed;
+  // 1) JSON auto-parsé
+  if ("parsed" in msg && msg.parsed) {
+    return msg.parsed.chapters ?? [];
+  }
+
+  // 2) JSON dans msg.content[0].text
+  if (Array.isArray(msg.content)) {
+    const text = msg.content[0]?.text;
+
+    try {
+      const parsed = JSON.parse(text);
+      return parsed.chapters ?? [];
+    } catch (err) {
+      console.error("JSON invalide:", text);
+      return [];
     }
+  }
 
-    // 2. Si le JSON est dans msg.content[0].text
-    if (Array.isArray(msg.content)) {
-      const text = msg.content[0]?.text;
-
-      if (typeof text === "string") {
-        try {
-          return JSON.parse(text);
-        } catch (e) {
-          console.error("Erreur JSON parse:", text);
-        }
-      }
-    }
-
-// 3. fallback
-console.log("Fallback content:", msg.content);
-return msg.content;
+  return [];
 }
