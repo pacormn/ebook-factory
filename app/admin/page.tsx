@@ -373,53 +373,48 @@ export default function AdminPage() {
             {/* GRAPH + LISTES */}
             <div className="grid gap-6 lg:grid-cols-2 mt-6">
               {/* ACTIVITÉ QUOTIDIENNE */}
-              <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
-                <p className="text-xs uppercase tracking-[0.16em] text-slate-500 mb-4 flex items-center gap-2">
-                  Activité quotidienne
-                  <span className="text-[10px] text-slate-500">
-                    (30 derniers jours)
-                  </span>
-                </p>
+              {/* daily */}
+<div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
+  <p className="text-xs uppercase tracking-[0.16em] text-slate-500 mb-4 flex items-center gap-2">
+    Activité quotidienne
+    <span className="text-[10px] text-slate-500">(30 derniers jours)</span>
+  </p>
 
-                {data.daily.length === 0 && (
-                  <p className="text-xs text-slate-500">
-                    Pas encore de trafic enregistré.
-                  </p>
-                )}
+  {(!data?.daily || data.daily.length === 0) && (
+    <p className="text-xs text-slate-500">Pas encore de trafic enregistré.</p>
+  )}
 
-                {data.daily.length > 0 && (
-                  <div className="relative h-40 flex items-end gap-1">
-                    {data.daily.map((d, idx) => {
-                      const maxReq = Math.max(
-                        ...data.daily.map((x) => x.total_requests || 1)
-                      );
-                      const height = Math.max(
-                        6,
-                        (d.total_requests / maxReq) * 100
-                      );
+  {data?.daily && data.daily.length > 0 && (
+    <div className="flex items-end gap-1 h-40">
+      {(() => {
+        // SAFE: éviter Math.max(...[])
+        const values = data.daily.map((d) => d.total_requests || 0);
+        const maxReq = values.length > 0 ? Math.max(...values) : 1;
 
-                      const dateObj = new Date(d.day);
-                      const label = `${dateObj.getDate()}/${
-                        dateObj.getMonth() + 1
-                      }`;
+        return data.daily.map((d) => {
+          const pct = d.total_requests / maxReq;
+          const height = Math.max(6, pct * 100);
 
-                      return (
-                        <div
-                          key={d.day + idx}
-                          className="flex-1 flex flex-col items-center gap-1"
-                        >
-                          <div className="w-full rounded-full bg-gradient-to-t from-blue-500/30 via-blue-500 to-purple-500/90 shadow-[0_0_12px_rgba(56,189,248,0.45)]"
-                            style={{ height: `${height}%` }}
-                          />
-                          <span className="text-[9px] text-slate-500">
-                            {label}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+          const dateObj = new Date(d.day);
+          const label = `${dateObj.getDate()}/${dateObj.getMonth() + 1}`;
+
+          return (
+            <div
+              key={d.day}
+              className="flex-1 flex flex-col items-center gap-1"
+            >
+              <div
+                className="w-full rounded-full bg-gradient-to-t from-blue-500 to-purple-500"
+                style={{ height: `${height}%` }}
+              />
+              <span className="text-[9px] text-slate-500">{label}</span>
+            </div>
+          );
+        });
+      })()}
+    </div>
+  )}
+</div>
 
               {/* RÉPARTITION PAR MODÈLE */}
               <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
