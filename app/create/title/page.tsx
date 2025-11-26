@@ -1,19 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import { useEbookStore } from "@/store/ebook-store";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, House, Sparkles } from "lucide-react";
 import TitleIdeasModal from "@/components/TitleIdeasModal";
 
 export default function TitlePage() {
-  const [title, setTitle] = useState("");
+  const router = useRouter();
+  const { title, setTitle } = useEbookStore();
   const [isIdeasModalOpen, setIdeasModalOpen] = useState(false);
 
   const handlePickTitle = (newTitle: string) => {
     setTitle(newTitle);
     setIdeasModalOpen(false);
   };
+
+  function handleNext() {
+    if (!title.trim()) return;
+    router.push("/create/structure");
+  }
 
   return (
 <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-white via-slate-50 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 bg-dynamic">
@@ -87,7 +95,7 @@ export default function TitlePage() {
         {/* CTA SUIVANT */}
         <div className="mt-10">
           <Link href="/create/description">
-            <Button
+            <Button onClick={handleNext}
               disabled={!title.trim()}
               className="px-10 py-6 text-lg rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
             >

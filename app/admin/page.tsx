@@ -210,9 +210,6 @@ function GraphActivityPro({ data }: { data: { day: string; total_requests: numbe
 }
 
 
-
-
-
 /* ============================
    HELPERS
 ============================ */
