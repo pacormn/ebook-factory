@@ -7,6 +7,7 @@ const client = new OpenAI({
 });
 
 export async function generateStructure(title: string) {
+console.log("Generating for :", title);
   const prompt = `
   Génère une structure d'ebook en JSON strict :
   {
