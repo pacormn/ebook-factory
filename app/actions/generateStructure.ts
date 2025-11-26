@@ -48,5 +48,7 @@ export async function generateStructure(title: string) {
     }
   }
 
+  console.log("Format de réponse inattendu:", msg);
+
   return [];
 }
