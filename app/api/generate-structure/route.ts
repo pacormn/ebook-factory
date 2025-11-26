@@ -6,8 +6,8 @@ const MODEL = "gpt-4.1";
 
 const MODEL_PRICES: Record<string, { input: number; output: number }> = {
   "gpt-4.1": {
-    input: 0.005 / 1000,     // exemple : 5$/1M tokens => 0.005/1k
-    output: 0.015 / 1000,    // exemple : 15$/1M tokens => 0.015/1k
+    input: 0.005 / 1000,
+    output: 0.015 / 1000,
   },
 };
 
@@ -28,19 +28,18 @@ export async function POST(req: Request) {
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
     const prompt = `
-    Génère une structure d'ebook en JSON strict :
+Génère une structure d'ebook en JSON strict :
 
-    {
-      "title": "...",
-      "chapters": [
-        { "title": "Introduction" },
-        { "title": "Chapitre 1" },
-        { "title": "Chapitre 2" }
-      ]
-    }
+{
+  "chapters": [
+    { "title": "Introduction" },
+    { "title": "Chapitre 1" },
+    { "title": "Chapitre 2" }
+  ]
+}
 
-    Titre : "${title}"
-    `;
+Titre : "${title}"
+`;
 
     const completion = await client.chat.completions.create({
       model: MODEL,
@@ -51,34 +50,27 @@ export async function POST(req: Request) {
       ],
     });
 
-    // extraction JSON selon le nouveau format OpenAI
     const msg = completion.choices[0].message;
+
+    // Nouvelle extraction JSON
+    const raw = msg.content; // c'est une string JSON ici !
+    console.log("RAW STRUCTURE:", raw);
 
     let chapters: any[] = [];
 
-if ("parsed" in msg && msg.parsed) {
-  const parsed: any = msg.parsed;   // <-- Fix TypeScript ici
-  chapters = parsed.chapters ?? [];
-}
-else if (Array.isArray(msg.content)) {
-  const text = msg.content[0]?.text ?? "{}";
+    try {
+      const parsed = JSON.parse(raw);
+      chapters = parsed.chapters ?? [];
+    } catch (e) {
+      console.error("Erreur JSON:", raw);
+    }
 
-  try {
-    const parsed = JSON.parse(text);
-    chapters = parsed.chapters ?? [];
-  } catch (e) {
-    console.error("Erreur JSON structure:", text);
-  }
-}
-
-
-    // === LOG DES TOKENS + COÛT ===
+    // LOG TOKENS
     const usage = completion?.usage;
     if (usage && supabaseAdmin) {
       const promptTokens = usage.prompt_tokens ?? 0;
       const completionTokens = usage.completion_tokens ?? 0;
       const totalTokens = usage.total_tokens ?? promptTokens + completionTokens;
-
       const cost_usd = calculateCost(MODEL, promptTokens, completionTokens);
 
       const { error } = await supabaseAdmin.from("ai_usage").insert({
@@ -89,18 +81,16 @@ else if (Array.isArray(msg.content)) {
         total_tokens: totalTokens,
         cost_usd,
         user_id: null,
-        meta: {
-          title,
-        },
+        meta: { title },
       });
 
-      if (error) {
-        console.error("[ai_usage insert error]", error);
-      }
+      if (error) console.error("[ai_usage insert error]", error);
     }
-    console.log("Generated chapters:", NextResponse.json({ chapters }));
+
+    console.log("CHAPTERS PARSED:", chapters);
 
     return NextResponse.json({ chapters });
+
   } catch (e) {
     console.error("ERROR /api/generate-structure:", e);
     return NextResponse.json({ error: "Erreur interne." }, { status: 500 });
