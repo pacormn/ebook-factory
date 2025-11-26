@@ -1,97 +1,108 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* FONT */
+/* Font */
 html, body {
   font-family: "Inter", sans-serif;
   transition: background-color .25s ease, color .25s ease;
 }
 
-/* REAL iOS LIQUID GLASS */
-.glass {
-  position: relative;
-  border-radius: 24px;
-  overflow: hidden;
+/* ===================== */
+/* REAL GLASS NAVBAR     */
+/* ===================== */
 
-  background: rgba(255, 255, 255, 0.08);
+.glass-bar {
+  background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.25);
-
-  backdrop-filter: blur(40px) saturate(250%);
-  -webkit-backdrop-filter: blur(40px) saturate(250%);
-
+  backdrop-filter: blur(35px) saturate(180%);
+  -webkit-backdrop-filter: blur(35px) saturate(180%);
+  border-radius: 20px;
   box-shadow:
     0 4px 25px rgba(0, 0, 0, 0.18),
-    inset 0 0 0.6px rgba(255, 255, 255, 0.45);
+    inset 0 0 0.6px rgba(255, 255, 255, 0.4);
 }
 
-/* internal gradient */
-.glass::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.25) 0%,
-    rgba(255,255,255,0.10) 20%,
-    rgba(255,255,255,0.05) 60%,
-    rgba(255,255,255,0.02) 100%
-  );
-  mix-blend-mode: soft-light;
-}
-
-/* dark mode */
-.dark .glass {
-  background: rgba(15, 15, 15, 0.28);
+.dark .glass-bar {
+  background: rgba(20, 20, 20, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow:
-    0 4px 25px rgba(0, 0, 0, 0.35),
-    inset 0 0 0.6px rgba(255, 255, 255, 0.2);
 }
 
-.dark .glass::before {
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.13) 0%,
-    rgba(255,255,255,0.04) 50%,
-    rgba(255,255,255,0.02) 100%
-  );
-  mix-blend-mode: overlay;
+/* Floating animation */
+@keyframes navbarPop {
+  from {
+    opacity: 0;
+    transform: translateY(-15px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-/* BLOBS */
+.navbar-pop {
+  animation: navbarPop .28s ease-out forwards;
+}
+
+/* Background gradient */
+.bg-dynamic {
+  background: radial-gradient(circle at top left, rgba(80,140,255,0.35), transparent 50%),
+              radial-gradient(circle at bottom right, rgba(160,80,255,0.25), transparent 50%);
+}
+
+/* Blobs */
 @keyframes blobFloating {
   0% { transform: translate(0,0) scale(1); }
   33% { transform: translate(50px,-30px) scale(1.05); }
   66% { transform: translate(-30px,20px) scale(0.97); }
   100% { transform: translate(0,0) scale(1); }
 }
+
 .animate-blob-floating { animation: blobFloating 12s infinite ease-in-out; }
 .animate-blob-floating2 { animation: blobFloating 14s infinite ease-in-out; }
 
-/* HEADER ANIMATION (optionnel pour le header sticky) */
-@keyframes headerFadeScale {
+
+@keyframes fadeDown {
   from {
     opacity: 0;
-    transform: scale(0.96);
+    transform: translateY(-4px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
-}
-header-fade-scale {
-  animation: headerFadeScale .25s ease-out forwards;
-  transform-origin: top center;
 }
 
-@keyframes headerFadeScale {
+.fade-down {
+  animation: fadeDown 0.18s ease-out;
+}
+/* ===================== */
+.navbar-pop {
+  animation: navPop .35s ease-out;
+}
+
+@keyframes navPop {
   from {
     opacity: 0;
-    transform: scale(0.92);
+    transform: translateY(-10px) scale(.96);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0) scale(1);
   }
 }
+
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-down {
+  animation: fadeDown 0.18s ease-out;
+}
+/* ===================== */
