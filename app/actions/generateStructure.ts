@@ -29,16 +29,16 @@ export async function generateStructure(title: string) {
   });
 
     const msg = completion.choices[0].message;
-  
+
     // 1. Si OpenAI a déjà parsé le JSON automatiquement
     if ("parsed" in msg && msg.parsed) {
       return (msg as any).parsed;
     }
-    
+
     // 2. Si le JSON est dans msg.content[0].text
     if (Array.isArray(msg.content)) {
       const text = msg.content[0]?.text;
-    
+
       if (typeof text === "string") {
         try {
           return JSON.parse(text);
@@ -49,5 +49,6 @@ export async function generateStructure(title: string) {
     }
 
 // 3. fallback
+console.log("Fallback content:", msg.content);
 return msg.content;
 }
