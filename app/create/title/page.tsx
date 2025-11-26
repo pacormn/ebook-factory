@@ -16,7 +16,7 @@ export default function TitlePage() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-white via-slate-50 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 bg-dynamic">
+<main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-white via-slate-50 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 bg-dynamic">
 
       {/* BLOBS */}
       <div className="absolute top-[-250px] left-[-150px] w-[600px] h-[600px] rounded-full bg-blue-400/40 dark:bg-blue-700/20 blur-[135px] animate-blob-floating -z-10" />
@@ -25,7 +25,7 @@ export default function TitlePage() {
       {/* HEADER BULLE */}
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] md:w-[70%] px-6 py-3 glass-bar rounded-3xl navbar-pop shadow-xl">
         <div className="flex items-center justify-between">
-
+          
           {/* Logo */}
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer">
