@@ -34,7 +34,7 @@ export async function GET() {
 
     const rows: AiUsageRow[] = data ?? [];
 
-    // ---- AGRÉGATIONS GLOBALES ----
+    // ---- GLOBAL STATS ----
     let totalTokens = 0;
     let totalCost = 0;
     let totalRequests = rows.length;
@@ -50,104 +50,85 @@ export async function GET() {
       total_requests: totalRequests,
     };
 
-    // ---- AGRÉGATION JOUR PAR JOUR ----
+    // ---- GROUP BY MODEL (même si toujours le même) ----
+    const modelMap = new Map<
+      string,
+      { total_tokens: number; total_cost_usd: number; total_requests: number }
+    >();
+
+    rows.forEach((r) => {
+      const model = r.model ?? "unknown";
+      const entry =
+        modelMap.get(model) || {
+          total_tokens: 0,
+          total_cost_usd: 0,
+          total_requests: 0,
+        };
+      entry.total_tokens += r.total_tokens ?? 0;
+      entry.total_cost_usd += Number(r.cost_usd ?? 0);
+      entry.total_requests += 1;
+      modelMap.set(model, entry);
+    });
+
+    const byModel = [...modelMap.entries()].map(([model, vals]) => ({
+      model,
+      ...vals,
+    }));
+
+    // ---- DAILY STATS ----
+    const dayKey = (d: string) => d.slice(0, 10);
+
     const dayMap = new Map<
       string,
       { total_tokens: number; total_cost_usd: number; total_requests: number }
     >();
 
-    const toDayKey = (d: string) => d.slice(0, 10); // "YYYY-MM-DD"
-
     rows.forEach((r) => {
-      const key = toDayKey(r.created_at);
-      const existing =
-        dayMap.get(key) || { total_tokens: 0, total_cost_usd: 0, total_requests: 0 };
-      existing.total_tokens += r.total_tokens ?? 0;
-      existing.total_cost_usd += Number(r.cost_usd ?? 0);
-      existing.total_requests += 1;
-      dayMap.set(key, existing);
-    });
-
-    const daily: {
-      day: string;
-      total_tokens: number;
-      total_cost_usd: number;
-      total_requests: number;
-    }[] = [];
-
-    // on génère toutes les dates pour avoir un graphe continu
-    for (let i = 0; i < 30; i++) {
-      const d = new Date(from);
-      d.setDate(from.getDate() + i);
-      const key = d.toISOString().slice(0, 10);
+      const key = dayKey(r.created_at);
       const stats =
         dayMap.get(key) || {
           total_tokens: 0,
           total_cost_usd: 0,
           total_requests: 0,
         };
+      stats.total_tokens += r.total_tokens ?? 0;
+      stats.total_cost_usd += Number(r.cost_usd ?? 0);
+      stats.total_requests += 1;
+      dayMap.set(key, stats);
+    });
 
+    const daily = [];
+    for (let i = 0; i < 30; i++) {
+      const d = new Date(from);
+      d.setDate(from.getDate() + i);
+      const key = d.toISOString().slice(0, 10);
       daily.push({
         day: key,
-        ...stats,
+        ...(dayMap.get(key) || {
+          total_tokens: 0,
+          total_cost_usd: 0,
+          total_requests: 0,
+        }),
       });
     }
 
-    // ---- STATS AVANCÉES ----
+    // ---- ADVANCED STATS ----
     const reqCount = totalRequests || 1;
-    const avgTokensPerReq = totalTokens / reqCount;
-    const avgCostPerReq = totalCost / reqCount;
-
-    let maxTokens = 0;
-    let minTokens = rows.length ? rows[0].total_tokens ?? 0 : 0;
-
-    rows.forEach((r) => {
-      const t = r.total_tokens ?? 0;
-      if (t > maxTokens) maxTokens = t;
-      if (t < minTokens) minTokens = t;
-    });
-
-    const todayKey = now.toISOString().slice(0, 10);
-    const y = new Date();
-    y.setDate(now.getDate() - 1);
-    const yesterdayKey = y.toISOString().slice(0, 10);
-
-    const todayStats =
-      dayMap.get(todayKey) || {
-        total_requests: 0,
-        total_tokens: 0,
-        total_cost_usd: 0,
-      };
-
-    const yesterdayStats =
-      dayMap.get(yesterdayKey) || {
-        total_requests: 0,
-        total_tokens: 0,
-        total_cost_usd: 0,
-      };
-
-    // Prévision coût fin de mois : moyenne journalière * nb de jours du mois
-    const daysInMonth = new Date(
-      now.getFullYear(),
-      now.getMonth() + 1,
-      0
-    ).getDate();
-
-    const daysWithData =
-      daily.filter((d) => d.total_requests > 0).length || 1;
-    const avgDailyCost = totalCost / daysWithData;
-    const forecastMonthlyCostUsd = avgDailyCost * daysInMonth;
 
     const stats = {
-      avg_tokens_per_request: avgTokensPerReq,
-      avg_cost_per_request: avgCostPerReq,
-      max_tokens: maxTokens,
-      min_tokens: minTokens,
-      requests_today: todayStats.total_requests,
-      requests_yesterday: yesterdayStats.total_requests,
+      avg_tokens_per_request: totalTokens / reqCount,
+      avg_cost_per_request: totalCost / reqCount,
+      max_tokens: Math.max(...rows.map((r) => r.total_tokens ?? 0), 0),
+      min_tokens: Math.min(...rows.map((r) => r.total_tokens ?? 0), 0),
+      requests_today:
+        dayMap.get(now.toISOString().slice(0, 10))?.total_requests ?? 0,
+      requests_yesterday:
+        dayMap.get(
+          new Date(now.getTime() - 86400000).toISOString().slice(0, 10)
+        )?.total_requests ?? 0,
     };
 
-    // ---- DERNIÈRES REQUÊTES ----
+    // ---- LAST REQUESTS ----
     const lastRequests = [...rows]
       .sort((a, b) => b.created_at.localeCompare(a.created_at))
       .slice(0, 12)
@@ -160,19 +141,33 @@ export async function GET() {
         created_at: r.created_at,
       }));
 
+    // ---- FORECAST ----
+    const daysInMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0
+    ).getDate();
+
+    const daysWithData =
+      daily.filter((d) => d.total_requests > 0).length || 1;
+
+    const avgDailyCost = totalCost / daysWithData;
+
     const forecast = {
-      monthly_cost_usd: forecastMonthlyCostUsd,
+      monthly_cost_usd: avgDailyCost * daysInMonth,
     };
 
+    // ---- FINAL JSON (SECURED) ----
     return NextResponse.json({
       totals,
+      byModel: byModel ?? [], // <-- prevents UI crash
       daily,
       lastRequests,
       stats,
       forecast,
     });
   } catch (err) {
-    console.error("[admin/ai-usage/summary] error:", err);
+    console.error("[admin/ai-usage/summary] ERROR:", err);
     return NextResponse.json(
       { error: "Erreur lors du calcul des stats admin." },
       { status: 500 }
