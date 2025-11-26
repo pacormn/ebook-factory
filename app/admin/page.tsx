@@ -1,42 +1,17 @@
 // app/admin/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
+  BarChart2,
   Cpu,
   DollarSign,
   Loader2,
   Activity,
-  TrendingUp,
-  TrendingDown,
-  ListOrdered,
+  ArrowUpDown,
 } from "lucide-react";
 import Link from "next/link";
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  Tooltip,
-  XAxis,
-  CartesianGrid,
-} from "recharts";
-
-type DailyPoint = {
-  day: string;
-  total_tokens: number;
-  total_cost_usd: number;
-  total_requests: number;
-};
-
-type LastRequest = {
-  id: string;
-  endpoint: string | null;
-  model: string | null;
-  total_tokens: number;
-  cost_usd: number;
-  created_at: string;
-};
 
 type SummaryResponse = {
   totals: {
@@ -44,37 +19,102 @@ type SummaryResponse = {
     total_cost_usd: number | null;
     total_requests: number | null;
   };
-  daily: DailyPoint[];
-  lastRequests: LastRequest[];
-  stats: {
-    avg_tokens_per_request: number;
-    avg_cost_per_request: number;
-    max_tokens: number;
-    min_tokens: number;
-    requests_today: number;
-    requests_yesterday: number;
-  };
-  forecast: {
-    monthly_cost_usd: number;
-  };
+  byModel: {
+    model: string;
+    total_tokens: number;
+    total_cost_usd: number;
+    total_requests: number;
+  }[];
+  daily: {
+    day: string;
+    total_tokens: number;
+    total_cost_usd: number;
+    total_requests: number;
+  }[];
 };
+
+type AiUsageRow = {
+  id: string;
+  created_at: string;
+  model: string;
+  endpoint: string;
+  total_tokens: number;
+  prompt_tokens: number;
+  completion_tokens: number;
+  cost_usd: number;
+};
+
+type LatestResponse = {
+  latest: AiUsageRow | null;
+};
+
+type ListResponse = {
+  items: AiUsageRow[];
+};
+
+type SortField = "created_at" | "total_tokens" | "cost_usd" | "endpoint";
+type SortDir = "asc" | "desc";
+
+type NotificationItem = {
+  id: string;
+  message: string;
+  subtitle?: string;
+};
+
+function formatDateTime(dateStr: string) {
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return dateStr;
+  return d.toLocaleString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function formatCost(cost: number) {
+  if (!cost) return "0.0000 $";
+  return `${cost.toFixed(4)} $`;
+}
+
+function formatTokens(tokens: number) {
+  if (!tokens) return "0";
+  // si < 1000 → valeur brute ; sinon en milliers
+  if (tokens < 1000) return `${tokens} tokens`;
+  return `${(tokens / 1000).toFixed(1)}k tokens`;
+}
 
 export default function AdminPage() {
   const [data, setData] = useState<SummaryResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loadingSummary, setLoadingSummary] = useState(true);
+  const [errorSummary, setErrorSummary] = useState<string | null>(null);
 
+  const [latest, setLatest] = useState<AiUsageRow | null>(null);
+  const [lastSeenId, setLastSeenId] = useState<string | null>(null);
+
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+
+  const [rows, setRows] = useState<AiUsageRow[]>([]);
+  const [loadingRows, setLoadingRows] = useState(true);
+  const [errorRows, setErrorRows] = useState<string | null>(null);
+
+  const [sortField, setSortField] = useState<SortField>("created_at");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
+
+  // ============================
+  // 1) Chargement du résumé
+  // ============================
   useEffect(() => {
     const fetchSummary = async () => {
       try {
         const res = await fetch("/api/admin/ai-usage/summary");
         if (!res.ok) throw new Error("API ERROR");
-        const json = await res.json();
+        const json = (await res.json()) as SummaryResponse;
         setData(json);
       } catch (e: any) {
-        setError(e?.message || "Erreur de chargement");
+        setErrorSummary(e?.message || "Erreur de chargement");
       } finally {
-        setLoading(false);
+        setLoadingSummary(false);
       }
     };
 
@@ -82,34 +122,120 @@ export default function AdminPage() {
   }, []);
 
   const totals = data?.totals;
-  const stats = data?.stats;
-  const daily = data?.daily || [];
-  const lastRequests = data?.lastRequests || [];
 
-  // ---- format tokens : millions ou milliers ----
-  const totalTokens = totals?.total_tokens ?? 0;
-  let tokensValue = "0.0";
-  let tokensLabel = "k tokens";
+  // ============================
+  // 2) Live : dernière requête
+  // ============================
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    let isMounted = true;
 
-  if (totalTokens >= 1_000_000) {
-    tokensValue = (totalTokens / 1_000_000).toFixed(3);
-    tokensLabel = "millions de tokens";
-  } else {
-    tokensValue = (totalTokens / 1_000).toFixed(1);
-    tokensLabel = "k tokens";
+    const fetchLatest = async () => {
+      try {
+        const res = await fetch("/api/admin/ai-usage/latest");
+        if (!res.ok) return;
+        const json = (await res.json()) as LatestResponse;
+        if (!isMounted) return;
+
+        if (json.latest) {
+          setLatest(json.latest);
+
+          // première fois : on enregistre l'id sans créer de notif
+          if (!lastSeenId) {
+            setLastSeenId(json.latest.id);
+          } else if (json.latest.id !== lastSeenId) {
+            // nouvelle requête détectée => notif
+            setLastSeenId(json.latest.id);
+            const msg = `Nouvelle requête : ${json.latest.endpoint}`;
+            const subtitle = `${json.latest.total_tokens} tokens • ${json.latest.cost_usd.toFixed(
+              5
+            )} $`;
+
+            const notifId = json.latest.id;
+            setNotifications((prev) => [
+              ...prev,
+              { id: notifId, message: msg, subtitle },
+            ]);
+
+            // auto-dismiss après 3s
+            setTimeout(() => {
+              setNotifications((prev) =>
+                prev.filter((n) => n.id !== notifId)
+              );
+            }, 3000);
+          }
+        }
+      } catch (e) {
+        // on log mais on ne casse pas la page
+        console.error("[admin latest fetch]", e);
+      }
+    };
+
+    // première récupération immédiate
+    fetchLatest();
+    // puis toutes les 3 secondes
+    interval = setInterval(fetchLatest, 3000);
+
+    return () => {
+      isMounted = false;
+      if (interval) clearInterval(interval);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastSeenId]);
+
+  const liveStatusText = useMemo(() => {
+    if (!latest) return "En attente de la première requête...";
+    return `Dernière requête : ${latest.endpoint} • ${latest.total_tokens} tokens`;
+  }, [latest]);
+
+  // ============================
+  // 3) Liste des requêtes + tri
+  // ============================
+  async function fetchRows(field: SortField, dir: SortDir) {
+    setLoadingRows(true);
+    setErrorRows(null);
+    try {
+      const params = new URLSearchParams({
+        sort: field,
+        dir,
+        limit: "20",
+      });
+
+      const res = await fetch(`/api/admin/ai-usage/list?${params.toString()}`);
+      if (!res.ok) throw new Error("Erreur API list");
+      const json = (await res.json()) as ListResponse;
+      setRows(json.items || []);
+    } catch (e: any) {
+      console.error("[admin list fetch]", e);
+      setErrorRows(e?.message || "Erreur de chargement");
+    } finally {
+      setLoadingRows(false);
+    }
   }
 
-  // variation aujourd'hui vs hier
-  const todayReq = stats?.requests_today ?? 0;
-  const yesterdayReq = stats?.requests_yesterday ?? 0;
-  const deltaReq =
-    yesterdayReq === 0
-      ? todayReq > 0
-        ? 100
-        : 0
-      : ((todayReq - yesterdayReq) / yesterdayReq) * 100;
+  useEffect(() => {
+    fetchRows(sortField, sortDir);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortField, sortDir]);
 
-  const deltaReqRounded = Math.round(deltaReq);
+  const toggleSort = (field: SortField) => {
+    setSortField((prevField) => {
+      if (prevField === field) {
+        // on inverse juste le sens
+        setSortDir((prevDir) => (prevDir === "asc" ? "desc" : "asc"));
+        return prevField;
+      } else {
+        // nouveau champ => desc par défaut
+        setSortDir("desc");
+        return field;
+      }
+    });
+  };
+
+  const expensiveThresholdTokens = 800;
+  const expensiveThresholdCost = 0.001;
+
+  const unreadCount = notifications.length;
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-50">
@@ -129,27 +255,78 @@ export default function AdminPage() {
             </p>
             <h1 className="text-xl font-semibold mt-1 flex items-center gap-2">
               Dashboard OpenAI
-              <Cpu className="h-4 w-4 text-emerald-400" />
+              <span className="relative inline-flex">
+                <Cpu className="h-4 w-4 text-emerald-400" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-emerald-400 animate-ping" />
+                )}
+              </span>
             </h1>
           </div>
         </div>
+
+        {/* Widget LIVE compact en haut */}
+        <div className="hidden md:flex items-center gap-2 rounded-full border border-slate-800 bg-slate-950/70 px-3 py-1.5 text-xs">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-70" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+          </span>
+          <span className="text-slate-300">LIVE</span>
+          <span className="text-slate-500">&mdash;</span>
+          <span className="text-slate-400 truncate max-w-[210px]">
+            {liveStatusText}
+          </span>
+        </div>
       </div>
 
-      <section className="max-w-6xl mx-auto px-4 pb-16 pt-6">
-        {loading && (
-          <div className="flex items-center justify-center mt-20">
+      <section className="max-w-6xl mx-auto px-4 pb-20 pt-6 space-y-8">
+        {/* WIDGET LIVE en version carte pour mobile */}
+        <div className="mt-4 md:hidden rounded-2xl border border-slate-800 bg-slate-950/70 p-4 flex items-start gap-3">
+          <div className="mt-1">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-70" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400" />
+            </span>
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+              Requêtes en direct
+            </p>
+            {latest ? (
+              <>
+                <p className="text-sm text-slate-100">
+                  {latest.endpoint} — {latest.total_tokens} tokens
+                </p>
+                <p className="text-xs text-slate-500">
+                  {formatDateTime(latest.created_at)} •{" "}
+                  {formatCost(latest.cost_usd)}
+                </p>
+              </>
+            ) : (
+              <p className="text-xs text-slate-500">
+                En attente de la première requête...
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Résumé global */}
+        {loadingSummary && (
+          <div className="flex items-center justify-center mt-10">
             <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
           </div>
         )}
 
-        {error && !loading && (
-          <p className="mt-10 text-center text-sm text-red-400">{error}</p>
+        {errorSummary && !loadingSummary && (
+          <p className="mt-10 text-center text-sm text-red-400">
+            {errorSummary}
+          </p>
         )}
 
-        {!loading && !error && data && (
+        {!loadingSummary && !errorSummary && data && (
           <>
-            {/* TOP CARDS */}
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            {/* CARDS TOP */}
+            <div className="grid gap-4 sm:grid-cols-3">
               {/* Requêtes totales */}
               <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
                 <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
@@ -160,35 +337,6 @@ export default function AdminPage() {
                     {totals?.total_requests ?? 0}
                   </span>
                 </div>
-                <p className="mt-2 text-[11px] text-slate-500">
-                  Aujourd&apos;hui :{" "}
-                  <span className="font-medium text-slate-200">
-                    {todayReq}
-                  </span>{" "}
-                  / Hier :{" "}
-                  <span className="text-slate-400">{yesterdayReq}</span>
-                </p>
-                <p className="mt-1 text-[11px] flex items-center gap-1">
-                  {deltaReqRounded > 0 && (
-                    <>
-                      <TrendingUp className="h-3 w-3 text-emerald-400" />
-                      <span className="text-emerald-400">
-                        +{deltaReqRounded}%
-                      </span>
-                    </>
-                  )}
-                  {deltaReqRounded < 0 && (
-                    <>
-                      <TrendingDown className="h-3 w-3 text-red-400" />
-                      <span className="text-red-400">
-                        {deltaReqRounded}%
-                      </span>
-                    </>
-                  )}
-                  {deltaReqRounded === 0 && (
-                    <span className="text-slate-500">Stable</span>
-                  )}
-                </p>
               </div>
 
               {/* Tokens consommés */}
@@ -197,18 +345,17 @@ export default function AdminPage() {
                   Tokens consommés
                 </p>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-2xl font-semibold">{tokensValue}</span>
-                  <span className="text-xs text-slate-500">{tokensLabel}</span>
-                </div>
-                <p className="mt-2 text-[11px] text-slate-500">
-                  Moyenne / requête :{" "}
-                  <span className="font-medium text-slate-200">
-                    {Math.round(stats?.avg_tokens_per_request ?? 0)} tokens
+                  <span className="text-2xl font-semibold">
+                    {/* si très petit => en tokens, sinon en milliers */}
+                    {(totals?.total_tokens ?? 0) < 1000
+                      ? `${totals?.total_tokens ?? 0}`
+                      : `${((totals?.total_tokens ?? 0) / 1000).toFixed(1)}k`}
                   </span>
-                </p>
+                  <span className="text-xs text-slate-500">tokens</span>
+                </div>
               </div>
 
-              {/* Coût total */}
+              {/* Coût total estimé */}
               <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
                 <p className="text-xs uppercase tracking-[0.16em] text-slate-500 flex items-center gap-1">
                   Coût total estimé
@@ -220,204 +367,246 @@ export default function AdminPage() {
                   </span>
                   <span className="text-xs text-slate-500">USD</span>
                 </div>
-                <p className="mt-2 text-[11px] text-slate-500">
-                  Coût moyen / requête :{" "}
-                  <span className="font-medium text-slate-200">
-                    {(stats?.avg_cost_per_request ?? 0).toFixed(6)} $
-                  </span>
-                </p>
-                <p className="mt-1 text-[11px] text-slate-500">
-                  Prévision fin de mois :{" "}
-                  <span className="font-medium text-emerald-300">
-                    {data.forecast.monthly_cost_usd.toFixed(3)} $
-                  </span>
-                </p>
               </div>
             </div>
 
-            {/* GRAPH + STATS */}
-            <div className="mt-10 grid gap-6 lg:grid-cols-[2fr,1.1fr]">
-              {/* GRAPHE DAILY */}
-              <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <Activity className="h-4 w-4 text-blue-400" />
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
-                    Activité quotidienne (30 jours)
-                  </p>
-                </div>
+            {/* GRAPH + LISTES */}
+            <div className="grid gap-6 lg:grid-cols-2 mt-6">
+              {/* ACTIVITÉ QUOTIDIENNE */}
+              <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
+                <p className="text-xs uppercase tracking-[0.16em] text-slate-500 mb-4 flex items-center gap-2">
+                  Activité quotidienne
+                  <span className="text-[10px] text-slate-500">
+                    (30 derniers jours)
+                  </span>
+                </p>
 
-                {daily.length === 0 && (
+                {data.daily.length === 0 && (
                   <p className="text-xs text-slate-500">
                     Pas encore de trafic enregistré.
                   </p>
                 )}
 
-                {daily.length > 0 && (
-                  <div className="h-56">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={daily}>
-                        <defs>
-                          <linearGradient id="colorReq" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.75} />
-                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
+                {data.daily.length > 0 && (
+                  <div className="relative h-40 flex items-end gap-1">
+                    {data.daily.map((d, idx) => {
+                      const maxReq = Math.max(
+                        ...data.daily.map((x) => x.total_requests || 1)
+                      );
+                      const height = Math.max(
+                        6,
+                        (d.total_requests / maxReq) * 100
+                      );
 
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          stroke="#1f2937"
-                          vertical={false}
-                        />
-                        <XAxis
-                          dataKey="day"
-                          tickFormatter={(value) => {
-                            const d = new Date(value);
-                            return `${d.getDate()}/${d.getMonth() + 1}`;
-                          }}
-                          tick={{ fontSize: 10, fill: "#64748b" }}
-                          axisLine={false}
-                          tickLine={false}
-                          interval="preserveStartEnd"
-                        />
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: "#020617",
-                            border: "1px solid #1f2937",
-                            borderRadius: 12,
-                            fontSize: 11,
-                          }}
-                          formatter={(value: any) => [`${value} requêtes`, "Requêtes"]}
-                          labelFormatter={(label) => {
-                            const d = new Date(label);
-                            return `${d.getDate()}/${d.getMonth() + 1}`;
-                          }}
-                        />
-                        <Area
-                          type="monotone"
-                          dataKey="total_requests"
-                          stroke="#60a5fa"
-                          strokeWidth={2}
-                          fill="url(#colorReq)"
-                          dot={{ r: 2 }}
-                          activeDot={{ r: 4 }}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
+                      const dateObj = new Date(d.day);
+                      const label = `${dateObj.getDate()}/${
+                        dateObj.getMonth() + 1
+                      }`;
+
+                      return (
+                        <div
+                          key={d.day + idx}
+                          className="flex-1 flex flex-col items-center gap-1"
+                        >
+                          <div className="w-full rounded-full bg-gradient-to-t from-blue-500/30 via-blue-500 to-purple-500/90 shadow-[0_0_12px_rgba(56,189,248,0.45)]"
+                            style={{ height: `${height}%` }}
+                          />
+                          <span className="text-[9px] text-slate-500">
+                            {label}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
 
-              {/* STATS AVANCÉES */}
-              <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-5 flex flex-col gap-3">
-                <div className="flex items-center gap-2 mb-1">
-                  <TrendingUp className="h-4 w-4 text-emerald-400" />
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
-                    Statistiques avancées
-                  </p>
+              {/* RÉPARTITION PAR MODÈLE */}
+              <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <BarChart2 className="h-4 w-4 text-blue-400" />
+                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+                      Répartition par modèle
+                    </p>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-3">
-                    <p className="text-[10px] text-slate-500">Tokens max</p>
-                    <p className="mt-1 text-sm font-semibold">
-                      {stats?.max_tokens ?? 0}
-                    </p>
+                {data.byModel.length === 0 && (
+                  <p className="text-xs text-slate-500">
+                    Aucune donnée encore. Génère au moins un titre 😊
+                  </p>
+                )}
+
+                {data.byModel.length > 0 && (
+                  <div className="space-y-3">
+                    {data.byModel.map((m) => {
+                      const totalReq = totals?.total_requests ?? 1;
+                      const pct = Math.round(
+                        ((m.total_requests || 0) / totalReq) * 100
+                      );
+
+                      return (
+                        <div key={m.model} className="space-y-1">
+                          <div className="flex justify-between text-xs">
+                            <span className="font-medium">{m.model}</span>
+                            <span className="text-slate-400">
+                              {m.total_requests} req —{" "}
+                              {(m.total_cost_usd ?? 0).toFixed(4)} $
+                            </span>
+                          </div>
+                          <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-3">
-                    <p className="text-[10px] text-slate-500">Tokens min</p>
-                    <p className="mt-1 text-sm font-semibold">
-                      {stats?.min_tokens ?? 0}
-                    </p>
-                  </div>
-                  <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-3">
-                    <p className="text-[10px] text-slate-500">
-                      Cost / 100 requêtes
-                    </p>
-                    <p className="mt-1 text-sm font-semibold">
-                      {(
-                        (stats?.avg_cost_per_request ?? 0) * 100
-                      ).toFixed(4)}{" "}
-                      $
-                    </p>
-                  </div>
-                  <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-3">
-                    <p className="text-[10px] text-slate-500">Req / jour (moy.)</p>
-                    <p className="mt-1 text-sm font-semibold">
-                      {Math.round(
-                        (totals?.total_requests ?? 0) /
-                          Math.max(1, daily.filter((d) => d.total_requests > 0).length)
-                      )}
-                    </p>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 
-            {/* DERNIÈRES REQUÊTES */}
+            {/* LISTE DES DERNIÈRES REQUÊTES */}
             <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-950/70 p-5">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <ListOrdered className="h-4 w-4 text-blue-400" />
+                  <Activity className="h-4 w-4 text-emerald-400" />
                   <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
                     Dernières requêtes
                   </p>
                 </div>
+                <p className="text-[11px] text-slate-500">
+                  Tri : {sortField} ({sortDir})
+                </p>
               </div>
 
-              {lastRequests.length === 0 && (
+              {loadingRows && (
+                <div className="flex items-center justify-center py-10">
+                  <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+                </div>
+              )}
+
+              {errorRows && !loadingRows && (
+                <p className="text-xs text-red-400">{errorRows}</p>
+              )}
+
+              {!loadingRows && !errorRows && rows.length === 0 && (
                 <p className="text-xs text-slate-500">
-                  Aucune requête enregistrée pour l&apos;instant.
+                  Aucune requête enregistrée pour l’instant.
                 </p>
               )}
 
-              {lastRequests.length > 0 && (
-                <div className="mt-2 space-y-2 text-xs">
-                  {lastRequests.map((r) => {
-                    const d = new Date(r.created_at);
-                    const label = `${d.getDate()}/${
-                      d.getMonth() + 1
-                    } ${d.getHours()}h${d
-                      .getMinutes()
-                      .toString()
-                      .padStart(2, "0")}`;
+              {!loadingRows && !errorRows && rows.length > 0 && (
+                <div className="mt-3 overflow-x-auto">
+                  <table className="w-full text-xs md:text-sm border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-800/80 text-[11px] uppercase tracking-[0.16em] text-slate-500">
+                        <th className="py-2 px-2 text-left">
+                          <button
+                            onClick={() => toggleSort("created_at")}
+                            className="inline-flex items-center gap-1 hover:text-slate-300"
+                          >
+                            Date
+                            <ArrowUpDown className="h-3 w-3" />
+                          </button>
+                        </th>
+                        <th className="py-2 px-2 text-left">Endpoint</th>
+                        <th className="py-2 px-2 text-right">
+                          <button
+                            onClick={() => toggleSort("total_tokens")}
+                            className="inline-flex items-center gap-1 hover:text-slate-300"
+                          >
+                            Tokens
+                            <ArrowUpDown className="h-3 w-3" />
+                          </button>
+                        </th>
+                        <th className="py-2 px-2 text-right">
+                          <button
+                            onClick={() => toggleSort("cost_usd")}
+                            className="inline-flex items-center gap-1 hover:text-slate-300"
+                          >
+                            Coût
+                            <ArrowUpDown className="h-3 w-3" />
+                          </button>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rows.map((r) => {
+                        const isExpensive =
+                          (r.total_tokens ?? 0) >= expensiveThresholdTokens ||
+                          (r.cost_usd ?? 0) >= expensiveThresholdCost;
 
-                    let icon = "⚡";
-                    if (r.total_tokens > (stats?.avg_tokens_per_request ?? 0) * 2)
-                      icon = "🔥";
-
-                    return (
-                      <div
-                        key={r.id}
-                        className="flex items-center justify-between rounded-xl bg-slate-900/80 border border-slate-800 px-3 py-2"
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">{icon}</span>
-                          <div>
-                            <p className="font-medium text-slate-100">
-                              {r.endpoint || "endpoint inconnu"}
-                            </p>
-                            <p className="text-[10px] text-slate-500">
-                              {label} • {r.model || "model ?"}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-[11px] text-slate-300">
-                            {r.total_tokens} tokens
-                          </p>
-                          <p className="text-[10px] text-slate-500">
-                            {r.cost_usd.toFixed(6)} $
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
+                        return (
+                          <tr
+                            key={r.id}
+                            className={`border-b border-slate-900/70 hover:bg-slate-900/70 transition-colors ${
+                              isExpensive ? "expensive-row" : ""
+                            }`}
+                          >
+                            <td className="py-2.5 px-2 whitespace-nowrap">
+                              <span className="text-slate-100">
+                                {formatDateTime(r.created_at)}
+                              </span>
+                            </td>
+                            <td className="py-2.5 px-2">
+                              <span className="inline-flex items-center gap-2">
+                                <span className="px-2 py-0.5 rounded-full bg-slate-900/80 border border-slate-700/70 text-[10px] uppercase tracking-[0.14em] text-slate-300">
+                                  {r.endpoint}
+                                </span>
+                                {isExpensive && (
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-rose-500/10 text-[10px] text-rose-300 border border-rose-500/40 animate-pulse-soft">
+                                    🔥 chère
+                                  </span>
+                                )}
+                              </span>
+                            </td>
+                            <td className="py-2.5 px-2 text-right">
+                              <span className="text-slate-100">
+                                {r.total_tokens}
+                              </span>
+                            </td>
+                            <td className="py-2.5 px-2 text-right">
+                              <span className="text-slate-100">
+                                {r.cost_usd.toFixed(5)} $
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>
           </>
         )}
       </section>
+
+      {/* NOTIFICATIONS type playground, en bas à droite */}
+      {notifications.length > 0 && (
+        <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50 max-w-xs">
+          {notifications.map((n) => (
+            <div
+              key={n.id}
+              className="glass-notif text-xs px-3 py-2 rounded-xl shadow-lg border border-slate-700/60 bg-slate-900/90 text-slate-50 animate-slide-in-up"
+            >
+              <p className="font-medium flex items-center gap-1">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                {n.message}
+              </p>
+              {n.subtitle && (
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  {n.subtitle}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </main>
   );
 }
