@@ -1,4 +1,5 @@
 "use client";
+import DailyActivityChart from "@/components/admin/DailyActivityChart";
 
 import { useEffect, useState } from "react";
 import {
@@ -159,32 +160,14 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* ---------- GRAPHIQUE JOURNALIER ---------- */}
+          {/* ---------- NEW: GRAPHIQUE QUOTIDIEN ---------- */}
           <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-6">
             <h2 className="text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
               <BarChart2 size={14} className="text-blue-400" />
               Activité quotidienne (30 jours)
             </h2>
 
-            <div className="flex items-end gap-2 h-40">
-              {data.daily.map((d) => {
-                const max = Math.max(...data.daily.map((x) => x.total_requests || 1));
-                const heightPct = (d.total_requests / max) * 100;
-
-                const dateObj = new Date(d.day);
-                const label = `${dateObj.getDate()}/${dateObj.getMonth() + 1}`;
-
-                return (
-                  <div key={d.day} className="flex-1 flex flex-col items-center gap-1">
-                    <div
-                      className="w-full rounded-full bg-gradient-to-t from-blue-500 to-purple-500 transition-all"
-                      style={{ height: `${heightPct}%` }}
-                    />
-                    <span className="text-[9px] text-slate-500">{label}</span>
-                  </div>
-                );
-              })}
-            </div>
+            <DailyActivityChart data={data.daily} />
           </div>
 
           {/* ---------- RÉPARTITION PAR MODÈLE ---------- */}
