@@ -537,41 +537,41 @@ export default function AdminPage() {
                         </linearGradient>
                       </defs>
 
-                      {(() => {
-                        const maxRq = Math.max(
-                          ...daily.map((d) => d.total_requests),
-                          1
-                        );
-                        const n = daily.length;
-                        const points = daily
-                          .map((d, i) => {
-                            const x = n === 1 ? 50 : (i / (n - 1)) * 100;
-                            const y =
-                              100 - (d.total_requests / maxRq) * 100 || 100;
-                            return `${x},${y}`;
-                          })
-                          .join(" ");
+{(() => {
+  const values = daily.map((d) => d.total_requests);
+  const maxValue = Math.max(...values, 1);
+  const n = daily.length;
 
-                        // zone sous la courbe
-                        const areaPoints = `0,100 ${points} 100,100`;
+  if (n === 0) return null;
 
-                        return (
-                          <>
-                            <polyline
-                              points={areaPoints}
-                              fill="url(#activityGradient)"
-                              opacity="0.45"
-                            />
-                            <polyline
-                              points={points}
-                              fill="none"
-                              stroke="url(#activityGradient)"
-                              strokeWidth={2}
-                              strokeLinecap="round"
-                            />
-                          </>
-                        );
-                      })()}
+  const points = daily
+    .map((d, i) => {
+      const x = n === 1 ? 50 : (i / (n - 1)) * 100;
+      const y = 100 - (d.total_requests / maxValue) * 100;
+      return `${x},${y}`;
+    })
+    .join(" ");
+
+  const areaPoints = `0,100 ${points} 100,100`;
+
+  return (
+    <>
+      <polyline
+        points={areaPoints}
+        fill="url(#activityGradient)"
+        opacity="0.35"
+      />
+      <polyline
+        points={points}
+        fill="none"
+        stroke="url(#activityGradient)"
+        strokeWidth={2.2}
+        strokeLinecap="round"
+      />
+    </>
+  );
+})()}
+
                     </svg>
                   </div>
                 )}
