@@ -23,6 +23,7 @@ export default function StructurePage() {
 
       setLoading(true);
       const result = await generateStructure(title);
+      console.log("STRUCTURE RESULT =>", result);
 
       const formatted = result.map((c: any) => ({
         id: crypto.randomUUID(),
