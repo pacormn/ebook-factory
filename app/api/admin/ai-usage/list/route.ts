@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
 
     const limit = Math.min(
-      Number(searchParams.get("limit")) || 20,
+      Number(searchParams.get("limit")) || 20000,
       100
     );
 
