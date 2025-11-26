@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import { useEbookStore } from "@/store/ebook-store";
 import { useRouter } from "next/navigation";
-import { generateStructure } from "@/app/actions/generateStructure";
+import { generateStructure } from "@/lib/generateStructure";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowRight, House, Sparkles, Loader2, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, House, Loader2, Plus, Trash2 } from "lucide-react";
 
 export default function StructurePage() {
   const router = useRouter();
@@ -15,13 +15,19 @@ export default function StructurePage() {
   const [loading, setLoading] = useState(false);
   const [localChapters, setLocalChapters] = useState(chapters);
 
-  // Auto génération
+  // Auto génération côté client
   useEffect(() => {
     async function load() {
-      if (!title) return router.push("/create/title");
-      if (chapters.length > 0) return; // déjà généré
+      if (!title) {
+        router.push("/create/title");
+        return;
+      }
+
+      // si déjà généré → ne pas regénérer
+      if (chapters.length > 0) return;
 
       setLoading(true);
+
       const result = await generateStructure(title);
       console.log("STRUCTURE RESULT =>", result);
 
@@ -32,11 +38,12 @@ export default function StructurePage() {
 
       setChapters(formatted);
       setLocalChapters(formatted);
+
       setLoading(false);
     }
 
     load();
-  }, []);
+  }, [title, chapters, router, setChapters]);
 
   function updateChapter(id: string, value: string) {
     setLocalChapters((prev) =>
@@ -70,7 +77,7 @@ export default function StructurePage() {
       {/* HEADER */}
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] md:w-[70%] px-6 py-3 glass-bar rounded-3xl navbar-pop shadow-xl">
         <div className="flex items-center justify-between">
-          {/* Logo */}
+          
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer">
               <div className="h-7 w-7 bg-blue-600 rounded-xl"></div>
@@ -78,17 +85,16 @@ export default function StructurePage() {
             </div>
           </Link>
 
-          {/* Retour */}
           <Link href="/">
             <button className="glass-bar px-3 py-2 rounded-xl flex items-center gap-2 text-sm">
               <House size={16} />
               <span className="hidden sm:inline">Retour à l'accueil</span>
             </button>
           </Link>
+
         </div>
       </div>
 
-      {/* ESPACE SOUS HEADER */}
       <div className="h-20" />
 
       <section className="max-w-3xl mx-auto text-center px-6 mt-14">
@@ -99,7 +105,7 @@ export default function StructurePage() {
         </h2>
 
         <p className="text-gray-600 dark:text-gray-300 mt-4 text-lg max-w-2xl mx-auto">
-          Voici les chapitres proposés pour ton ebook basé sur :<br />
+          Voici les chapitres proposés pour :<br />
           <span className="font-semibold text-blue-600 dark:text-blue-400">"{title}"</span>
         </p>
 
@@ -112,11 +118,12 @@ export default function StructurePage() {
           </div>
         ) : (
           <div className="mt-12 space-y-4 text-left">
-
+            
             {localChapters.map((chapter) => (
               <div key={chapter.id} className="flex items-center gap-3">
                 <input
-                  className="flex-1 px-5 py-4 rounded-2xl bg-white/70 dark:bg-gray-800/60 backdrop-blur-xl border border-gray-300 dark:border-gray-700 shadow-md text-lg"
+                  className="flex-1 px-5 py-4 rounded-2xl bg-white/70 dark:bg-gray-800/60 
+                             backdrop-blur-xl border border-gray-300 dark:border-gray-700 shadow-md text-lg"
                   value={chapter.title}
                   onChange={(e) => updateChapter(chapter.id, e.target.value)}
                 />
@@ -129,7 +136,8 @@ export default function StructurePage() {
 
             <Button
               onClick={addChapter}
-              className="w-full mt-4 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-6 py-4 text-lg rounded-2xl flex items-center gap-2 justify-center"
+              className="w-full mt-4 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 
+                         px-6 py-4 text-lg rounded-2xl flex items-center gap-2 justify-center"
             >
               <Plus size={18} /> Ajouter un chapitre
             </Button>
@@ -140,6 +148,7 @@ export default function StructurePage() {
             >
               Suivant <ArrowRight className="ml-2" />
             </Button>
+
           </div>
         )}
       </section>

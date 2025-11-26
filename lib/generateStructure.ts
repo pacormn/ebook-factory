@@ -6,8 +6,8 @@ export async function generateStructure(title: string) {
   });
 
   if (!res.ok) {
-    const errorText = await res.text();
-    console.error("Erreur API /generate-structure :", errorText);
+    const txt = await res.text();
+    console.error("Erreur API :", txt);
     return [];
   }
 
