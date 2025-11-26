@@ -53,7 +53,7 @@ Titre : "${title}"
     const msg = completion.choices[0].message;
 
     // Nouvelle extraction JSON
-    const raw = msg.content; // c'est une string JSON ici !
+    const raw = msg.content ?? "{}"; // fallback JSON vide
     console.log("RAW STRUCTURE:", raw);
 
     let chapters: any[] = [];
