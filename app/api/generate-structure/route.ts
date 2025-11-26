@@ -98,6 +98,7 @@ else if (Array.isArray(msg.content)) {
         console.error("[ai_usage insert error]", error);
       }
     }
+    console.log("Generated chapters:", chapters);
 
     return NextResponse.json({ chapters });
   } catch (e) {
