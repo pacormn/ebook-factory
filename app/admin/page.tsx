@@ -1,4 +1,3 @@
-// app/admin/page.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -13,34 +12,61 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+/* ============================
+   TYPES
+============================ */
+
+type Totals = {
+  total_tokens: number | null;
+  total_cost_usd: number | null;
+  total_requests: number | null;
+};
+
+type DailyPoint = {
+  day: string;
+  total_tokens: number;
+  total_cost_usd: number;
+  total_requests: number;
+};
+
+type LastRequest = {
+  id: string;
+  endpoint: string | null;
+  model: string | null;
+  total_tokens: number;
+  cost_usd: number;
+  created_at: string;
+};
+
+type Stats = {
+  avg_tokens_per_request: number;
+  avg_cost_per_request: number;
+  max_tokens: number;
+  min_tokens: number;
+  requests_today: number;
+  requests_yesterday: number;
+};
+
+type Forecast = {
+  monthly_cost_usd: number;
+};
+
 type SummaryResponse = {
-  totals: {
-    total_tokens: number | null;
-    total_cost_usd: number | null;
-    total_requests: number | null;
-  };
-  byModel: {
-    model: string;
-    total_tokens: number;
-    total_cost_usd: number;
-    total_requests: number;
-  }[];
-  daily: {
-    day: string;
-    total_tokens: number;
-    total_cost_usd: number;
-    total_requests: number;
-  }[];
+  totals: Totals;
+  daily: DailyPoint[];
+  lastRequests: LastRequest[];
+  stats: Stats;
+  forecast: Forecast;
 };
 
 type AiUsageRow = {
   id: string;
   created_at: string;
-  model: string;
-  endpoint: string;
+  model: string | null;
+  endpoint: string | null;
   total_tokens: number;
-  prompt_tokens: number;
-  completion_tokens: number;
+  prompt_tokens?: number | null;
+  completion_tokens?: number | null;
   cost_usd: number;
 };
 
@@ -61,6 +87,10 @@ type NotificationItem = {
   subtitle?: string;
 };
 
+/* ============================
+   HELPERS
+============================ */
+
 function formatDateTime(dateStr: string) {
   const d = new Date(dateStr);
   if (Number.isNaN(d.getTime())) return dateStr;
@@ -79,13 +109,16 @@ function formatCost(cost: number) {
 
 function formatTokens(tokens: number) {
   if (!tokens) return "0";
-  // si < 1000 → valeur brute ; sinon en milliers
   if (tokens < 1000) return `${tokens} tokens`;
   return `${(tokens / 1000).toFixed(1)}k tokens`;
 }
 
+/* ============================
+   COMPOSANT PRINCIPAL
+============================ */
+
 export default function AdminPage() {
-  const [data, setData] = useState<SummaryResponse | null>(null);
+  const [summary, setSummary] = useState<SummaryResponse | null>(null);
   const [loadingSummary, setLoadingSummary] = useState(true);
   const [errorSummary, setErrorSummary] = useState<string | null>(null);
 
@@ -101,17 +134,22 @@ export default function AdminPage() {
   const [sortField, setSortField] = useState<SortField>("created_at");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
-  // ============================
-  // 1) Chargement du résumé
-  // ============================
+  const expensiveThresholdTokens = 800;
+  const expensiveThresholdCost = 0.001;
+
+  /* ============================
+     1) Chargement du résumé
+  ============================ */
+
   useEffect(() => {
     const fetchSummary = async () => {
       try {
         const res = await fetch("/api/admin/ai-usage/summary");
         if (!res.ok) throw new Error("API ERROR");
         const json = (await res.json()) as SummaryResponse;
-        setData(json);
+        setSummary(json);
       } catch (e: any) {
+        console.error("[admin summary fetch]", e);
         setErrorSummary(e?.message || "Erreur de chargement");
       } finally {
         setLoadingSummary(false);
@@ -121,13 +159,18 @@ export default function AdminPage() {
     fetchSummary();
   }, []);
 
-  const totals = data?.totals;
+  const totals = summary?.totals;
+  const daily = summary?.daily ?? [];
+  const lastRequestsSummary = summary?.lastRequests ?? [];
+  const stats = summary?.stats;
+  const forecast = summary?.forecast;
 
-  // ============================
-  // 2) Live : dernière requête
-  // ============================
+  /* ============================
+     2) Live : dernière requête
+  ============================ */
+
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
+    let interval: ReturnType<typeof setInterval> | null = null;
     let isMounted = true;
 
     const fetchLatest = async () => {
@@ -140,16 +183,17 @@ export default function AdminPage() {
         if (json.latest) {
           setLatest(json.latest);
 
-          // première fois : on enregistre l'id sans créer de notif
           if (!lastSeenId) {
+            // Première initialisation : on ne notifie pas
             setLastSeenId(json.latest.id);
           } else if (json.latest.id !== lastSeenId) {
-            // nouvelle requête détectée => notif
+            // Nouvelle requête → notif
             setLastSeenId(json.latest.id);
-            const msg = `Nouvelle requête : ${json.latest.endpoint}`;
-            const subtitle = `${json.latest.total_tokens} tokens • ${json.latest.cost_usd.toFixed(
-              5
-            )} $`;
+
+            const msg = `Nouvelle requête : ${json.latest.endpoint || "inconnu"}`;
+            const subtitle = `${formatTokens(
+              json.latest.total_tokens
+            )} • ${formatCost(json.latest.cost_usd)}`;
 
             const notifId = json.latest.id;
             setNotifications((prev) => [
@@ -157,21 +201,19 @@ export default function AdminPage() {
               { id: notifId, message: msg, subtitle },
             ]);
 
-            // auto-dismiss après 3s
             setTimeout(() => {
               setNotifications((prev) =>
                 prev.filter((n) => n.id !== notifId)
               );
-            }, 6000);
+            }, 5000);
           }
         }
       } catch (e) {
-        // on log mais on ne casse pas la page
         console.error("[admin latest fetch]", e);
       }
     };
 
-    // première récupération immédiate
+    // première récupération
     fetchLatest();
     // puis toutes les 3 secondes
     interval = setInterval(fetchLatest, 3000);
@@ -180,17 +222,21 @@ export default function AdminPage() {
       isMounted = false;
       if (interval) clearInterval(interval);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastSeenId]);
 
   const liveStatusText = useMemo(() => {
     if (!latest) return "En attente de la première requête...";
-    return `Dernière requête : ${latest.endpoint} • ${latest.total_tokens} tokens`;
+    return `Dernière requête : ${latest.endpoint ?? "inconnu"} • ${
+      latest.total_tokens
+    } tokens`;
   }, [latest]);
 
-  // ============================
-  // 3) Liste des requêtes + tri
-  // ============================
+  const unreadCount = notifications.length;
+
+  /* ============================
+     3) Liste des requêtes + tri
+  ============================ */
+
   async function fetchRows(field: SortField, dir: SortDir) {
     setLoadingRows(true);
     setErrorRows(null);
@@ -221,21 +267,54 @@ export default function AdminPage() {
   const toggleSort = (field: SortField) => {
     setSortField((prevField) => {
       if (prevField === field) {
-        // on inverse juste le sens
         setSortDir((prevDir) => (prevDir === "asc" ? "desc" : "asc"));
         return prevField;
       } else {
-        // nouveau champ => desc par défaut
         setSortDir("desc");
         return field;
       }
     });
   };
 
-  const expensiveThresholdTokens = 800;
-  const expensiveThresholdCost = 0.001;
+  /* ============================
+     4) Agrégations pour endpoint
+  ============================ */
 
-  const unreadCount = notifications.length;
+  const endpointDistribution = useMemo(() => {
+    if (!lastRequestsSummary || lastRequestsSummary.length === 0) return [];
+
+    const map = new Map<
+      string,
+      { total_cost: number; total_tokens: number; total_requests: number }
+    >();
+
+    lastRequestsSummary.forEach((req) => {
+      const ep = req.endpoint ?? "inconnu";
+      const base =
+        map.get(ep) || {
+          total_cost: 0,
+          total_tokens: 0,
+          total_requests: 0,
+        };
+
+      base.total_cost += req.cost_usd;
+      base.total_tokens += req.total_tokens;
+      base.total_requests += 1;
+
+      map.set(ep, base);
+    });
+
+    return Array.from(map.entries()).map(([endpoint, value]) => ({
+      endpoint,
+      ...value,
+    }));
+  }, [lastRequestsSummary]);
+
+  const totalRequestsForPct = totals?.total_requests || 1;
+
+  /* ============================
+     RENDER
+  ============================ */
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-50">
@@ -265,7 +344,7 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Widget LIVE compact en haut */}
+        {/* LIVE widget (desktop) */}
         <div className="hidden md:flex items-center gap-2 rounded-full border border-slate-800 bg-slate-950/70 px-3 py-1.5 text-xs">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-70" />
@@ -273,14 +352,14 @@ export default function AdminPage() {
           </span>
           <span className="text-slate-300">LIVE</span>
           <span className="text-slate-500">&mdash;</span>
-          <span className="text-slate-400 truncate max-w-[210px]">
+          <span className="text-slate-400 truncate max-w-[220px]">
             {liveStatusText}
           </span>
         </div>
       </div>
 
       <section className="max-w-6xl mx-auto px-4 pb-20 pt-6 space-y-8">
-        {/* WIDGET LIVE en version carte pour mobile */}
+        {/* LIVE widget (mobile) */}
         <div className="mt-4 md:hidden rounded-2xl border border-slate-800 bg-slate-950/70 p-4 flex items-start gap-3">
           <div className="mt-1">
             <span className="relative flex h-2.5 w-2.5">
@@ -295,7 +374,7 @@ export default function AdminPage() {
             {latest ? (
               <>
                 <p className="text-sm text-slate-100">
-                  {latest.endpoint} — {latest.total_tokens} tokens
+                  {latest.endpoint ?? "inconnu"} — {latest.total_tokens} tokens
                 </p>
                 <p className="text-xs text-slate-500">
                   {formatDateTime(latest.created_at)} •{" "}
@@ -310,7 +389,7 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Résumé global */}
+        {/* RÉSUMÉ GLOBAL */}
         {loadingSummary && (
           <div className="flex items-center justify-center mt-10">
             <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
@@ -323,10 +402,10 @@ export default function AdminPage() {
           </p>
         )}
 
-        {!loadingSummary && !errorSummary && data && (
+        {!loadingSummary && !errorSummary && summary && (
           <>
             {/* CARDS TOP */}
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-4">
               {/* Requêtes totales */}
               <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
                 <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
@@ -346,16 +425,17 @@ export default function AdminPage() {
                 </p>
                 <div className="mt-2 flex items-baseline gap-2">
                   <span className="text-2xl font-semibold">
-                    {/* si très petit => en tokens, sinon en milliers */}
                     {(totals?.total_tokens ?? 0) < 1000
-                      ? `${totals?.total_tokens ?? 0}`
-                      : `${((totals?.total_tokens ?? 0) / 1000).toFixed(1)}k`}
+                      ? totals?.total_tokens ?? 0
+                      : ((totals?.total_tokens ?? 0) / 1000).toFixed(1)}
                   </span>
-                  <span className="text-xs text-slate-500">tokens</span>
+                  <span className="text-xs text-slate-500">
+                    {(totals?.total_tokens ?? 0) < 1000 ? "tokens" : "k tokens"}
+                  </span>
                 </div>
               </div>
 
-              {/* Coût total estimé */}
+              {/* Coût total */}
               <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
                 <p className="text-xs uppercase tracking-[0.16em] text-slate-500 flex items-center gap-1">
                   Coût total estimé
@@ -368,137 +448,183 @@ export default function AdminPage() {
                   <span className="text-xs text-slate-500">USD</span>
                 </div>
               </div>
+
+              {/* Prévision mensuelle */}
+              <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
+                <p className="text-xs uppercase tracking-[0.16em] text-slate-500 flex items-center gap-1">
+                  Prévision fin de mois
+                </p>
+                <div className="mt-2 flex items-baseline gap-2">
+                  <span className="text-2xl font-semibold">
+                    {(forecast?.monthly_cost_usd ?? 0).toFixed(3)}
+                  </span>
+                  <span className="text-xs text-slate-500">USD</span>
+                </div>
+                <p className="mt-1 text-[11px] text-slate-500">
+                  Basée sur l&apos;activité récente.
+                </p>
+              </div>
             </div>
 
-            {/* GRAPH + LISTES */}
+            {/* STATS SECONDAIRES */}
+            {stats && (
+              <div className="grid gap-4 sm:grid-cols-3 mt-4 text-[11px] text-slate-400">
+                <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+                  <p className="uppercase tracking-[0.16em] text-slate-500 mb-1">
+                    Moyenne / requête
+                  </p>
+                  <p>
+                    {stats.avg_tokens_per_request.toFixed(1)} tokens •{" "}
+                    {stats.avg_cost_per_request.toFixed(5)} $
+                  </p>
+                </div>
+                <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+                  <p className="uppercase tracking-[0.16em] text-slate-500 mb-1">
+                    Min / Max tokens
+                  </p>
+                  <p>
+                    {stats.min_tokens} &rarr; {stats.max_tokens}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+                  <p className="uppercase tracking-[0.16em] text-slate-500 mb-1">
+                    Volume (hier → aujourd&apos;hui)
+                  </p>
+                  <p>
+                    {stats.requests_yesterday} &rarr; {stats.requests_today}{" "}
+                    requêtes
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* GRAPH + RÉPARTITION ENDPOINT */}
             <div className="grid gap-6 lg:grid-cols-2 mt-6">
-              {/* ACTIVITÉ QUOTIDIENNE */}
-              {/* daily */}
-{/* === Graphique d’activité quotidienne === */}
-<div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
-  <p className="text-xs uppercase tracking-[0.16em] text-slate-500 mb-4">
-    Activité quotidienne
-    <span className="text-[10px] text-slate-500"> (30j)</span>
-  </p>
+              {/* Graphique activité quotidienne */}
+              <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
+                <p className="text-xs uppercase tracking-[0.16em] text-slate-500 mb-4">
+                  Activité quotidienne
+                  <span className="text-[10px] text-slate-500"> (30j)</span>
+                </p>
 
-  {!data?.daily?.length && (
-    <p className="text-xs text-slate-500">Pas de données.</p>
-  )}
+                {daily.length === 0 && (
+                  <p className="text-xs text-slate-500">
+                    Pas encore de trafic enregistré.
+                  </p>
+                )}
 
-  {data?.daily?.length > 0 && (
-    <div className="relative h-40 w-full">
-      <svg className="absolute inset-0 w-full h-full overflow-visible">
-        <defs>
-          <linearGradient id="activityGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.1" />
-          </linearGradient>
-        </defs>
+                {daily.length > 0 && (
+                  <div className="relative h-40 w-full">
+                    <svg className="absolute inset-0 w-full h-full overflow-visible">
+                      <defs>
+                        <linearGradient
+                          id="activityGradient"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="#60A5FA"
+                            stopOpacity="0.9"
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="#8B5CF6"
+                            stopOpacity="0.1"
+                          />
+                        </linearGradient>
+                      </defs>
 
-        {(() => {
-          const maxRq = Math.max(...data.daily.map((d) => d.total_requests), 1);
+                      {(() => {
+                        const maxRq = Math.max(
+                          ...daily.map((d) => d.total_requests),
+                          1
+                        );
+                        const n = daily.length;
+                        const points = daily
+                          .map((d, i) => {
+                            const x = n === 1 ? 50 : (i / (n - 1)) * 100;
+                            const y =
+                              100 - (d.total_requests / maxRq) * 100 || 100;
+                            return `${x},${y}`;
+                          })
+                          .join(" ");
 
-          const points = data.daily
-            .map((d, i) => {
-              const x = (i / 29) * 100;
-              const y = 100 - (d.total_requests / maxRq) * 100;
-              return `${x},${y}`;
-            })
-            .join(" ");
+                        // zone sous la courbe
+                        const areaPoints = `0,100 ${points} 100,100`;
 
-          return (
-            <>
-              {/* zone dégradée */}
-              <polyline
-                points={`0,100 ${points} 100,100`}
-                fill="url(#activityGradient)"
-                opacity="0.4"
-              />
-
-              {/* ligne */}
-              <polyline
-                points={points}
-                fill="none"
-                stroke="url(#activityGradient)"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </>
-          );
-        })()}
-      </svg>
-    </div>
-  )}
-</div>
-
-
-{/* === Répartition par endpoint === */}
-<div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
-  <div className="flex items-center justify-between mb-4">
-    <div className="flex items-center gap-2">
-      <BarChart2 className="h-4 w-4 text-blue-400" />
-      <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
-        Répartition par endpoint
-      </p>
-    </div>
-  </div>
-
-  {data.lastRequests.length === 0 && (
-    <p className="text-xs text-slate-500">Aucune donnée encore.</p>
-  )}
-
-  {data.lastRequests.length > 0 && (
-    <div className="space-y-3">
-      {(() => {
-        // regroupement des endpoints
-        const map = new Map<
-          string,
-          { total_cost: number; total_tokens: number; total_requests: number }
-        >();
-
-        data.lastRequests.forEach((req) => {
-          const ep = req.endpoint ?? "inconnu";
-          const base =
-            map.get(ep) || {
-              total_cost: 0,
-              total_tokens: 0,
-              total_requests: 0,
-            };
-
-          base.total_cost += req.cost_usd;
-          base.total_tokens += req.total_tokens;
-          base.total_requests += 1;
-
-          map.set(ep, base);
-        });
-
-        const totalReq = data.totals.total_requests || 1;
-
-        return [...map.entries()].map(([ep, stats]) => {
-          const pct = Math.round((stats.total_requests / totalReq) * 100);
-
-          return (
-            <div key={ep} className="space-y-1">
-              <div className="flex justify-between text-xs">
-                <span className="font-medium">{ep}</span>
-                <span className="text-slate-400">
-                  {stats.total_requests} req —
-                  {(stats.total_cost || 0).toFixed(4)} $
-                </span>
+                        return (
+                          <>
+                            <polyline
+                              points={areaPoints}
+                              fill="url(#activityGradient)"
+                              opacity="0.45"
+                            />
+                            <polyline
+                              points={points}
+                              fill="none"
+                              stroke="url(#activityGradient)"
+                              strokeWidth={2}
+                              strokeLinecap="round"
+                            />
+                          </>
+                        );
+                      })()}
+                    </svg>
+                  </div>
+                )}
               </div>
-              <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
-                  style={{ width: `${pct}%` }}
-                />
+
+              {/* Répartition par endpoint */}
+              <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <BarChart2 className="h-4 w-4 text-blue-400" />
+                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+                      Répartition par endpoint
+                    </p>
+                  </div>
+                </div>
+
+                {endpointDistribution.length === 0 && (
+                  <p className="text-xs text-slate-500">
+                    Aucune donnée encore. Génère au moins un titre 😊
+                  </p>
+                )}
+
+                {endpointDistribution.length > 0 && (
+                  <div className="space-y-3">
+                    {endpointDistribution.map((ep) => {
+                      const pct = Math.round(
+                        (ep.total_requests / totalRequestsForPct) * 100
+                      );
+
+                      return (
+                        <div key={ep.endpoint} className="space-y-1">
+                          <div className="flex justify-between text-xs">
+                            <span className="font-medium">
+                              {ep.endpoint ?? "inconnu"}
+                            </span>
+                            <span className="text-slate-400">
+                              {ep.total_requests} req —{" "}
+                              {(ep.total_cost || 0).toFixed(4)} $
+                            </span>
+                          </div>
+                          <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
-          );
-        });
-      })()}
-    </div>
-  )}
-</div>
 
             {/* LISTE DES DERNIÈRES REQUÊTES */}
             <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-950/70 p-5">
@@ -526,7 +652,7 @@ export default function AdminPage() {
 
               {!loadingRows && !errorRows && rows.length === 0 && (
                 <p className="text-xs text-slate-500">
-                  Aucune requête enregistrée pour l’instant.
+                  Aucune requête enregistrée pour l&apos;instant.
                 </p>
               )}
 
@@ -544,7 +670,15 @@ export default function AdminPage() {
                             <ArrowUpDown className="h-3 w-3" />
                           </button>
                         </th>
-                        <th className="py-2 px-2 text-left">Endpoint</th>
+                        <th className="py-2 px-2 text-left">
+                          <button
+                            onClick={() => toggleSort("endpoint")}
+                            className="inline-flex items-center gap-1 hover:text-slate-300"
+                          >
+                            Endpoint
+                            <ArrowUpDown className="h-3 w-3" />
+                          </button>
+                        </th>
                         <th className="py-2 px-2 text-right">
                           <button
                             onClick={() => toggleSort("total_tokens")}
@@ -575,7 +709,7 @@ export default function AdminPage() {
                           <tr
                             key={r.id}
                             className={`border-b border-slate-900/70 hover:bg-slate-900/70 transition-colors ${
-                              isExpensive ? "expensive-row" : ""
+                              isExpensive ? "animate-pulse" : ""
                             }`}
                           >
                             <td className="py-2.5 px-2 whitespace-nowrap">
@@ -586,13 +720,8 @@ export default function AdminPage() {
                             <td className="py-2.5 px-2">
                               <span className="inline-flex items-center gap-2">
                                 <span className="px-2 py-0.5 rounded-full bg-slate-900/80 border border-slate-700/70 text-[10px] uppercase tracking-[0.14em] text-slate-300">
-                                  {r.endpoint}
+                                  {r.endpoint ?? "inconnu"}
                                 </span>
-                                {isExpensive && (
-                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-rose-500/10 text-[10px] text-rose-300 border border-rose-500/40 animate-pulse-soft">
-                                    🔥 chère
-                                  </span>
-                                )}
                               </span>
                             </td>
                             <td className="py-2.5 px-2 text-right">
@@ -617,13 +746,13 @@ export default function AdminPage() {
         )}
       </section>
 
-      {/* NOTIFICATIONS type playground, en bas à droite */}
+      {/* NOTIFICATIONS type playground */}
       {notifications.length > 0 && (
         <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50 max-w-xs">
           {notifications.map((n) => (
             <div
               key={n.id}
-              className="glass-notif text-xs px-3 py-2 rounded-xl shadow-lg border border-slate-700/60 bg-slate-900/90 text-slate-50 animate-slide-in-up"
+              className="text-xs px-3 py-2 rounded-xl shadow-lg border border-slate-700/60 bg-slate-900/95 text-slate-50"
             >
               <p className="font-medium flex items-center gap-1">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
