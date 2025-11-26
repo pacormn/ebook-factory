@@ -5,8 +5,9 @@ export async function generateStructure(title: string) {
     body: JSON.stringify({ title }),
   });
 
-  console.log("RESPONSE STATUS:", res.status);
-
   const data = await res.json();
-  return data.chapters ?? []; // ← seul endroit important
+
+  console.log("DATA FROM API:", data);
+
+  return Array.isArray(data.chapters) ? data.chapters : [];
 }
