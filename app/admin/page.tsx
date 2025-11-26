@@ -92,113 +92,113 @@ function GraphActivityPro({ data }: { data: { day: string; total_requests: numbe
   const [hover, setHover] = useState<number | null>(null);
 
   const n = data.length;
+
+  // max ajusté (évite les énormes pics visuels)
   const maxValue = Math.max(...data.map((d) => d.total_requests), 1);
 
-  // Convertir en points SVG normalisés
+  // padding top/bottom (évite le collé au bord)
+  const padY = 8;
+
   const points = data.map((d, i) => {
-    const x = n === 1 ? 50 : (i / (n - 1)) * 100;
-    const y = 100 - (d.total_requests / maxValue) * 100;
+    const x = (i / (n - 1)) * 100;
+    const y = 100 - ((d.total_requests / maxValue) * (100 - padY * 2) + padY);
     return { x, y, raw: d.total_requests, date: d.day };
   });
 
-  // Spline lissée (Catmull-Rom)
-  function spline(pts: any[], tension = 0.5) {
-    let d = "";
-    for (let i = 0; i < pts.length; i++) {
-      const p0 = pts[i - 1] || pts[i];
-      const p1 = pts[i];
-      const p2 = pts[i + 1] || pts[i];
-      const p3 = pts[i + 2] || p2;
-
-      const x1 = p1.x;
-      const y1 = p1.y;
-
-      const cp1x = x1 + ((p2.x - p0.x) * tension) / 6;
-      const cp1y = y1 + ((p2.y - p0.y) * tension) / 6;
-
-      const cp2x = p2.x - ((p3.x - p1.x) * tension) / 6;
-      const cp2y = p2.y - ((p3.y - p1.y) * tension) / 6;
-
-      if (i === 0) {
-        d += `M ${x1},${y1} `;
-      }
-
-      if (i < pts.length - 1) {
-        d += `C ${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y} `;
-      }
+  // Spline lissée PRO
+  const buildSpline = (pts: any[]) => {
+    let path = `M ${pts[0].x},${pts[0].y}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i];
+      const p1 = pts[i + 1];
+      const cx = (p0.x + p1.x) / 2;
+      const cy = (p0.y + p1.y) / 2;
+      path += ` Q ${p0.x},${p0.y} ${cx},${cy}`;
     }
-    return d;
-  }
+    path += ` T ${pts[pts.length - 1].x},${pts[pts.length - 1].y}`;
+    return path;
+  };
 
-  const path = spline(points);
+  const path = buildSpline(points);
 
   return (
-    <div className="relative h-48 w-full">
+    <div className="relative h-48 w-full select-none">
       <svg className="absolute inset-0 w-full h-full overflow-visible">
         <defs>
-          <linearGradient id="gradLine" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#60A5FA" stopOpacity="1" />
-            <stop offset="100%" stopColor="#8B5CF6" stopOpacity="1" />
+          {/* Ligne */}
+          <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#6EE7FF" />
+            <stop offset="100%" stopColor="#A78BFA" />
           </linearGradient>
 
-          <linearGradient id="gradArea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.30" />
-            <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.05" />
-          </linearGradient>
-
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
+          {/* Ombre glow */}
+          <filter id="shadowGlow">
+            <feDropShadow dx="0" dy="3" stdDeviation="6" floodColor="#6EE7FF55" />
           </filter>
+
+          {/* Fond léger */}
+          <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#6EE7FF55" />
+            <stop offset="100%" stopColor="#A78BFA00" />
+          </linearGradient>
         </defs>
 
-        {/* Zone (surface) */}
+        {/* Zone dégradée */}
         <path
           d={`${path} L 100,100 L 0,100 Z`}
-          fill="url(#gradArea)"
-          opacity="0.3"
+          fill="url(#areaGrad)"
+          opacity="0.25"
         />
 
-        {/* Ligne */}
+        {/* Ligne principale */}
         <path
           d={path}
           fill="none"
-          stroke="url(#gradLine)"
-          strokeWidth="2.4"
+          stroke="url(#lineGrad)"
+          strokeWidth="2.5"
           strokeLinecap="round"
-          filter="url(#glow)"
+          filter="url(#shadowGlow)"
         />
 
-        {/* Points interactifs */}
+        {/* Axe X */}
+        <line
+          x1="0"
+          y1="100"
+          x2="100"
+          y2="100"
+          stroke="#334155"
+          strokeWidth="1"
+          opacity="0.4"
+        />
+
+        {/* Points très discrets */}
         {points.map((p, i) => (
           <circle
             key={i}
             cx={p.x}
             cy={p.y}
-            r={hover === i ? 3.5 : 2}
-            fill={hover === i ? "#93C5FD" : "#60A5FA"}
-            className="cursor-pointer transition-all"
+            r={hover === i ? 3 : 1.5}
+            fill={hover === i ? "#ffffff" : "#93C5FD"}
+            opacity={hover === i ? 1 : 0.5}
             onMouseEnter={() => setHover(i)}
             onMouseLeave={() => setHover(null)}
+            className="transition-all"
           />
         ))}
       </svg>
 
-      {/* Tooltip */}
+      {/* Tooltip PRO */}
       {hover !== null && (
         <div
-          className="absolute px-2 py-1 text-[10px] bg-slate-900/90 border border-slate-700 rounded-lg pointer-events-none whitespace-nowrap"
+          className="absolute px-2 py-1 text-[10px] bg-slate-900/95 border border-slate-700 rounded-lg pointer-events-none shadow-xl"
           style={{
             left: `${points[hover].x}%`,
             top: `${points[hover].y}%`,
-            transform: "translate(-50%, -120%)",
+            transform: "translate(-50%, -140%)",
           }}
         >
-          <p className="text-slate-300">
-            {points[hover].raw} req
+          <p className="text-slate-100 font-medium">
+            {points[hover].raw} requêtes
           </p>
           <p className="text-slate-500 text-[9px]">
             {new Date(points[hover].date).toLocaleDateString("fr-FR")}
@@ -208,6 +208,7 @@ function GraphActivityPro({ data }: { data: { day: string; total_requests: numbe
     </div>
   );
 }
+
 
 
 
