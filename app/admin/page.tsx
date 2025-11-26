@@ -162,7 +162,7 @@ export default function AdminPage() {
               setNotifications((prev) =>
                 prev.filter((n) => n.id !== notifId)
               );
-            }, 3000);
+            }, 6000);
           }
         }
       } catch (e) {
@@ -374,40 +374,124 @@ export default function AdminPage() {
             <div className="grid gap-6 lg:grid-cols-2 mt-6">
               {/* ACTIVITÉ QUOTIDIENNE */}
               {/* daily */}
+{/* === Graphique d’activité quotidienne === */}
 <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
-  <p className="text-xs uppercase tracking-[0.16em] text-slate-500 mb-4 flex items-center gap-2">
+  <p className="text-xs uppercase tracking-[0.16em] text-slate-500 mb-4">
     Activité quotidienne
-    <span className="text-[10px] text-slate-500">(30 derniers jours)</span>
+    <span className="text-[10px] text-slate-500"> (30j)</span>
   </p>
 
-  {(!data?.daily || data.daily.length === 0) && (
-    <p className="text-xs text-slate-500">Pas encore de trafic enregistré.</p>
+  {!data?.daily?.length && (
+    <p className="text-xs text-slate-500">Pas de données.</p>
   )}
 
-  {data?.daily && data.daily.length > 0 && (
-    <div className="flex items-end gap-1 h-40">
-      {(() => {
-        // SAFE: éviter Math.max(...[])
-        const values = data.daily.map((d) => d.total_requests || 0);
-        const maxReq = values.length > 0 ? Math.max(...values) : 1;
+  {data?.daily?.length > 0 && (
+    <div className="relative h-40 w-full">
+      <svg className="absolute inset-0 w-full h-full overflow-visible">
+        <defs>
+          <linearGradient id="activityGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.1" />
+          </linearGradient>
+        </defs>
 
-        return data.daily.map((d) => {
-          const pct = d.total_requests / maxReq;
-          const height = Math.max(6, pct * 100);
+        {(() => {
+          const maxRq = Math.max(...data.daily.map((d) => d.total_requests), 1);
 
-          const dateObj = new Date(d.day);
-          const label = `${dateObj.getDate()}/${dateObj.getMonth() + 1}`;
+          const points = data.daily
+            .map((d, i) => {
+              const x = (i / 29) * 100;
+              const y = 100 - (d.total_requests / maxRq) * 100;
+              return `${x},${y}`;
+            })
+            .join(" ");
 
           return (
-            <div
-              key={d.day}
-              className="flex-1 flex flex-col items-center gap-1"
-            >
-              <div
-                className="w-full rounded-full bg-gradient-to-t from-blue-500 to-purple-500"
-                style={{ height: `${height}%` }}
+            <>
+              {/* zone dégradée */}
+              <polyline
+                points={`0,100 ${points} 100,100`}
+                fill="url(#activityGradient)"
+                opacity="0.4"
               />
-              <span className="text-[9px] text-slate-500">{label}</span>
+
+              {/* ligne */}
+              <polyline
+                points={points}
+                fill="none"
+                stroke="url(#activityGradient)"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </>
+          );
+        })()}
+      </svg>
+    </div>
+  )}
+</div>
+
+
+{/* === Répartition par endpoint === */}
+<div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
+  <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center gap-2">
+      <BarChart2 className="h-4 w-4 text-blue-400" />
+      <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+        Répartition par endpoint
+      </p>
+    </div>
+  </div>
+
+  {data.lastRequests.length === 0 && (
+    <p className="text-xs text-slate-500">Aucune donnée encore.</p>
+  )}
+
+  {data.lastRequests.length > 0 && (
+    <div className="space-y-3">
+      {(() => {
+        // regroupement des endpoints
+        const map = new Map<
+          string,
+          { total_cost: number; total_tokens: number; total_requests: number }
+        >();
+
+        data.lastRequests.forEach((req) => {
+          const ep = req.endpoint ?? "inconnu";
+          const base =
+            map.get(ep) || {
+              total_cost: 0,
+              total_tokens: 0,
+              total_requests: 0,
+            };
+
+          base.total_cost += req.cost_usd;
+          base.total_tokens += req.total_tokens;
+          base.total_requests += 1;
+
+          map.set(ep, base);
+        });
+
+        const totalReq = data.totals.total_requests || 1;
+
+        return [...map.entries()].map(([ep, stats]) => {
+          const pct = Math.round((stats.total_requests / totalReq) * 100);
+
+          return (
+            <div key={ep} className="space-y-1">
+              <div className="flex justify-between text-xs">
+                <span className="font-medium">{ep}</span>
+                <span className="text-slate-400">
+                  {stats.total_requests} req —
+                  {(stats.total_cost || 0).toFixed(4)} $
+                </span>
+              </div>
+              <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
             </div>
           );
         });
@@ -415,54 +499,6 @@ export default function AdminPage() {
     </div>
   )}
 </div>
-
-              {/* RÉPARTITION PAR MODÈLE */}
-              <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <BarChart2 className="h-4 w-4 text-blue-400" />
-                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
-                      Répartition par modèle
-                    </p>
-                  </div>
-                </div>
-
-                {data.byModel.length === 0 && (
-                  <p className="text-xs text-slate-500">
-                    Aucune donnée encore. Génère au moins un titre 😊
-                  </p>
-                )}
-
-                {data.byModel.length > 0 && (
-                  <div className="space-y-3">
-                    {data.byModel.map((m) => {
-                      const totalReq = totals?.total_requests ?? 1;
-                      const pct = Math.round(
-                        ((m.total_requests || 0) / totalReq) * 100
-                      );
-
-                      return (
-                        <div key={m.model} className="space-y-1">
-                          <div className="flex justify-between text-xs">
-                            <span className="font-medium">{m.model}</span>
-                            <span className="text-slate-400">
-                              {m.total_requests} req —{" "}
-                              {(m.total_cost_usd ?? 0).toFixed(4)} $
-                            </span>
-                          </div>
-                          <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
-                            <div
-                              className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
-                              style={{ width: `${pct}%` }}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </div>
 
             {/* LISTE DES DERNIÈRES REQUÊTES */}
             <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-950/70 p-5">
