@@ -87,6 +87,131 @@ type NotificationItem = {
   subtitle?: string;
 };
 
+
+function GraphActivityPro({ data }: { data: { day: string; total_requests: number }[] }) {
+  const [hover, setHover] = useState<number | null>(null);
+
+  const n = data.length;
+  const maxValue = Math.max(...data.map((d) => d.total_requests), 1);
+
+  // Convertir en points SVG normalisés
+  const points = data.map((d, i) => {
+    const x = n === 1 ? 50 : (i / (n - 1)) * 100;
+    const y = 100 - (d.total_requests / maxValue) * 100;
+    return { x, y, raw: d.total_requests, date: d.day };
+  });
+
+  // Spline lissée (Catmull-Rom)
+  function spline(pts: any[], tension = 0.5) {
+    let d = "";
+    for (let i = 0; i < pts.length; i++) {
+      const p0 = pts[i - 1] || pts[i];
+      const p1 = pts[i];
+      const p2 = pts[i + 1] || pts[i];
+      const p3 = pts[i + 2] || p2;
+
+      const x1 = p1.x;
+      const y1 = p1.y;
+
+      const cp1x = x1 + ((p2.x - p0.x) * tension) / 6;
+      const cp1y = y1 + ((p2.y - p0.y) * tension) / 6;
+
+      const cp2x = p2.x - ((p3.x - p1.x) * tension) / 6;
+      const cp2y = p2.y - ((p3.y - p1.y) * tension) / 6;
+
+      if (i === 0) {
+        d += `M ${x1},${y1} `;
+      }
+
+      if (i < pts.length - 1) {
+        d += `C ${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y} `;
+      }
+    }
+    return d;
+  }
+
+  const path = spline(points);
+
+  return (
+    <div className="relative h-48 w-full">
+      <svg className="absolute inset-0 w-full h-full overflow-visible">
+        <defs>
+          <linearGradient id="gradLine" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#60A5FA" stopOpacity="1" />
+            <stop offset="100%" stopColor="#8B5CF6" stopOpacity="1" />
+          </linearGradient>
+
+          <linearGradient id="gradArea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.30" />
+            <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.05" />
+          </linearGradient>
+
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* Zone (surface) */}
+        <path
+          d={`${path} L 100,100 L 0,100 Z`}
+          fill="url(#gradArea)"
+          opacity="0.3"
+        />
+
+        {/* Ligne */}
+        <path
+          d={path}
+          fill="none"
+          stroke="url(#gradLine)"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          filter="url(#glow)"
+        />
+
+        {/* Points interactifs */}
+        {points.map((p, i) => (
+          <circle
+            key={i}
+            cx={p.x}
+            cy={p.y}
+            r={hover === i ? 3.5 : 2}
+            fill={hover === i ? "#93C5FD" : "#60A5FA"}
+            className="cursor-pointer transition-all"
+            onMouseEnter={() => setHover(i)}
+            onMouseLeave={() => setHover(null)}
+          />
+        ))}
+      </svg>
+
+      {/* Tooltip */}
+      {hover !== null && (
+        <div
+          className="absolute px-2 py-1 text-[10px] bg-slate-900/90 border border-slate-700 rounded-lg pointer-events-none whitespace-nowrap"
+          style={{
+            left: `${points[hover].x}%`,
+            top: `${points[hover].y}%`,
+            transform: "translate(-50%, -120%)",
+          }}
+        >
+          <p className="text-slate-300">
+            {points[hover].raw} req
+          </p>
+          <p className="text-slate-500 text-[9px]">
+            {new Date(points[hover].date).toLocaleDateString("fr-FR")}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+
+
 /* ============================
    HELPERS
 ============================ */
@@ -500,82 +625,20 @@ export default function AdminPage() {
 
             {/* GRAPH + RÉPARTITION ENDPOINT */}
             <div className="grid gap-6 lg:grid-cols-2 mt-6">
-              {/* Graphique activité quotidienne */}
-              <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
-                <p className="text-xs uppercase tracking-[0.16em] text-slate-500 mb-4">
-                  Activité quotidienne
-                  <span className="text-[10px] text-slate-500"> (30j)</span>
-                </p>
+{/* === Graphique d’activité quotidienne — Version PRO Max === */}
+<div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
+  <p className="text-xs uppercase tracking-[0.16em] text-slate-500 mb-4">
+    Activité quotidienne
+    <span className="text-[10px] text-slate-500"> (30j)</span>
+  </p>
 
-                {daily.length === 0 && (
-                  <p className="text-xs text-slate-500">
-                    Pas encore de trafic enregistré.
-                  </p>
-                )}
+{/* Sécurisé, propre, PRO */}
+{daily.length === 0 && (
+  <p className="text-xs text-slate-500">Pas de données.</p>
+)}
 
-                {daily.length > 0 && (
-                  <div className="relative h-40 w-full">
-                    <svg className="absolute inset-0 w-full h-full overflow-visible">
-                      <defs>
-                        <linearGradient
-                          id="activityGradient"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="0%"
-                            stopColor="#60A5FA"
-                            stopOpacity="0.9"
-                          />
-                          <stop
-                            offset="100%"
-                            stopColor="#8B5CF6"
-                            stopOpacity="0.1"
-                          />
-                        </linearGradient>
-                      </defs>
-
-{(() => {
-  const values = daily.map((d) => d.total_requests);
-  const maxValue = Math.max(...values, 1);
-  const n = daily.length;
-
-  if (n === 0) return null;
-
-  const points = daily
-    .map((d, i) => {
-      const x = n === 1 ? 50 : (i / (n - 1)) * 100;
-      const y = 100 - (d.total_requests / maxValue) * 100;
-      return `${x},${y}`;
-    })
-    .join(" ");
-
-  const areaPoints = `0,100 ${points} 100,100`;
-
-  return (
-    <>
-      <polyline
-        points={areaPoints}
-        fill="url(#activityGradient)"
-        opacity="0.35"
-      />
-      <polyline
-        points={points}
-        fill="none"
-        stroke="url(#activityGradient)"
-        strokeWidth={2.2}
-        strokeLinecap="round"
-      />
-    </>
-  );
-})()}
-
-                    </svg>
-                  </div>
-                )}
-              </div>
+{daily.length > 0 && <GraphActivityPro data={daily} />}
+</div>
 
               {/* Répartition par endpoint */}
               <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
