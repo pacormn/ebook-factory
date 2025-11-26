@@ -94,14 +94,12 @@ export default function TitlePage() {
 
         {/* CTA SUIVANT */}
         <div className="mt-10">
-          <Link href="/create/description">
             <Button onClick={handleNext}
               disabled={!title.trim()}
               className="px-10 py-6 text-lg rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
             >
               Suivant <ArrowRight className="ml-2" />
             </Button>
-          </Link>
         </div>
       </section>
 
