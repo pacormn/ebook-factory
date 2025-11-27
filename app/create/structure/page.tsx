@@ -315,12 +315,36 @@ export default function StructurePage() {
         </p>
 
         {loading ? (
-          <div className="flex flex-col items-center gap-4 mt-16">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-            <p className="text-gray-600 dark:text-gray-300 text-lg">
-              Génération de la structure…
-            </p>
-          </div>
+<div className="flex flex-col items-center gap-6 mt-16">
+
+  {/* Loader premium */}
+  <div className="relative w-20 h-20">
+    <div className="
+      absolute inset-0 rounded-full
+      bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500
+      blur-[6px] opacity-70 animate-spin-slow
+    "></div>
+
+    <div className="
+      absolute inset-1 rounded-full
+      bg-white/10 dark:bg-gray-900/30
+      backdrop-blur-xl border border-white/20 dark:border-gray-700/30
+      shadow-inner
+    "></div>
+
+    <div className="
+      absolute inset-3 rounded-full border-2
+      border-white/40 dark:border-white/10
+      animate-pulse-slow
+    "></div>
+  </div>
+
+  {/* Texte animé */}
+  <p className="text-gray-700 dark:text-gray-300 text-lg animate-pulse">
+    Génération de la structure…
+  </p>
+</div>
+
         ) : (
           <div className="mt-12 text-left">
             <div className="flex justify-end mt-10 pr-2 md:pr-4 translate-y-[-10px]">
