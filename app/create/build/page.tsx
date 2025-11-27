@@ -105,94 +105,76 @@ export default function BuildPage() {
       {/* CONTENT */}
 <section className="max-w-4xl mx-auto px-6 mt-10">
 
-    {/* HERO - Mockup + titre */}
-    <div className="flex flex-col items-center text-center mb-16">
-        <div className="relative w-64 h-96 mb-8 drop-shadow-2xl">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl shadow-xl rotate-[-2deg]" />
-            <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl flex items-center justify-center p-6 rotate-[2deg]">
-                <h2 className="text-xl font-bold">{title}</h2>
-            </div>
-        </div>
+  {/* HERO + MOCKUP 3D */}
+  <div className="flex flex-col items-center text-center mb-16">
+    <div className="group relative w-64 h-96 [perspective:1200px] cover-float mb-8">
+      {/* Glow derrière */}
+      <div
+        className="absolute inset-0 rounded-[1.8rem] bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-500 
+                   opacity-60 blur-2xl group-hover:opacity-80 transition-opacity duration-500"
+      />
 
-        <h1 className="text-4xl font-extrabold mb-4">Ton ebook est prêt 📘</h1>
-        <p className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl">
-            Voici un aperçu personnalisé de ton ebook. Découvre les premiers chapitres 
-            avant de débloquer la version complète.
-        </p>
-    </div>
+      {/* Livre principal */}
+      <div
+        className="relative h-full w-full rounded-[1.5rem] bg-slate-950/90 dark:bg-slate-950/95 
+                   border border-white/10 shadow-2xl shadow-blue-900/40 overflow-hidden
+                   transform-gpu transition-transform duration-500
+                   group-hover:-rotate-y-6 group-hover:rotate-x-3 group-hover:-translate-y-1"
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        {/* Bande brillante */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-white/5 mix-blend-screen opacity-80" />
 
-    {/* Ce que tu vas apprendre */}
-    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-8 shadow-xl border border-gray-300 dark:border-gray-700 mb-16">
-        <h2 className="text-2xl font-bold mb-4">🎯 Ce que tu vas apprendre</h2>
-
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300 text-lg">
-            <li className="flex gap-2 items-center"><span className="text-blue-600">✔</span> {promise}</li>
-            <li className="flex gap-2 items-center"><span className="text-blue-600">✔</span> {goal}</li>
-            <li className="flex gap-2 items-center"><span className="text-blue-600">✔</span> Comment {audienceProblem}</li>
-            <li className="flex gap-2 items-center"><span className="text-blue-600">✔</span> Adapté pour {audience}</li>
-        </ul>
-    </div>
-
-    {/* COVER */}
-    <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-8 shadow-lg mb-10">
-        <h2 className="text-2xl font-bold mb-3">📘 Couverture</h2>
-        <p className="text-gray-700 dark:text-gray-300 text-lg whitespace-pre-line">{preview.cover}</p>
-    </div>
-
-    {/* INTRODUCTION */}
-    <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-8 shadow-lg mb-10">
-        <h2 className="text-2xl font-bold mb-3">✨ Introduction</h2>
-
-        {/* Apparition progressive du texte */}
-        <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg animate-fadeIn">
-            {preview.introduction}
-        </p>
-    </div>
-
-    {/* Chapitres visibles */}
-    {preview.chapters.map((c: any, idx: number) => (
-        <div
-            key={idx}
-            className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-8 shadow-lg mb-10 animate-slideUp"
-            style={{ animationDelay: `${idx * 0.3}s` }}
-        >
-            <h2 className="text-2xl font-bold mb-3">📖 {c.title}</h2>
-            
-            {/* Extrait, pas tout */}
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line line-clamp-5">
-                {c.content}
+        {/* Contenu de la cover */}
+        <div className="relative h-full w-full flex flex-col justify-between p-6 text-left">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-blue-300 mb-3">
+              Ebook exclusif
             </p>
+            <h2 className="text-xl font-bold text-white leading-snug line-clamp-3">
+              {title}
+            </h2>
+          </div>
 
-            <button className="text-blue-600 hover:underline mt-3">
-                Lire l’extrait complet →
-            </button>
+          <div className="space-y-2 text-sm text-slate-300 line-clamp-4">
+            <p>{preview?.cover}</p>
+          </div>
+
+          <div className="mt-4 flex items-center justify-between text-xs text-slate-400">
+            <span>{audience || "Débutants ambitieux"}</span>
+            <span className="px-2 py-1 rounded-full bg-blue-500/20 text-blue-200">
+              {style || "Style dynamique"}
+            </span>
+          </div>
         </div>
-    ))}
 
-    {/* ZONE VERROUILLÉE */}
-    <div className="text-center mt-20">
-        <div className="bg-gray-300/20 dark:bg-gray-700/30 border border-gray-400 dark:border-gray-600 rounded-2xl p-10 backdrop-blur-xl relative">
-            
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                <Lock size={48} className="text-white/80" />
-            </div>
+        {/* Shimmer qui traverse la cover */}
+        <div className="pointer-events-none absolute -inset-x-10 -top-10 h-16 bg-gradient-to-r 
+                        from-transparent via-white/35 to-transparent opacity-0 cover-shimmer" />
+      </div>
 
-            <h2 className="text-2xl font-bold mb-4">Les autres chapitres sont verrouillés 🔒</h2>
-            <p className="text-gray-700 dark:text-gray-300 max-w-lg mx-auto mb-6">
-                Débloque l’ebook complet pour lire l’intégralité des chapitres, 
-                les stratégies avancées et toutes les méthodes exclusives.
-            </p>
-
-            <Button
-                className="px-10 py-6 text-lg rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-xl"
-                onClick={() => router.push("/pay")}
-            >
-                Débloquer l’ebook complet →
-            </Button>
-        </div>
+      {/* Tranche du livre */}
+      <div
+        className="absolute -left-3 inset-y-4 w-4 rounded-l-[1.5rem] bg-gradient-to-b 
+                   from-slate-900 to-slate-800 border border-white/10 border-r-0
+                   shadow-lg transform-gpu -skew-y-3"
+        style={{ transformOrigin: "right center" }}
+      />
     </div>
 
+    {/* Texte sous le mockup */}
+    <h1 className="text-3xl md:text-4xl font-extrabold mb-3">
+      Aperçu de ton ebook
+    </h1>
+    <p className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl">
+      Voici un aperçu ultra personnalisé de ton ebook. Découvre les premières pages
+      avant de débloquer la version complète.
+    </p>
+  </div>
+
+  {/* (Ensuite tu laisses tes blocs Intro / Chapitres / zone verrouillée) */}
 </section>
+
     </main>
   );
 }

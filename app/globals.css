@@ -259,3 +259,30 @@ html, body {
   opacity: 0;
 }
 
+@keyframes cover-float {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
+}
+
+.cover-float {
+  animation: cover-float 6s ease-in-out infinite;
+}
+
+@keyframes cover-shimmer {
+  0% {
+    opacity: 0;
+    transform: translateX(-80%) translateY(0) skewX(-20deg);
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(80%) translateY(0) skewX(-20deg);
+  }
+}
+
+.cover-shimmer {
+  animation: cover-shimmer 2.4s ease-in-out infinite;
+}
