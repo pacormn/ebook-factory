@@ -103,7 +103,7 @@ export default function BuildPage() {
       <div className="h-24" />
 
       {/* CONTENT */}
-<section className="max-w-4xl mx-auto px-6 mt-10">
+      <section className="max-w-4xl mx-auto px-6 mt-10">
 
   {/* HERO + MOCKUP 3D */}
   <div className="flex flex-col items-center text-center mb-16">
@@ -175,6 +175,58 @@ export default function BuildPage() {
   {/* (Ensuite tu laisses tes blocs Intro / Chapitres / zone verrouillée) */}
 </section>
 
+      <section className="max-w-4xl mx-auto px-6">
+
+        <h1 className="text-4xl font-extrabold text-center mb-10">
+          Aperçu de ton ebook
+        </h1>
+
+        {/* COVER */}
+        <div className="bg-white/70 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-700 backdrop-blur-xl shadow-xl rounded-2xl p-8 mb-12">
+          <h2 className="text-3xl font-bold mb-4">📘 Couverture</h2>
+          <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
+            {preview.cover}
+          </p>
+        </div>
+
+        {/* INTRODUCTION */}
+        <div className="bg-white/70 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-700 backdrop-blur-xl shadow-xl rounded-2xl p-8 mb-12">
+          <h2 className="text-3xl font-bold mb-4">✨ Introduction</h2>
+          <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line leading-relaxed">
+            {preview.introduction}
+          </p>
+        </div>
+
+        {/* FIRST CHAPTERS */}
+        {preview.chapters.map((c: any, i: number) => (
+          <div
+            key={i}
+            className="bg-white/70 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-700 backdrop-blur-xl shadow-xl rounded-2xl p-8 mb-12"
+          >
+            <h2 className="text-2xl font-bold mb-4">📖 {c.title}</h2>
+            <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line leading-relaxed">
+              {c.content}
+            </p>
+          </div>
+        ))}
+
+        {/* LOCKED CHAPTERS */}
+        <div className="text-center mt-20 mb-10">
+          <Lock size={40} className="mx-auto text-gray-400 mb-4" />
+          <h3 className="text-2xl font-bold mb-2">Les autres chapitres sont verrouillés 🔒</h3>
+          <p className="text-gray-600 dark:text-gray-300">
+            Débloque le livre complet pour accéder à tout le contenu.
+          </p>
+
+          <Button
+            onClick={() => router.push("/pay")}
+            className="px-10 py-6 text-lg rounded-2xl bg-blue-600 hover:bg-blue-700 mt-6"
+          >
+            Débloquer l’ebook complet
+          </Button>
+        </div>
+
+      </section>
     </main>
   );
 }
