@@ -1,24 +1,19 @@
 import { NextResponse } from "next/server";
 import { PDFDocument, rgb, StandardFonts, PDFPage } from "pdf-lib";
+import type { PDFFont } from "pdf-lib";
 import fs from "fs";
 import path from "path";
 
-function sanitizeText(text?: string): string {
+function safeText(text?: string): string {
   if (!text) return "";
-  // Enlever les emojis / caractères hors WinAnsi (accents ok)
-  return text
-    .replace(/\r\n/g, "\n")
-    .split("")
-    .filter((ch) => ch.charCodeAt(0) <= 255)
-    .join("");
+  return text.replace(/\r\n/g, "\n");
 }
 
-function loadAsset(filename: string): Uint8Array | null {
+function loadFile(relativePath: string): Uint8Array | null {
   try {
-    const fullPath = path.join(process.cwd(), "public", "pdf-assets", filename);
+    const fullPath = path.join(process.cwd(), relativePath);
     return fs.readFileSync(fullPath);
-  } catch (e) {
-    console.warn("[PDF] Asset manquant:", filename);
+  } catch {
     return null;
   }
 }
@@ -27,38 +22,52 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const title = sanitizeText(body.title || "Ton ebook professionnel");
-    const description = sanitizeText(body.description || body.promise || "");
-    const style = sanitizeText(body.style || "");
-    const audience = sanitizeText(body.audience || "");
-    const audienceProblem = sanitizeText(body.audienceProblem || "");
-    const goal = sanitizeText(body.goal || "");
+    const title = safeText(body.title || "Titre de ton ebook");
+    const description = safeText(body.description || body.promise || "");
+    const style = safeText(body.style || "");
+    const audience = safeText(body.audience || "");
+    const audienceProblem = safeText(body.audienceProblem || "");
+    const goal = safeText(body.goal || "");
     const chapters = Array.isArray(body.chapters) ? body.chapters : [];
 
     const pdfDoc = await PDFDocument.create();
-    const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    const PRIMARY = rgb(0.36, 0.42, 0.95); // violet/bleu
-    const ACCENT = rgb(0.93, 0.41, 0.68); // rose
-    const TEXT = rgb(0.15, 0.15, 0.18);
-    const MUTED = rgb(0.45, 0.45, 0.50);
-    const BG_SOFT = rgb(0.97, 0.98, 1);
+    // ===== FONTS =====
+    const interRegularBytes = loadFile("public/fonts/Inter-Regular.ttf");
+    const interBoldBytes = loadFile("public/fonts/Inter-Bold.ttf");
 
-    const pageWidth = 595;
-    const pageHeight = 842;
-    const margin = 50;
+    let fontRegular: PDFFont;
+    let fontBold: PDFFont;
 
-    const coverBytes = loadAsset("cover-abstract.png");
-    const bannerBytes = loadAsset("chapter-banner.png");
-    const separatorBytes = loadAsset("separator.png");
+    // d'abord on charge la police par défaut (Helvetica)
+    const defaultRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const defaultBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    const iconIdeaBytes = loadAsset("icon-idea.png");
-    const iconRocketBytes = loadAsset("icon-rocket.png");
-    const iconChartBytes = loadAsset("icon-chart.png");
-    const iconCheckBytes = loadAsset("icon-check.png");
-    const iconTargetBytes = loadAsset("icon-target.png");
-    const iconNoteBytes = loadAsset("icon-note.png");
+    fontRegular = defaultRegular;
+    fontBold = defaultBold;
+
+    // si les fonts Inter existent, on override
+    if (interRegularBytes && interBoldBytes) {
+      try {
+        fontRegular = await pdfDoc.embedFont(interRegularBytes);
+        fontBold = await pdfDoc.embedFont(interBoldBytes);
+      } catch (e) {
+        console.warn("[PDF] Erreur chargement fonts Inter, fallback Helvetica.", e);
+      }
+    }
+
+
+    // ===== ASSETS IMAGES =====
+    const coverBytes = loadFile("public/pdf-assets/cover-luxe.png");
+    const bannerBytes = loadFile("public/pdf-assets/chapter-banner.png");
+    const separatorBytes = loadFile("public/pdf-assets/separator.png");
+
+    const iconIdeaBytes = loadFile("public/pdf-assets/icon-idea.png");
+    const iconRocketBytes = loadFile("public/pdf-assets/icon-rocket.png");
+    const iconChartBytes = loadFile("public/pdf-assets/icon-chart.png");
+    const iconTargetBytes = loadFile("public/pdf-assets/icon-target.png");
+    const iconNoteBytes = loadFile("public/pdf-assets/icon-note.png");
+    const iconCheckBytes = loadFile("public/pdf-assets/icon-check.png");
 
     const coverImg = coverBytes ? await pdfDoc.embedPng(coverBytes) : null;
     const bannerImg = bannerBytes ? await pdfDoc.embedPng(bannerBytes) : null;
@@ -67,19 +76,28 @@ export async function POST(req: Request) {
     const iconIdea = iconIdeaBytes ? await pdfDoc.embedPng(iconIdeaBytes) : null;
     const iconRocket = iconRocketBytes ? await pdfDoc.embedPng(iconRocketBytes) : null;
     const iconChart = iconChartBytes ? await pdfDoc.embedPng(iconChartBytes) : null;
-    const iconCheck = iconCheckBytes ? await pdfDoc.embedPng(iconCheckBytes) : null;
     const iconTarget = iconTargetBytes ? await pdfDoc.embedPng(iconTargetBytes) : null;
     const iconNote = iconNoteBytes ? await pdfDoc.embedPng(iconNoteBytes) : null;
+    const iconCheck = iconCheckBytes ? await pdfDoc.embedPng(iconCheckBytes) : null;
 
-    const keyBullets: string[] = [
-      sanitizeText(goal) || "Un plan clair et actionnable.",
-      sanitizeText(audienceProblem) || "Des reponses aux questions frequentes.",
-      sanitizeText(style) || "Un ton adapte a ton audience.",
-    ];
+    const iconPool = [iconIdea, iconRocket, iconChart, iconTarget, iconNote, iconCheck].filter(
+      Boolean
+    ) as any[];
+
+    // ===== PALETTE MAGAZINE LUXE =====
+    const PRIMARY = rgb(0.35, 0.32, 0.98); // Indigo
+    const SECONDARY = rgb(0.93, 0.40, 0.72); // rose
+    const BG = rgb(0.98, 0.98, 1);
+    const TEXT = rgb(0.12, 0.12, 0.16);
+    const MUTED = rgb(0.45, 0.45, 0.50);
+
+    const pageWidth = 595;
+    const pageHeight = 842;
+    const margin = 50;
 
     const addPage = () => pdfDoc.addPage([pageWidth, pageHeight]);
 
-    function drawFooter(page: PDFPage, pageNumber: number) {
+    function footer(page: PDFPage, n: number) {
       page.drawText("E-Book Factory", {
         x: margin,
         y: 25,
@@ -87,7 +105,7 @@ export async function POST(req: Request) {
         font: fontRegular,
         color: MUTED,
       });
-      page.drawText(String(pageNumber), {
+      page.drawText(String(n), {
         x: pageWidth - margin,
         y: 25,
         size: 9,
@@ -96,55 +114,58 @@ export async function POST(req: Request) {
       });
     }
 
-    function writeWrapped(
+    function wrapped(
       page: PDFPage,
       text: string,
       x: number,
       y: number,
       size = 12,
       lineHeight = 18,
-      color = TEXT
+      color = TEXT,
+      maxWidthOverride?: number
     ): number {
-      text = sanitizeText(text);
-      const maxWidth = pageWidth - margin * 2;
+      text = safeText(text);
+      const maxWidth = maxWidthOverride ?? pageWidth - margin * 2;
       const words = text.split(" ");
       let line = "";
       let yy = y;
 
-      for (const w of words) {
-        const test = line + w + " ";
-        if (fontRegular.widthOfTextAtSize(test, size) > maxWidth) {
+      for (const word of words) {
+        const t = line + word + " ";
+        if (fontRegular.widthOfTextAtSize(t, size) > maxWidth) {
           page.drawText(line.trim(), { x, y: yy, size, font: fontRegular, color });
-          line = w + " ";
+          line = word + " ";
           yy -= lineHeight;
         } else {
-          line = test;
+          line = t;
         }
       }
-      if (line.trim().length > 0) {
+
+      if (line.trim().length) {
         page.drawText(line.trim(), { x, y: yy, size, font: fontRegular, color });
         yy -= lineHeight;
       }
+
       return yy;
     }
 
-    function drawSoftSeparator(page: PDFPage, y: number) {
+    function softSeparator(page: PDFPage, y: number): number {
       if (separatorImg) {
-        const sw = 260;
-        const sh = (separatorImg.height / separatorImg.width) * sw;
+        const w = 260;
+        const h = (separatorImg.height / separatorImg.width) * w;
         page.drawImage(separatorImg, {
           x: margin,
-          y: y - sh,
-          width: sw,
-          height: sh,
-          opacity: 0.7,
+          y: y - h,
+          width: w,
+          height: h,
+          opacity: 0.85,
         });
-        return y - sh - 10;
+        return y - h - 10;
       } else {
         page.drawRectangle({
           x: margin,
-          y: y - 4,
-          width: 200,
+          y: y - 3,
+          width: 180,
           height: 3,
           color: PRIMARY,
         });
@@ -152,19 +173,18 @@ export async function POST(req: Request) {
       }
     }
 
-    // ================
-    // 📘 COVER PAGE
-    // ================
+    // ========= PAGE 1 : COUVERTURE LUXE =========
     let pageNumber = 1;
     {
       const page = addPage();
 
+      // fond général
       page.drawRectangle({
         x: 0,
         y: 0,
         width: pageWidth,
         height: pageHeight,
-        color: BG_SOFT,
+        color: BG,
       });
 
       if (coverImg) {
@@ -175,164 +195,176 @@ export async function POST(req: Request) {
           y: pageHeight - h,
           width: w,
           height: h,
-          opacity: 0.95,
         });
 
+        // overlay dégradé "magazine"
         page.drawRectangle({
           x: 0,
           y: pageHeight - h,
           width: w,
           height: h,
-          color: rgb(0, 0, 0),
-          opacity: 0.12,
+          color: PRIMARY,
+          opacity: 0.35,
         });
       }
 
+      // bloc luxe
+      const cardWidth = pageWidth - margin * 2;
+      const cardHeight = 190;
+      const cardY = pageHeight - 260;
+
       page.drawRectangle({
         x: margin,
-        y: pageHeight - 260,
-        width: pageWidth - margin * 2,
-        height: 140,
+        y: cardY,
+        width: cardWidth,
+        height: cardHeight,
         color: rgb(1, 1, 1),
-        opacity: 0.96,
+        opacity: 0.98,
       });
 
+      // barre gradient fake
       page.drawRectangle({
         x: margin,
-        y: pageHeight - 260,
-        width: 6,
-        height: 140,
-        color: PRIMARY,
+        y: cardY + cardHeight - 8,
+        width: cardWidth,
+        height: 8,
+        color: SECONDARY,
       });
 
-      page.drawText("E-Book Factory", {
-        x: margin + 10,
-        y: pageHeight - 120,
+      page.drawText("Edition premium", {
+        x: margin + 16,
+        y: cardY + cardHeight - 30,
         size: 11,
         font: fontBold,
-        color: PRIMARY,
+        color: SECONDARY,
       });
 
       page.drawText(title, {
-        x: margin + 10,
-        y: pageHeight - 150,
-        size: 22,
+        x: margin + 16,
+        y: cardY + cardHeight - 60,
+        size: 24,
         font: fontBold,
         color: TEXT,
       });
 
-      let y = writeWrapped(page, description || "Un ebook professionnel genere automatiquement pour ton audience.", margin + 10, pageHeight - 180, 11, 16, MUTED);
+      let yy = wrapped(
+        page,
+        description || "Un ebook professionnel, structure, pret a etre revendu.",
+        margin + 16,
+        cardY + cardHeight - 90,
+        11,
+        16,
+        MUTED
+      );
 
-      y -= 35;
-      page.drawText("Pour qui ?", {
-        x: margin + 10,
-        y,
-        size: 11,
+      yy -= 6;
+      page.drawText("Audience :", {
+        x: margin + 16,
+        y: yy,
+        size: 10,
         font: fontBold,
-        color: ACCENT,
+        color: PRIMARY,
       });
 
-      y = writeWrapped(
+      yy = wrapped(
         page,
-        audience || "Entrepreneurs, createurs de contenu et personnes ambitieuses.",
-        margin + 10,
-        y - 18,
+        audience || "Entrepreneurs, createurs de contenu, infopreneurs.",
+        margin + 16,
+        yy - 14,
+        10,
+        14,
+        MUTED
+      );
+
+      // bas de couverture
+      page.drawText("E-Book Factory", {
+        x: margin,
+        y: 60,
+        size: 11,
+        font: fontRegular,
+        color: MUTED,
+      });
+
+      footer(page, pageNumber);
+      pageNumber++;
+    }
+
+    // ========= PAGE 2 : AVANT-PROPOS / PROMESSE =========
+    {
+      const page = addPage();
+
+      page.drawRectangle({
+        x: 0,
+        y: 0,
+        width: pageWidth,
+        height: pageHeight,
+        color: rgb(1, 1, 1),
+      });
+
+      page.drawText("Avant-propos", {
+        x: margin,
+        y: pageHeight - 80,
+        size: 20,
+        font: fontBold,
+        color: PRIMARY,
+      });
+
+      let y = softSeparator(page, pageHeight - 90);
+
+      y = wrapped(
+        page,
+        goal ||
+          "Ce guide a ete concu pour etre actionnable, clair et directement exploitable pour ton audience.",
+        margin,
+        y,
+        12,
+        18,
+        TEXT
+      );
+
+      y -= 20;
+
+      // encadré "problème"
+      const boxHeight = 100;
+      page.drawRectangle({
+        x: margin,
+        y: y - boxHeight,
+        width: pageWidth - margin * 2,
+        height: boxHeight,
+        color: rgb(0.98, 0.98, 1),
+      });
+      page.drawRectangle({
+        x: margin,
+        y: y - boxHeight,
+        width: 5,
+        height: boxHeight,
+        color: SECONDARY,
+      });
+
+      page.drawText("Le probleme que rencontre ton audience", {
+        x: margin + 14,
+        y: y - 20,
+        size: 11,
+        font: fontBold,
+        color: SECONDARY,
+      });
+
+      wrapped(
+        page,
+        audienceProblem ||
+          "Manque de clarté, d'information structuree, et de plan d'action simple a suivre.",
+        margin + 14,
+        y - 36,
         10,
         15,
         MUTED
       );
 
-      drawFooter(page, pageNumber);
+      footer(page, pageNumber);
       pageNumber++;
     }
 
-    // ======================
-    // 🎯 PAGE "Ce que tu vas apprendre"
-    // ======================
-    {
-      const page = addPage();
-
-      page.drawText("Ce que tu vas apprendre", {
-        x: margin,
-        y: pageHeight - 80,
-        size: 22,
-        font: fontBold,
-        color: PRIMARY,
-      });
-
-      let y = drawSoftSeparator(page, pageHeight - 90);
-
-      const iconSize = 22;
-      const bulletIcons = [iconIdea, iconChart, iconRocket, iconCheck, iconTarget, iconNote];
-
-      keyBullets.forEach((b, i) => {
-        if (!b.trim()) return;
-        const icon = bulletIcons[i] || iconCheck;
-
-        if (icon) {
-          page.drawImage(icon, {
-            x: margin,
-            y: y - iconSize + 4,
-            width: iconSize,
-            height: iconSize,
-          });
-        }
-
-        page.drawText("- ", {
-          x: margin + (icon ? iconSize + 8 : 0),
-          y,
-          size: 11,
-          font: fontRegular,
-          color: PRIMARY,
-        });
-
-        y = writeWrapped(
-          page,
-          b,
-          margin + (icon ? iconSize + 18 : 12),
-          y,
-          11,
-          16,
-          TEXT
-        ) - 8;
-      });
-
-      if (audienceProblem) {
-        y -= 15;
-        page.drawRectangle({
-          x: margin,
-          y: y - 60,
-          width: pageWidth - margin * 2,
-          height: 60,
-          color: rgb(1, 1, 1),
-          opacity: 0.95,
-        });
-        page.drawRectangle({
-          x: margin,
-          y: y - 60,
-          width: 5,
-          height: 60,
-          color: ACCENT,
-        });
-
-        page.drawText("Le probleme que tu resols :", {
-          x: margin + 10,
-          y: y - 18,
-          size: 11,
-          font: fontBold,
-          color: ACCENT,
-        });
-
-        writeWrapped(page, audienceProblem, margin + 10, y - 34, 10, 15, MUTED);
-      }
-
-      drawFooter(page, pageNumber);
-      pageNumber++;
-    }
-
-    // ======================
-    // 📑 TABLE DES MATIERES
-    // ======================
+    // ========= PAGE 3 : TABLE DES MATIERES magazine =========
     {
       const page = addPage();
 
@@ -346,28 +378,39 @@ export async function POST(req: Request) {
 
       let y = pageHeight - 120;
 
-      chapters.forEach((ch: any, i: number) => {
-        const line = `${i + 1}. ${sanitizeText(ch.title || "")}`;
-        page.drawText(line, {
+      chapters.forEach((ch: any, idx: number) => {
+        const num = idx + 1;
+        const txt = `${num}. ${safeText(ch.title || "")}`;
+
+        page.drawText(txt, {
           x: margin,
           y,
           size: 12,
           font: fontRegular,
           color: TEXT,
         });
-        y -= 22;
+
+        // petit accent ligne
+        page.drawRectangle({
+          x: margin,
+          y: y - 4,
+          width: 120,
+          height: 1,
+          color: rgb(0.88, 0.88, 0.95),
+        });
+
+        y -= 26;
       });
 
-      drawFooter(page, pageNumber);
+      footer(page, pageNumber);
       pageNumber++;
     }
 
-    // ======================
-    // 🧩 CHAPITRES
-    // ======================
-    chapters.forEach((ch: any, i: number) => {
+    // ========= CHAPITRES (preview 3 max) =========
+    chapters.slice(0, 3).forEach((ch: any, idx: number) => {
       const page = addPage();
 
+      // bandeau haut
       if (bannerImg) {
         const bw = pageWidth;
         const bh = (bannerImg.height / bannerImg.width) * bw;
@@ -376,30 +419,48 @@ export async function POST(req: Request) {
           y: pageHeight - bh,
           width: bw,
           height: bh,
-          opacity: 0.95,
         });
-
         page.drawRectangle({
           x: 0,
           y: pageHeight - bh,
           width: bw,
           height: bh,
           color: rgb(0, 0, 0),
-          opacity: 0.15,
+          opacity: 0.18,
+        });
+      } else {
+        page.drawRectangle({
+          x: 0,
+          y: pageHeight - 120,
+          width: pageWidth,
+          height: 120,
+          color: PRIMARY,
         });
       }
 
-      page.drawText(`Chapitre ${i + 1}`, {
-        x: margin,
-        y: pageHeight - 90,
-        size: 14,
+      // icône chapitre
+      const icon = iconPool[idx % (iconPool.length || 1)];
+      if (icon) {
+        const is = 30;
+        page.drawImage(icon, {
+          x: margin,
+          y: pageHeight - 100,
+          width: is,
+          height: is,
+        });
+      }
+
+      page.drawText(`Chapitre ${idx + 1}`, {
+        x: margin + 40,
+        y: pageHeight - 80,
+        size: 13,
         font: fontBold,
-        color: ACCENT,
+        color: SECONDARY,
       });
 
-      page.drawText(sanitizeText(ch.title || "Chapitre"), {
-        x: margin,
-        y: pageHeight - 110,
+      page.drawText(safeText(ch.title || "Chapitre"), {
+        x: margin + 40,
+        y: pageHeight - 100,
         size: 18,
         font: fontBold,
         color: rgb(1, 1, 1),
@@ -407,16 +468,50 @@ export async function POST(req: Request) {
 
       let y = pageHeight - 150;
 
-      const content = sanitizeText(ch.content || "");
-      y = writeWrapped(page, content, margin, y, 12, 18, TEXT);
+      // bloc "a retenir"
+      page.drawRectangle({
+        x: margin,
+        y: y - 60,
+        width: pageWidth - margin * 2,
+        height: 60,
+        color: rgb(0.98, 0.98, 1),
+      });
+      page.drawRectangle({
+        x: margin,
+        y: y - 60,
+        width: 5,
+        height: 60,
+        color: PRIMARY,
+      });
 
-      drawFooter(page, pageNumber);
+      page.drawText("A retenir", {
+        x: margin + 14,
+        y: y - 20,
+        size: 11,
+        font: fontBold,
+        color: PRIMARY,
+      });
+
+      wrapped(
+        page,
+        "Les idees fortes de ce chapitre doivent etre claires, simples et orientees action.",
+        margin + 14,
+        y - 36,
+        10,
+        15,
+        MUTED
+      );
+
+      y -= 90;
+
+      const content = safeText(ch.content || "");
+      y = wrapped(page, content, margin, y, 12, 18, TEXT);
+
+      footer(page, pageNumber);
       pageNumber++;
     });
 
-    // ======================
-    // 🎉 PAGE DE FIN / CTA
-    // ======================
+    // ========= PAGE FINAL CTA LUXE =========
     {
       const page = addPage();
 
@@ -425,58 +520,58 @@ export async function POST(req: Request) {
         y: 0,
         width: pageWidth,
         height: pageHeight,
-        color: BG_SOFT,
+        color: BG,
       });
 
-      page.drawText("Merci pour ta lecture !", {
-        x: margin,
-        y: pageHeight - 80,
-        size: 22,
-        font: fontBold,
-        color: PRIMARY,
-      });
-
-      let y = pageHeight - 130;
-
-      y = writeWrapped(
-        page,
-        "Tu viens de lire un extrait. La version complete comprend tous les chapitres, la mise en page finale et la licence de revente illimitee.",
-        margin,
-        y,
-        12,
-        18,
-        TEXT
-      );
-
-      y -= 30;
-
+      // bloc central gradient simulé
       page.drawRectangle({
         x: margin,
-        y: y - 60,
+        y: pageHeight / 2 - 80,
         width: pageWidth - margin * 2,
-        height: 60,
+        height: 160,
         color: PRIMARY,
       });
 
-      page.drawText("Debloquer l'ebook complet", {
-        x: margin + 16,
-        y: y - 28,
-        size: 14,
+      page.drawRectangle({
+        x: margin + 5,
+        y: pageHeight / 2 - 75,
+        width: pageWidth - margin * 2 - 10,
+        height: 150,
+        color: SECONDARY,
+        opacity: 0.25,
+      });
+
+      page.drawText("Debloque l'ebook complet", {
+        x: margin + 24,
+        y: pageHeight / 2 + 50,
+        size: 18,
         font: fontBold,
         color: rgb(1, 1, 1),
       });
 
-      page.drawText("Paiement unique, acces immediat et licence de revente incluse.", {
-        x: margin + 16,
-        y: y - 44,
+      wrapped(
+        page,
+        "Accede a l'integralite du contenu, aux chapitres avances, aux exemples concrets et a la licence de revente illimitee.",
+        margin + 24,
+        pageHeight / 2 + 20,
+        11,
+        16,
+        rgb(0.95, 0.96, 1),
+        pageWidth - margin * 2 - 40
+      );
+
+      page.drawText("Paiement unique. Acces immediat en PDF.", {
+        x: margin + 24,
+        y: pageHeight / 2 - 10,
         size: 10,
         font: fontRegular,
-        color: rgb(0.93, 0.95, 1),
+        color: rgb(0.9, 0.92, 1),
       });
 
-      drawFooter(page, pageNumber);
+      footer(page, pageNumber);
     }
 
+    // ===== EXPORT =====
     const pdfBytes = await pdfDoc.save();
 
     const stream = new ReadableStream({
