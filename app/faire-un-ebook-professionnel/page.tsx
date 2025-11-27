@@ -1,10 +1,25 @@
 // app/faire-un-ebook-professionnel/page.tsx
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Faire un ebook professionnel facilement | Ebook Factory",
+export const metadata = {
+  title: "Faire un ebook professionnel (Guide 2025) | Ebook Factory",
   description:
-    "Apprends comment faire un ebook professionnel sans compétences techniques grâce à un générateur intelligent en 2025.",
+    "Apprends à créer un ebook professionnel sans compétences techniques grâce à un générateur IA.",
+
+  openGraph: {
+    title: "Faire un ebook professionnel facilement",
+    description:
+      "Structure, design, couverture et PDF pro en quelques minutes.",
+    url: "/faire-un-ebook-professionnel",
+    images: ["/images/og/default.webp"],
+  },
+
+  twitter: {
+    title: "Faire un ebook professionnel (IA)",
+    description:
+      "Crée un ebook pro en quelques minutes avec Ebook Factory.",
+    images: ["/images/og/default.webp"],
+  },
 };
 
 export default function FaireUnEbookProfessionnelPage() {

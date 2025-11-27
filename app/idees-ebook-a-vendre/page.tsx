@@ -1,11 +1,28 @@
 // app/idees-ebook-a-vendre/page.tsx
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Idées d’ebook à vendre en 2025 | Ebook Factory",
+export const metadata = {
+  title: "Idées d’ebooks à vendre en 2025 | Ebook Factory",
   description:
-    "Découvre les meilleures idées d’ebook à vendre en 2025 en 2025 : business, fitness, développement personnel et side hustles.",
+    "Découvre les meilleurs sujets d’ebooks à vendre : business, fitness, développement personnel et side hustles.",
+
+  openGraph: {
+    title: "Idées d’ebooks à vendre en 2025",
+    description:
+      "Liste des ebooks rentables à créer et vendre cette année.",
+    url: "/idees-ebook-a-vendre",
+    images: [
+      { url: "/images/og/default.webp", width: 1200, height: 630 },
+    ],
+  },
+
+  twitter: {
+    title: "Idées d’ebooks rentables 2025",
+    description: "Les sujets qui se vendent le mieux cette année.",
+    images: ["/images/og/default.webp"],
+  },
 };
+
 
 export default function IdeesEbookAVendrePage() {
   return (

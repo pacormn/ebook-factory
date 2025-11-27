@@ -1,11 +1,34 @@
 // app/generer-ebook-ia/page.tsx
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Générer un ebook avec l’IA | Ebook Factory",
+export const metadata = {
+  title: "Générer un ebook avec l’IA en 2025 | Ebook Factory",
   description:
-    "Découvre comment générer un ebook complet avec l’intelligence artificielle en 2025 : structure, contenu, mise en page et PDF.",
+    "Découvre comment générer un ebook complet automatiquement avec l’IA. Titres, chapitres, contenu et PDF pro.",
+
+  openGraph: {
+    title: "Générer un ebook avec IA (Méthode 2025)",
+    description:
+      "Crée ton ebook en quelques minutes grâce à l’intelligence artificielle. Guide complet.",
+    url: "/generer-ebook-ia",
+    images: [
+      {
+        url: "/images/og/default.webp",
+        width: 1200,
+        height: 630,
+        alt: "Générer un ebook IA facilement",
+      },
+    ],
+  },
+
+  twitter: {
+    title: "Générer un ebook IA en 2025",
+    description:
+      "Création automatique d’ebook avec IA : texte, structure, couverture et PDF.",
+    images: ["/images/og/default.webp"],
+  },
 };
+
 
 export default function GenererEbookIAPage() {
   return (

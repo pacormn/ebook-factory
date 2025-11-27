@@ -1,11 +1,27 @@
 // app/ebook-dropshipping/page.tsx
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Créer un ebook pour le dropshipping | Ebook Factory",
+export const metadata = {
+  title: "Créer un ebook pour le dropshipping | Produit digital rentable",
   description:
-    "Apprends à créer un ebook en 2025 comme produit digital pour ta boutique de dropshipping. Marges élevées, pas de stock, pas de SAV.",
+    "Crée un ebook digital pour ta boutique de dropshipping : marge élevée, pas de stock, zéro logistique.",
+
+  openGraph: {
+    title: "Ebook dropshipping : produit rentable 2025",
+    description:
+      "comment créer un ebook clé en main pour ta boutique.",
+    url: "/ebook-dropshipping",
+    images: ["/images/og/default.webp"],
+  },
+
+  twitter: {
+    title: "Ebook dropshipping : produit digital parfait",
+    description:
+      "Crée un ebook en quelques minutes et ajoute-le à ton shop.",
+    images: ["/images/og/default.webp"],
+  },
 };
+
 
 export default function EbookDropshippingPage() {
   return (

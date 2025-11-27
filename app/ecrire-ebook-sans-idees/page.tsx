@@ -1,11 +1,27 @@
 // app/ecrire-ebook-sans-idees/page.tsx
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Écrire un ebook quand on n’a pas d’idées | Ebook Factory",
   description:
-    "Découvre comment trouver un sujet et écrire un ebook même si tu penses ne rien avoir à raconter en 2025.",
+    "Trouve un sujet d’ebook facilement et écris-le grâce à l’IA, même si tu pars de zéro.",
+
+  openGraph: {
+    title: "Écrire un ebook sans idée (Guide)",
+    description:
+      "Comment trouver un sujet d’ebook même si tu ne sais pas quoi écrire.",
+    url: "/ecrire-ebook-sans-idees",
+    images: ["/images/og/default.webp"],
+  },
+
+  twitter: {
+    title: "Écrire un ebook sans idée",
+    description:
+      "Trouve une idée d’ebook et écris-le automatiquement avec l’IA.",
+    images: ["/images/og/default.webp"],
+  },
 };
+
 
 export default function EcrireEbookSansIdeesPage() {
   return (

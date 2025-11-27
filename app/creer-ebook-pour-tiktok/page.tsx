@@ -10,7 +10,7 @@ export const metadata = {
     title: "Créer un ebook TikTok en 2025 | Ebook Factory",
     description:
       "Méthode simple pour créer un ebook viral TikTok grâce à l’IA. Explications, exemples et étapes.",
-    url: "https://ebookfactory.com/creer-ebook-pour-tiktok",
+    url: "https://ebook-factory.fr/creer-ebook-pour-tiktok",
     siteName: "Ebook Factory",
     images: [
       {
@@ -29,7 +29,7 @@ export const metadata = {
     title: "Créer un ebook pour TikTok | Ebook Factory",
     description:
       "Découvre comment créer un ebook TikTok viral grâce à l'intelligence artificielle.",
-    images: ["https://ebookfactory.fr/images/ebook-factory-cover.webp"],
+    images: ["https://ebook-factory.fr/images/ebook-factory-cover.webp"],
   },
 };
 

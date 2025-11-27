@@ -1,11 +1,27 @@
 // app/vendre-un-ebook/page.tsx
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Comment vendre un ebook en ligne | Ebook Factory",
+export const metadata = {
+  title: "Comment vendre un ebook en ligne (Guide 2025) | Ebook Factory",
   description:
-    "Apprends à vendre ton ebook en ligne même si tu débutes en 2025 : plateformes, prix, tunnel simple et conseils.",
+    "Apprends à vendre ton ebook : plateformes, tarification, tunnels, stratégie pour débutant.",
+
+  openGraph: {
+    title: "Vendre un ebook : tutoriel complet",
+    description:
+      "Plateformes, prix, tunnel simple et stratégies qui fonctionnent.",
+    url: "/vendre-un-ebook",
+    images: ["/images/og/default.webp"],
+  },
+
+  twitter: {
+    title: "Vendre un ebook en 2025",
+    description:
+      "Le guide pratique pour vendre un ebook sans audience.",
+    images: ["/images/og/default.webp"],
+  },
 };
+
 
 export default function VendreUnEbookPage() {
   return (

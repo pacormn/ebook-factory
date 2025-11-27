@@ -1,11 +1,28 @@
 // app/ebook-business-en-ligne/page.tsx
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Créer un ebook pour son business en ligne | Ebook Factory",
   description:
-    "Utilise un ebook pour booster ton business en ligne en 2025 : autorité, génération de leads, offres payantes.",
+    "Utilise un ebook pour générer leads, ventes et autorité dans ton business en ligne.",
+
+  openGraph: {
+    title: "Ebook business : l’outil ultime",
+    description:
+      "Comment créer un ebook qui booste ton activité en ligne.",
+    url: "/ebook-business-en-ligne",
+    images: ["/images/og/default.webp"],
+  },
+
+  twitter: {
+    title: "Ebook business pour 2025",
+    description:
+      "Crée un ebook pour générer plus de prospects et d’autorité.",
+    images: ["/images/og/default.webp"],
+  },
 };
+
+
 
 export default function EbookBusinessEnLignePage() {
   return (

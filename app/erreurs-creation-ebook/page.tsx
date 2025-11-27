@@ -1,11 +1,27 @@
 // app/erreurs-creation-ebook/page.tsx
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "10 erreurs à éviter quand on crée un ebook | Ebook Factory",
   description:
-    "Évite les erreurs classiques quand tu crées ton ebook en 2025: sujet, structure, mise en forme, promotion, CTA.",
+    "Voici les erreurs les plus fréquentes dans les ebooks, et comment les éviter.",
+
+  openGraph: {
+    title: "Erreurs à éviter en créant un ebook",
+    description:
+      "Les 10 erreurs qui sabotent les ebooks et comment faire mieux.",
+    url: "/erreurs-creation-ebook",
+    images: ["/images/og/default.webp"],
+  },
+
+  twitter: {
+    title: "10 erreurs à éviter dans un ebook",
+    description:
+      "Voici ce qu’il faut absolument éviter lors de la création de ton ebook.",
+    images: ["/images/og/default.webp"],
+  },
 };
+
 
 export default function ErreursCreationEbookPage() {
   return (

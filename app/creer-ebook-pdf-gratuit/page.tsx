@@ -2,11 +2,27 @@
 import type { Metadata } from "next";
 export const dynamic = "force-static";
 
-export const metadata: Metadata = {
-  title: "Créer un ebook PDF gratuitement | Ebook Factory",
+export const metadata = {
+  title: "Créer un ebook PDF gratuitement | Guide complet 2025",
   description:
-    "Crée un ebook PDF gratuitement avec un générateur simple en 2025 : structure, contenu et export en PDF pro.",
+    "Crée un ebook PDF propre et lisible en quelques minutes grâce à Ebook Factory. 100% gratuit pour commencer.",
+
+  openGraph: {
+    title: "Créer un ebook PDF gratuit (2025)",
+    description:
+      "Méthode simple pour créer un ebook PDF pro sans outils compliqués.",
+    url: "/creer-ebook-pdf-gratuit",
+    images: ["/images/og/default.webp"],
+  },
+
+  twitter: {
+    title: "Créer un ebook PDF gratuitement",
+    description:
+      "Le guide le plus simple pour créer un ebook PDF pro.",
+    images: ["/images/og/default.webp"],
+  },
 };
+
 
 export default function CreerEbookPdfGratuitPage() {
   return (
