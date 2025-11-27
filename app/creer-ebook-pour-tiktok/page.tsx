@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Créer un ebook pour TikTok en moins de 10 minutes | Ebook Factory",
   description:
-    "Apprends à créer un ebook optimisé pour TikTok en quelques minutes grâce à l’IA. Idées de sujets, structure et méthode simple.",
+    "Apprends à créer un ebook optimisé pour TikTok en quelques minutes grâce à l’IA en 2025. Idées de sujets, structure et méthode simple.",
 };
 
 export default function CreerEbookPourTikTokPage() {

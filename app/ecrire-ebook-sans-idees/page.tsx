@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Écrire un ebook quand on n’a pas d’idées | Ebook Factory",
   description:
-    "Découvre comment trouver un sujet et écrire un ebook même si tu penses ne rien avoir à raconter.",
+    "Découvre comment trouver un sujet et écrire un ebook même si tu penses ne rien avoir à raconter en 2025.",
 };
 
 export default function EcrireEbookSansIdeesPage() {

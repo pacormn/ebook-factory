@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Idées d’ebook à vendre en 2025 | Ebook Factory",
   description:
-    "Découvre les meilleures idées d’ebook à vendre en 2025 : business, fitness, développement personnel et side hustles.",
+    "Découvre les meilleures idées d’ebook à vendre en 2025 en 2025 : business, fitness, développement personnel et side hustles.",
 };
 
 export default function IdeesEbookAVendrePage() {

@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Faire un ebook professionnel facilement | Ebook Factory",
   description:
-    "Apprends comment faire un ebook professionnel sans compétences techniques grâce à un générateur intelligent.",
+    "Apprends comment faire un ebook professionnel sans compétences techniques grâce à un générateur intelligent en 2025.",
 };
 
 export default function FaireUnEbookProfessionnelPage() {

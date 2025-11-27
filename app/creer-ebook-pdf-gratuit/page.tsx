@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Créer un ebook PDF gratuitement | Ebook Factory",
   description:
-    "Crée un ebook PDF gratuitement avec un générateur simple : structure, contenu et export en PDF pro.",
+    "Crée un ebook PDF gratuitement avec un générateur simple en 2025 : structure, contenu et export en PDF pro.",
 };
 
 export default function CreerEbookPdfGratuitPage() {

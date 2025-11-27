@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Comment vendre un ebook en ligne | Ebook Factory",
   description:
-    "Apprends à vendre ton ebook en ligne même si tu débutes : plateformes, prix, tunnel simple et conseils.",
+    "Apprends à vendre ton ebook en ligne même si tu débutes en 2025 : plateformes, prix, tunnel simple et conseils.",
 };
 
 export default function VendreUnEbookPage() {

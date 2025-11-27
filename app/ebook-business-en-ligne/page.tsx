@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Créer un ebook pour son business en ligne | Ebook Factory",
   description:
-    "Utilise un ebook pour booster ton business en ligne : autorité, génération de leads, offres payantes.",
+    "Utilise un ebook pour booster ton business en ligne en 2025 : autorité, génération de leads, offres payantes.",
 };
 
 export default function EbookBusinessEnLignePage() {

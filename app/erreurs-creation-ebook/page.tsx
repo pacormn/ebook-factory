@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "10 erreurs à éviter quand on crée un ebook | Ebook Factory",
   description:
-    "Évite les erreurs classiques quand tu crées ton ebook : sujet, structure, mise en forme, promotion, CTA.",
+    "Évite les erreurs classiques quand tu crées ton ebook en 2025: sujet, structure, mise en forme, promotion, CTA.",
 };
 
 export default function ErreursCreationEbookPage() {

@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Créer un ebook pour le dropshipping | Ebook Factory",
   description:
-    "Apprends à créer un ebook comme produit digital pour ta boutique de dropshipping. Marges élevées, pas de stock, pas de SAV.",
+    "Apprends à créer un ebook en 2025 comme produit digital pour ta boutique de dropshipping. Marges élevées, pas de stock, pas de SAV.",
 };
 
 export default function EbookDropshippingPage() {

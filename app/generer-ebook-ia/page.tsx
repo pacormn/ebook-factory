@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Générer un ebook avec l’IA | Ebook Factory",
   description:
-    "Découvre comment générer un ebook complet avec l’intelligence artificielle : structure, contenu, mise en page et PDF.",
+    "Découvre comment générer un ebook complet avec l’intelligence artificielle en 2025 : structure, contenu, mise en page et PDF.",
 };
 
 export default function GenererEbookIAPage() {

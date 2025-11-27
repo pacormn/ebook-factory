@@ -1,5 +1,7 @@
 // app/guides/page.tsx
 import type { Metadata } from "next";
+import Image from "next/image";
+
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -81,6 +83,14 @@ export default function GuidesIndexPage() {
         </p>
       </header>
 
+      <Image
+          src="/images/ebook-factory-cover.webp"
+          width={1200}
+          height={630}
+          alt="Créer un ebook professionnel rapidement avec l'IA"
+          className="rounded-lg border"
+        />
+
       <div className="grid gap-6 md:grid-cols-2">
         {guides.map((guide) => (
           <Link
@@ -106,6 +116,15 @@ export default function GuidesIndexPage() {
           Retour à l’outil Ebook Factory
         </Link>
       </div>
+      <section className="mt-12 space-y-2">
+  <h3 className="text-lg font-semibold">Autres guides utiles</h3>
+  <ul className="list-disc pl-5 space-y-1">
+    <li><Link href="/creer-ebook-pour-tiktok">Créer un ebook pour TikTok</Link></li>
+    <li><Link href="/generer-ebook-ia">Générer un ebook avec l’IA</Link></li>
+    <li><Link href="/idees-ebook-a-vendre">Idées d’ebooks à vendre</Link></li>
+    {/* etc */}
+  </ul>
+</section>
     </main>
   );
 }
