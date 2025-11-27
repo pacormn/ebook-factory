@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Sparkles, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Footer from "@/components/Footer";
 
 export default function LandingPage() {
   return (
@@ -459,9 +460,7 @@ export default function LandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-slate-800/80 bg-slate-950/90 py-6 text-center text-xs text-slate-500 md:text-sm">
-        © {new Date().getFullYear()} • Ebook Factory — Tous droits réservés.
-      </footer>
+      <Footer />
     </main>
   );
 }
