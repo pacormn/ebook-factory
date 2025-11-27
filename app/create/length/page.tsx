@@ -44,7 +44,7 @@ export default function LengthPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-gradient-to-b 
+    <main className="relative min-h-[100dvh] overflow-hidden bg-gradient-to-b 
       from-white via-slate-50 to-white 
       dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 bg-dynamic">
 

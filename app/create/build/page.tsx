@@ -62,7 +62,7 @@ export default function BuildPage() {
 
   if (loading)
     return (
-      <main className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white via-slate-50 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+      <main className="relative min-h-[100dvh] flex flex-col items-center justify-center bg-gradient-to-b from-white via-slate-50 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
 
         <div className="absolute top-[-200px] left-[-100px] w-[600px] h-[600px] bg-blue-400/40 dark:bg-blue-800/20 rounded-full blur-[130px] animate-blob-floating -z-10" />
         <div className="absolute bottom-[-200px] right-[-100px] w-[600px] h-[600px] bg-purple-400/40 dark:bg-purple-800/20 rounded-full blur-[130px] animate-blob-floating2 -z-10" />
@@ -73,7 +73,7 @@ export default function BuildPage() {
     );
 
   return (
-    <main className="relative min-h-screen bg-gradient-to-b from-white via-slate-50 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 pb-24">
+    <main className="relative min-h-[100dvh] bg-gradient-to-b from-white via-slate-50 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 pb-24">
 
       {/* BLOBS */}
       <div className="absolute top-[-200px] left-[-100px] w-[600px] h-[600px] bg-blue-400/40 dark:bg-blue-800/20 rounded-full blur-[130px] animate-blob-floating -z-10" />
