@@ -1,0 +1,7 @@
+/* TEAM */
+Site: Ebook Factory
+Creator: Paco Ramon
+Tech: Next.js, React, TailwindCSS, Vercel
+
+/* CONTACT */
+Email: contact@ebookfactory.com

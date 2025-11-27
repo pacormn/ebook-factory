@@ -1,5 +1,6 @@
 // app/creer-ebook-pdf-gratuit/page.tsx
 import type { Metadata } from "next";
+export const dynamic = "force-static";
 
 export const metadata: Metadata = {
   title: "Créer un ebook PDF gratuitement | Ebook Factory",
@@ -23,6 +24,8 @@ export default function CreerEbookPdfGratuitPage() {
           mobile et ordinateur.
         </p>
       </header>
+
+      
 
       <section className="space-y-3">
         <h2 className="text-2xl font-semibold">Modèles gratuits</h2>

@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Bloque les pages techniques ou privées
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /internal/
+
+# Sitemap
+Sitemap: https://ebookfactory.com/sitemap.xml
