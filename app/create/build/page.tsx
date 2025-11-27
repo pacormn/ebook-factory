@@ -260,6 +260,37 @@ export default function BuildPage() {
             </div>
           </div>
 
+<div className="mt-12 flex flex-col items-center">
+  <div className="relative w-64 h-96 shadow-2xl shadow-black/40 rounded-xl overflow-hidden bg-white">
+
+    {/* Couverture résumé */}
+    <div className="p-6">
+      <h2 className="text-xl font-bold leading-tight line-clamp-3">{title}</h2>
+      <p className="mt-3 text-sm text-gray-600 line-clamp-5">{preview.cover}</p>
+    </div>
+
+    {/* Fade en bas */}
+    <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-white to-transparent" />
+  </div>
+
+  <button
+    onClick={() => window.open("/api/ebook-pdf", "_blank")}
+    className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold shadow-lg hover:bg-blue-700"
+  >
+    Voir le PDF →
+  </button>
+</div>
+
+
+          <button
+  onClick={() => window.open("/api/ebook-pdf", "_blank")}
+  className="px-8 py-4 bg-blue-600 rounded-xl text-white font-semibold shadow-xl hover:bg-blue-700 mt-6 w-full md:w-auto"
+>
+  📄 Télécharger l’aperçu PDF
+</button>
+
+
+
           <div className="mt-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 
             shadow-2xl rounded-2xl p-8 w-full max-w-sm mx-auto text-center relative">
 
