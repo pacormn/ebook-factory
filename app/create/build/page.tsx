@@ -103,58 +103,96 @@ export default function BuildPage() {
       <div className="h-24" />
 
       {/* CONTENT */}
-      <section className="max-w-4xl mx-auto px-6">
+<section className="max-w-4xl mx-auto px-6 mt-10">
 
-        <h1 className="text-4xl font-extrabold text-center mb-10">
-          Aperçu de ton ebook
-        </h1>
-
-        {/* COVER */}
-        <div className="bg-white/70 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-700 backdrop-blur-xl shadow-xl rounded-2xl p-8 mb-12">
-          <h2 className="text-3xl font-bold mb-4">📘 Couverture</h2>
-          <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
-            {preview.cover}
-          </p>
+    {/* HERO - Mockup + titre */}
+    <div className="flex flex-col items-center text-center mb-16">
+        <div className="relative w-64 h-96 mb-8 drop-shadow-2xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl shadow-xl rotate-[-2deg]" />
+            <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl flex items-center justify-center p-6 rotate-[2deg]">
+                <h2 className="text-xl font-bold">{title}</h2>
+            </div>
         </div>
 
-        {/* INTRODUCTION */}
-        <div className="bg-white/70 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-700 backdrop-blur-xl shadow-xl rounded-2xl p-8 mb-12">
-          <h2 className="text-3xl font-bold mb-4">✨ Introduction</h2>
-          <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line leading-relaxed">
+        <h1 className="text-4xl font-extrabold mb-4">Ton ebook est prêt 📘</h1>
+        <p className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl">
+            Voici un aperçu personnalisé de ton ebook. Découvre les premiers chapitres 
+            avant de débloquer la version complète.
+        </p>
+    </div>
+
+    {/* Ce que tu vas apprendre */}
+    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-8 shadow-xl border border-gray-300 dark:border-gray-700 mb-16">
+        <h2 className="text-2xl font-bold mb-4">🎯 Ce que tu vas apprendre</h2>
+
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300 text-lg">
+            <li className="flex gap-2 items-center"><span className="text-blue-600">✔</span> {promise}</li>
+            <li className="flex gap-2 items-center"><span className="text-blue-600">✔</span> {goal}</li>
+            <li className="flex gap-2 items-center"><span className="text-blue-600">✔</span> Comment {audienceProblem}</li>
+            <li className="flex gap-2 items-center"><span className="text-blue-600">✔</span> Adapté pour {audience}</li>
+        </ul>
+    </div>
+
+    {/* COVER */}
+    <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-8 shadow-lg mb-10">
+        <h2 className="text-2xl font-bold mb-3">📘 Couverture</h2>
+        <p className="text-gray-700 dark:text-gray-300 text-lg whitespace-pre-line">{preview.cover}</p>
+    </div>
+
+    {/* INTRODUCTION */}
+    <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-8 shadow-lg mb-10">
+        <h2 className="text-2xl font-bold mb-3">✨ Introduction</h2>
+
+        {/* Apparition progressive du texte */}
+        <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg animate-fadeIn">
             {preview.introduction}
-          </p>
-        </div>
+        </p>
+    </div>
 
-        {/* FIRST CHAPTERS */}
-        {preview.chapters.map((c: any, i: number) => (
-          <div
-            key={i}
-            className="bg-white/70 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-700 backdrop-blur-xl shadow-xl rounded-2xl p-8 mb-12"
-          >
-            <h2 className="text-2xl font-bold mb-4">📖 {c.title}</h2>
-            <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line leading-relaxed">
-              {c.content}
+    {/* Chapitres visibles */}
+    {preview.chapters.map((c: any, idx: number) => (
+        <div
+            key={idx}
+            className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-8 shadow-lg mb-10 animate-slideUp"
+            style={{ animationDelay: `${idx * 0.3}s` }}
+        >
+            <h2 className="text-2xl font-bold mb-3">📖 {c.title}</h2>
+            
+            {/* Extrait, pas tout */}
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line line-clamp-5">
+                {c.content}
             </p>
-          </div>
-        ))}
 
-        {/* LOCKED CHAPTERS */}
-        <div className="text-center mt-20 mb-10">
-          <Lock size={40} className="mx-auto text-gray-400 mb-4" />
-          <h3 className="text-2xl font-bold mb-2">Les autres chapitres sont verrouillés 🔒</h3>
-          <p className="text-gray-600 dark:text-gray-300">
-            Débloque le livre complet pour accéder à tout le contenu.
-          </p>
-
-          <Button
-            onClick={() => router.push("/pay")}
-            className="px-10 py-6 text-lg rounded-2xl bg-blue-600 hover:bg-blue-700 mt-6"
-          >
-            Débloquer l’ebook complet
-          </Button>
+            <button className="text-blue-600 hover:underline mt-3">
+                Lire l’extrait complet →
+            </button>
         </div>
+    ))}
 
-      </section>
+    {/* ZONE VERROUILLÉE */}
+    <div className="text-center mt-20">
+        <div className="bg-gray-300/20 dark:bg-gray-700/30 border border-gray-400 dark:border-gray-600 rounded-2xl p-10 backdrop-blur-xl relative">
+            
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                <Lock size={48} className="text-white/80" />
+            </div>
+
+            <h2 className="text-2xl font-bold mb-4">Les autres chapitres sont verrouillés 🔒</h2>
+            <p className="text-gray-700 dark:text-gray-300 max-w-lg mx-auto mb-6">
+                Débloque l’ebook complet pour lire l’intégralité des chapitres, 
+                les stratégies avancées et toutes les méthodes exclusives.
+            </p>
+
+            <Button
+                className="px-10 py-6 text-lg rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-xl"
+                onClick={() => router.push("/pay")}
+            >
+                Débloquer l’ebook complet →
+            </Button>
+        </div>
+    </div>
+
+</section>
     </main>
   );
 }
