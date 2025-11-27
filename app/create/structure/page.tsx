@@ -361,23 +361,16 @@ hover:shadow-blue-900/20 active:scale-[0.97]
                     className="space-y-4"
                   >
                     {localChapters.map((chapter, index) => (
-                      
                       <Draggable
                         key={chapter.id}
                         draggableId={chapter.id}
                         index={index}
                       >
-                        
                         {(dragProvided) => (
-                          
                           <div
-  key={chapter.id}
-  style={{
-    animationDelay: `${index * 80}ms`,
-  }}
                             ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}
-                            className="rounded-2xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-gray-200 dark:border-gray-800 shadow-lg p-4 fade-in-chapter"
+                            className="rounded-2xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-gray-200 dark:border-gray-800 shadow-lg p-4"
                           >
                             <div className="flex items-start gap-3">
                               {/* Handle drag chapitre */}
