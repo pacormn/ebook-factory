@@ -1,11 +1,38 @@
 // app/creer-ebook-pour-tiktok/page.tsx
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Créer un ebook pour TikTok en moins de 10 minutes | Ebook Factory",
+export const metadata = {
+  title: "Créer un ebook pour TikTok (Méthode 2025) | Ebook Factory",
   description:
-    "Apprends à créer un ebook optimisé pour TikTok en quelques minutes grâce à l’IA en 2025. Idées de sujets, structure et méthode simple.",
+    "Apprends à créer un ebook optimisé TikTok rapidement grâce à l’IA. Guide complet 2025.",
+    
+  openGraph: {
+    title: "Créer un ebook TikTok en 2025 | Ebook Factory",
+    description:
+      "Méthode simple pour créer un ebook viral TikTok grâce à l’IA. Explications, exemples et étapes.",
+    url: "https://ebookfactory.com/creer-ebook-pour-tiktok",
+    siteName: "Ebook Factory",
+    images: [
+      {
+        url: "https://ebook-factory.fr/images/ebook-factory-cover.webp",
+        width: 1200,
+        height: 630,
+        alt: "Créer un ebook TikTok avec l’IA",
+      },
+    ],
+    locale: "fr_FR",
+    type: "article",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Créer un ebook pour TikTok | Ebook Factory",
+    description:
+      "Découvre comment créer un ebook TikTok viral grâce à l'intelligence artificielle.",
+    images: ["https://ebookfactory.fr/images/ebook-factory-cover.webp"],
+  },
 };
+
 
 export default function CreerEbookPourTikTokPage() {
   return (
