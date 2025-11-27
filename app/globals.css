@@ -315,3 +315,30 @@ html, body {
 .animate-glow-pulse {
   animation: glow-pulse 3s ease-in-out infinite;
 }
+
+
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 8s ease infinite;
+}
+
+/* Footer link hover */
+.footer-link {
+  color: white;
+  opacity: 0.75;
+  transition: all 0.25s;
+}
+
+.footer-link:hover {
+  opacity: 1;
+  transform: translateX(2px);
+}
