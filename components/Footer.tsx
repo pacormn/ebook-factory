@@ -43,9 +43,10 @@ export default function Footer() {
             <div>
               <h3 className="font-semibold text-lg mb-3">Légal</h3>
               <ul className="space-y-2 text-white/70">
-                <FooterLink href="/conditions">Conditions</FooterLink>
-                <FooterLink href="/politique-confidentialite">Confidentialité</FooterLink>
-                <FooterLink href="/mentions-legales">Mentions légales</FooterLink>
+                <FooterLink href="/legal-center">Legal centere</FooterLink>
+                <FooterLink href="/conditions">Conditions (CGU)</FooterLink>
+                <FooterLink href="/conditions-vente">Conditions de vente (CGV)</FooterLink>
+                <FooterLink href="/politique-confidentialite">Politique de confidentialite</FooterLink>
                 <FooterLink href="/cookies">Cookies</FooterLink>
               </ul>
             </div>
@@ -53,7 +54,7 @@ export default function Footer() {
             <div>
               <h3 className="font-semibold text-lg mb-3">Ressources</h3>
               <ul className="space-y-2 text-white/70">
-                <FooterLink href="/blog">Guides & ressources</FooterLink>
+                <FooterLink href="/guides">Guides & ressources</FooterLink>
                 <FooterLink href="/support">Support</FooterLink>
                 <FooterLink href="/contact">Contact</FooterLink>
               </ul>

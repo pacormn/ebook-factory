@@ -342,3 +342,41 @@ html, body {
   opacity: 1;
   transform: translateX(2px);
 }
+/* 3D hover tilt */
+.card-3d {
+  transform: perspective(800px) rotateX(0deg) rotateY(0deg) translateY(0px);
+  transition: all 0.4s cubic-bezier(.19,1,.22,1);
+}
+
+.card-3d:hover {
+  transform: perspective(800px) rotateX(4deg) rotateY(-6deg) translateY(-6px);
+}
+
+/* Light reflection */
+.card-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-glow::before {
+  content: "";
+  position: absolute;
+  top: -120%;
+  left: -120%;
+  width: 250%;
+  height: 250%;
+  background: linear-gradient(
+    120deg,
+    transparent 40%,
+    rgba(255,255,255,0.25) 50%,
+    transparent 60%
+  );
+  transform: rotate(25deg);
+  transition: 0.8s;
+}
+
+.card-3d:hover.card-glow::before {
+  top: -20%;
+  left: -20%;
+}
+
