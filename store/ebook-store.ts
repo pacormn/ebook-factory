@@ -28,6 +28,7 @@ type EbookState = {
 
   // --- Structure ---
   chapters: Chapter[];
+  length: string,
 
   // Setters
   setTitle: (title: string) => void;
@@ -41,6 +42,8 @@ type EbookState = {
   setAudienceProblem: (v: string) => void;
 
   setChapters: (chapters: Chapter[]) => void;
+  setLength: (v: string) => void;
+
 
   reset: () => void;
 };
@@ -60,6 +63,7 @@ export const useEbookStore = create<EbookState>((set) => ({
 
   // --- Structure ---
   chapters: [],
+  length: "",
 
   // --- Mutateurs ---
   setTitle: (title) => set({ title }),
@@ -73,6 +77,7 @@ export const useEbookStore = create<EbookState>((set) => ({
   setAudienceProblem: (audienceProblem) => set({ audienceProblem }),
 
   setChapters: (chapters) => set({ chapters }),
+  setLength: (v: string) => set({ length: v }),
 
   // --- Reset complet (utile après export PDF) ---
   reset: () =>
@@ -86,5 +91,6 @@ export const useEbookStore = create<EbookState>((set) => ({
       audienceLevel: "",
       audienceProblem: "",
       chapters: [],
+      length: "",
     }),
 }));
