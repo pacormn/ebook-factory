@@ -369,24 +369,15 @@ hover:shadow-blue-900/20 active:scale-[0.97]
                       >
                         
                         {(dragProvided) => (
-                          <>
+                          
                           <div
   key={chapter.id}
-  ref={dragProvided.innerRef}
-  {...dragProvided.draggableProps}
-  className={`
-    rounded-2xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-gray-200 dark:border-gray-800
-    shadow-lg p-4 fade-in-chapter
-  `}
   style={{
     animationDelay: `${index * 80}ms`,
   }}
-></div>
-                          
-                          <div
                             ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}
-                            className="rounded-2xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-gray-200 dark:border-gray-800 shadow-lg p-4"
+                            className="rounded-2xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-gray-200 dark:border-gray-800 shadow-lg p-4 fade-in-chapter"
                           >
                             <div className="flex items-start gap-3">
                               {/* Handle drag chapitre */}
@@ -498,9 +489,7 @@ hover:shadow-blue-900/20 active:scale-[0.97]
                               </Button>
                             </div>
                           </div>
-                          </>
                         )}
-                        
                       </Draggable>
                     ))}
 
