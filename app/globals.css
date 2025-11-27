@@ -159,3 +159,19 @@ html, body {
 .animate-fade-in {
   animation: fade-in 0.2s ease-out;
 }
+
+
+@keyframes modal-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-modal-pop {
+  animation: modal-pop 0.25s cubic-bezier(0.3, 0, 0.2, 1);
+}

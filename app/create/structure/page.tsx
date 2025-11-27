@@ -501,49 +501,82 @@ export default function StructurePage() {
 
       <div className="h-32" />
 
-      {showConfirmModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[100]">
-          <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-8 max-w-md w-[90%] border border-gray-200 dark:border-gray-700 animate-fade-in">
-            
-            <h3 className="text-xl font-bold text-center mb-4">
-              Confirmer la régénération ?
-            </h3>
-            
-            <p className="text-gray-600 dark:text-gray-300 text-center mb-8">
-              Cette action va <span className="font-semibold text-red-600">écraser entièrement</span> 
-              la structure actuelle de ton ebook.
-            </p>
-            
-            <div className="flex items-center justify-center gap-4">
-              {/* Cancel */}
-              <Button
-                onClick={() => setShowConfirmModal(false)}
-                className="px-5 py-3 rounded-xl bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200"
-              >
-                Annuler
-              </Button>
-            
-              {/* Validate */}
-              <Button
-                onClick={async () => {
-                  setShowConfirmModal(false);
-                  await handleRegenerate();
-                }}
-                className="px-5 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white"
-              >
-                {regenLoading ? (
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Régénération…
-                  </div>
-                ) : (
-                  "Regénérer"
-                )}
-              </Button>
-            </div>
-          </div>
+{showConfirmModal && (
+  <div
+    className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-[200]"
+    onClick={() => !regenLoading && setShowConfirmModal(false)}
+  >
+    <div
+      className="relative bg-white/20 dark:bg-gray-900/30 backdrop-blur-2xl border border-white/30 dark:border-gray-700/30 shadow-2xl rounded-3xl p-8 w-[90%] max-w-md animate-modal-pop"
+      onClick={(e) => e.stopPropagation()} // Empêche la fermeture quand on clique dans la modale
+    >
+      {/* Icône d’alerte */}
+      <div className="flex justify-center mb-4">
+        <div className="h-16 w-16 rounded-2xl bg-red-500/20 border border-red-500/30 flex items-center justify-center">
+          <svg
+            className="w-10 h-10 text-red-500"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v3m0 4h.01M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"
+            />
+          </svg>
         </div>
-      )}
-      
+      </div>
+
+      {/* Texte */}
+      <h3 className="text-xl font-bold text-center text-gray-900 dark:text-gray-100 mb-3">
+        Regénérer la structure ?
+      </h3>
+
+      <p className="text-center text-gray-700 dark:text-gray-300 mb-8 leading-relaxed">
+        Cette action va <span className="font-semibold text-red-600">effacer toute votre structure actuelle</span> et en générer une nouvelle.
+      </p>
+
+      {/* Boutons */}
+      <div className="flex items-center justify-center gap-4">
+        
+        {/* Bouton Annuler */}
+        <button
+          onClick={() => !regenLoading && setShowConfirmModal(false)}
+          className="px-6 py-3 rounded-xl text-gray-700 dark:text-gray-200 bg-white/70 dark:bg-gray-800/50
+                     backdrop-blur-xl border border-gray-300/50 dark:border-gray-700/50 shadow-md
+                     hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+        >
+          Annuler
+        </button>
+
+        {/* Bouton Regénérer */}
+        <button
+          onClick={async () => {
+            if (regenLoading) return;
+            await handleRegenerate();
+            setShowConfirmModal(false);
+          }}
+          className="px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-white 
+                     shadow-lg hover:shadow-xl hover:brightness-110 transition-all 
+                     flex items-center gap-2"
+        >
+          {regenLoading ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Régénération…
+            </>
+          ) : (
+            "Regénérer"
+          )}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
     </main>
   );
 }
