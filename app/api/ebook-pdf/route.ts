@@ -4,40 +4,56 @@ import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 export async function POST(req: Request) {
   const {
     title,
-    introduction,
     cover,
+    introduction,
     chapters,
     style,
-    audience
+    audience,
   } = await req.json();
 
   try {
     const pdfDoc = await PDFDocument.create();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
+    // Utility: wrap long text into lines
+    function wrapText(text: string, maxLen: number) {
+      const words = text.split(" ");
+      const lines: string[] = [];
+      let line = "";
+
+      for (const word of words) {
+        if ((line + word).length > maxLen) {
+          lines.push(line.trim());
+          line = word + " ";
+        } else {
+          line += word + " ";
+        }
+      }
+      if (line.trim().length > 0) lines.push(line.trim());
+      return lines;
+    }
+
     const addPage = (text: string, pageTitle?: string) => {
-      const page = pdfDoc.addPage([595, 842]); // format A4
+      const page = pdfDoc.addPage([595, 842]); // A4
       const { width, height } = page.getSize();
       const fontSize = 14;
 
-      // Title
+      // title
       if (pageTitle) {
         page.drawText(pageTitle, {
           x: 40,
           y: height - 60,
           size: 22,
           font,
-          color: rgb(0.2, 0.2, 0.7),
+          color: rgb(0.15, 0.2, 0.7),
         });
       }
 
-      // Content
-      const textWidth = 515;
-      const wrapped = wrapText(text, 90);
+      const lines = wrapText(text || "", 90);
+      let y = pageTitle ? height - 100 : height - 60;
 
-      let y = height - 100;
-      for (const line of wrapped) {
-        if (y < 50) break; // stop page overflow
+      for (const line of lines) {
+        if (y < 60) break;
         page.drawText(line, {
           x: 40,
           y,
@@ -49,87 +65,93 @@ export async function POST(req: Request) {
       }
     };
 
-    // Utility: wrap long text
-    function wrapText(text: string, maxLen: number) {
-      const words = text.split(" ");
-      const lines = [];
-      let line = "";
-
-      for (const word of words) {
-        if ((line + word).length > maxLen) {
-          lines.push(line);
-          line = word + " ";
-        } else {
-          line += word + " ";
-        }
-      }
-      lines.push(line);
-      return lines;
-    }
-
-    // 📘 COVER PAGE
+    // 📘 PAGE 1 : COVER
     {
       const page = pdfDoc.addPage([595, 842]);
       const { height } = page.getSize();
 
-      page.drawText(title, {
-        x: 40,
-        y: height - 120,
-        size: 32,
-        font,
-        color: rgb(0.1, 0.1, 0.1),
+      // bande colorée
+      page.drawRectangle({
+        x: 0,
+        y: height - 160,
+        width: 595,
+        height: 160,
+        color: rgb(0.11, 0.29, 0.77),
       });
 
-      page.drawText(cover, {
+      page.drawText(title || "Titre de l’ebook", {
         x: 40,
-        y: height - 180,
-        size: 16,
+        y: height - 110,
+        size: 30,
         font,
-        color: rgb(0.4, 0.4, 0.4),
+        color: rgb(1, 1, 1),
       });
 
-      page.drawText(`Audience : ${audience}`, {
+      page.drawText(cover || "", {
         x: 40,
-        y: height - 220,
+        y: height - 190,
         size: 14,
         font,
-        color: rgb(0.3, 0.3, 0.3),
+        color: rgb(0.25, 0.25, 0.25),
       });
 
-      page.drawText(`Style : ${style}`, {
+      page.drawText(`Audience : ${audience || "Non précisée"}`, {
+        x: 40,
+        y: height - 230,
+        size: 12,
+        font,
+        color: rgb(0.35, 0.35, 0.35),
+      });
+
+      page.drawText(`Style : ${style || "Standard"}`, {
         x: 40,
         y: height - 250,
-        size: 14,
+        size: 12,
         font,
-        color: rgb(0.3, 0.3, 0.3),
+        color: rgb(0.35, 0.35, 0.35),
       });
     }
 
-    // ✨ Introduction
-    addPage(introduction, "Introduction");
-
-    // 📖 First chapters (max 3)
-    for (const chap of chapters.slice(0, 3)) {
-      addPage(chap.content, chap.title);
+    // ✨ PAGE 2 : INTRODUCTION
+    if (introduction) {
+      addPage(introduction, "Introduction");
     }
 
-    // 🔒 LOCK PAGE
+    // 📖 PAGES SUIVANTES : premiers chapitres (max 3)
+    if (Array.isArray(chapters)) {
+      for (const chap of chapters.slice(0, 3)) {
+        addPage(chap.content || "", chap.title || "Chapitre");
+      }
+    }
+
+    // 🔒 PAGE LOCK
     addPage(
-      "Les chapitres suivants sont verrouillés.\n\nDébloque l’ebook complet pour obtenir :\n- 50+ pages\n- Stratégies avancées\n- Contenus exclusifs\n- Droits de revente",
+      "Les chapitres suivants sont verrouillés.\n\n" +
+        "Débloque l’ebook complet pour obtenir :\n" +
+        "- Toutes les stratégies avancées\n" +
+        "- Le plan d’action complet\n" +
+        "- Tous les chapitres et bonus\n" +
+        "- Les droits de revente de l’ebook",
       "Chapitres verrouillés"
     );
 
     const pdfBytes = await pdfDoc.save();
-    return new NextResponse(pdfBytes, {
+
+    // ✅ On transforme le Uint8Array en Blob pour satisfaire NextResponse (BodyInit)
+    const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+
+    return new NextResponse(pdfBlob, {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": 'inline; filename="ebook-preview.pdf"',
       },
     });
-
   } catch (error) {
     console.error("PDF ERROR:", error);
-    return NextResponse.json({ error: "PDF creation failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Impossible de générer le PDF." },
+      { status: 500 }
+    );
   }
 }

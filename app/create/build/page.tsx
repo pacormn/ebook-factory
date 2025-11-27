@@ -261,33 +261,57 @@ export default function BuildPage() {
           </div>
 
 <div className="mt-12 flex flex-col items-center">
-  <div className="relative w-64 h-96 shadow-2xl shadow-black/40 rounded-xl overflow-hidden bg-white">
-
-    {/* Couverture résumé */}
-    <div className="p-6">
-      <h2 className="text-xl font-bold leading-tight line-clamp-3">{title}</h2>
-      <p className="mt-3 text-sm text-gray-600 line-clamp-5">{preview.cover}</p>
+<div className="mt-16 mb-6 flex flex-col items-center">
+  <div className="relative w-56 h-80 rounded-xl bg-white shadow-2xl shadow-black/30 overflow-hidden border border-gray-200">
+    <div className="h-24 bg-gradient-to-br from-blue-600 to-indigo-500 p-4 flex items-end">
+      <h3 className="text-white font-bold text-lg line-clamp-2">
+        {title}
+      </h3>
     </div>
-
-    {/* Fade en bas */}
-    <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-white to-transparent" />
+    <div className="p-4">
+      <p className="text-xs uppercase tracking-[0.18em] text-gray-400 mb-2">
+        Aperçu PDF
+      </p>
+      <p className="text-sm text-gray-700 line-clamp-5">
+        {preview.cover}
+      </p>
+    </div>
+    <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />
   </div>
 
-  <button
-    onClick={() => window.open("/api/ebook-pdf", "_blank")}
-    className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold shadow-lg hover:bg-blue-700"
-  >
-    Voir le PDF →
-  </button>
+  <p className="mt-3 text-sm text-gray-500">
+    Aperçu réel du PDF que tu vas recevoir
+  </p>
 </div>
 
 
-          <button
-  onClick={() => window.open("/api/ebook-pdf", "_blank")}
-  className="px-8 py-4 bg-blue-600 rounded-xl text-white font-semibold shadow-xl hover:bg-blue-700 mt-6 w-full md:w-auto"
+<Button
+  className="mt-6 w-full md:w-auto px-8 py-4 rounded-2xl bg-slate-900 text-white hover:bg-slate-800 shadow-lg"
+  onClick={async () => {
+    if (!preview) return;
+
+    const res = await fetch("/api/ebook-pdf", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title,
+        cover: preview.cover,
+        introduction: preview.introduction,
+        chapters: preview.chapters,
+        style,
+        audience,
+      }),
+    });
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+  }}
 >
-  📄 Télécharger l’aperçu PDF
-</button>
+  📄 Voir l’aperçu PDF
+</Button>
+</div>
+
 
 
 
