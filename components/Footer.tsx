@@ -4,75 +4,89 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="
-      w-full mt-32 border-t border-white/10 dark:border-white/5 
-      bg-white/30 dark:bg-gray-900/40 backdrop-blur-xl
-      shadow-[0_-4px_30px_rgba(0,0,0,0.1)]
-    ">
-      <div className="max-w-6xl mx-auto px-6 py-12">
+    <footer className="relative w-full mt-32">
+      {/* 🔥 BACKGROUND GRADIENT ANIMÉ */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 
+                      opacity-[0.25] blur-[90px] animate-gradient-flow pointer-events-none" />
+
+      <div className="relative max-w-6xl mx-auto px-6 py-16 text-white">
         
-        {/* --- TOP ZONE --- */}
-        <div className="flex flex-col md:flex-row justify-between gap-14">
+        {/* TOP FLEX */}
+        <div className="flex flex-col md:flex-row justify-between gap-16">
           
           {/* LOGO */}
           <div className="flex flex-col gap-4 md:w-1/3">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600" />
-              <h2 className="text-xl font-bold">E-Book Factory</h2>
+              <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-blue-400 to-purple-500 shadow-lg shadow-purple-800/40 animate-glow-pulse" />
+              <h2 className="text-2xl font-bold tracking-tight">E-Book Factory</h2>
             </div>
 
-            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-              Le générateur d’ebooks le plus rapide et le plus complet du marché.  
-              Création instantanée, contenu sur-mesure, et droits de revente inclus.
+            <p className="text-white/70 text-sm leading-relaxed">
+              Génère des ebooks professionnels en quelques secondes.  
+              Contenu sur-mesure, droits de revente, design premium — tout inclus.
             </p>
           </div>
 
-          {/* LINKS GRID */}
+          {/* LINKS */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-10 md:w-2/3">
-
-            {/* PRODUCT */}
+            
             <div>
-              <h3 className="font-semibold mb-3">Produit</h3>
-              <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-                <li><Link href="/create/title" className="hover:text-blue-500 transition">Créer un ebook</Link></li>
-                <li><Link href="/pricing" className="hover:text-blue-500 transition">Tarifs</Link></li>
-                <li><Link href="/examples" className="hover:text-blue-500 transition">Exemples</Link></li>
-                <li><Link href="/faq" className="hover:text-blue-500 transition">FAQ</Link></li>
+              <h3 className="font-semibold text-lg mb-3">Produit</h3>
+              <ul className="space-y-2 text-white/70">
+                <FooterLink href="/create/title">Créer un ebook</FooterLink>
+                <FooterLink href="/pricing">Tarifs</FooterLink>
+                <FooterLink href="/examples">Exemples</FooterLink>
+                <FooterLink href="/faq">FAQ</FooterLink>
               </ul>
             </div>
 
-            {/* LEGAL */}
             <div>
-              <h3 className="font-semibold mb-3">Légal</h3>
-              <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-                <li><Link href="/conditions" className="hover:text-blue-500 transition">Conditions</Link></li>
-                <li><Link href="/confidentialite" className="hover:text-blue-500 transition">Confidentialité</Link></li>
-                <li><Link href="/licence" className="hover:text-blue-500 transition">Licence de revente</Link></li>
+              <h3 className="font-semibold text-lg mb-3">Légal</h3>
+              <ul className="space-y-2 text-white/70">
+                <FooterLink href="/conditions">Conditions</FooterLink>
+                <FooterLink href="/politique-confidentialite">Confidentialité</FooterLink>
+                <FooterLink href="/mentions-legales">Mentions légales</FooterLink>
+                <FooterLink href="/cookies">Cookies</FooterLink>
               </ul>
             </div>
 
-            {/* RESOURCES */}
             <div>
-              <h3 className="font-semibold mb-3">Ressources</h3>
-              <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-                <li><Link href="/blog" className="hover:text-blue-500 transition">Blog</Link></li>
-                <li><Link href="/contact" className="hover:text-blue-500 transition">Contact</Link></li>
-                <li><Link href="/support" className="hover:text-blue-500 transition">Support</Link></li>
-                <li><Link href="/guides" className="hover:text-blue-500 transition">Guides & ressources</Link></li>
+              <h3 className="font-semibold text-lg mb-3">Ressources</h3>
+              <ul className="space-y-2 text-white/70">
+                <FooterLink href="/guides">Guides & ressources</FooterLink>
+                <FooterLink href="/support">Support</FooterLink>
+                <FooterLink href="/contact">Contact</FooterLink>
               </ul>
             </div>
 
           </div>
         </div>
 
-        {/* --- BOTTOM BAR --- */}
-        <div className="mt-12 pt-6 border-t border-white/10 dark:border-white/5 
-                        flex flex-col md:flex-row justify-between text-sm text-gray-600 dark:text-gray-400">
+        {/* BOTTOM */}
+        <div className="mt-14 pt-6 border-t border-white/20 flex flex-col md:flex-row justify-between text-sm text-white/60">
           <p>© {new Date().getFullYear()} E-Book Factory — Tous droits réservés.</p>
-          <p>Conçu avec ❤️ pour créateurs et entrepreneurs.</p>
+          <p>Propulsé pour créateurs & entrepreneurs.</p>
         </div>
 
       </div>
     </footer>
+  );
+}
+
+/* 🔥 Composant lien animé */
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <li>
+      <Link
+        href={href}
+        className="relative inline-block transition-all duration-300
+                 hover:text-white hover:translate-x-[2px]
+                 before:absolute before:-bottom-0.5 before:left-0
+                 before:h-[2px] before:w-0 before:bg-white before:transition-all before:duration-300
+                 hover:before:w-full"
+      >
+        {children}
+      </Link>
+    </li>
   );
 }
