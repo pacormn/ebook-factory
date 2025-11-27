@@ -324,19 +324,21 @@ export default function StructurePage() {
         ) : (
           <div className="mt-12 text-left">
             <div className="flex justify-end mt-4">
-              <Button
-                onClick={() => setShowConfirmModal(true)}
-                className="px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white"
-                disabled={regenLoading}
-              >
-                {regenLoading ? (
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Regénération...
-                  </div>
-                ) : (
-                  "🔁 Regénérer la structure"
-                )}
-              </Button>
+<Button
+  onClick={() => setShowConfirmModal(true)}
+  disabled={regenLoading}
+  className={`
+    px-6 py-3 rounded-xl text-white font-medium shadow-lg
+    bg-gradient-to-r from-orange-500 to-red-500
+    hover:from-orange-400 hover:to-red-400
+    transition-all duration-200
+    hover:shadow-orange-500/30 active:scale-[0.97]
+    hover:animate-[micro-tilt_0.35s_ease-in-out]
+  `}
+>
+  🔁 Regénérer la structure
+</Button>
+
             </div>
 
             <DragDropContext onDragEnd={handleDragEnd}>
