@@ -111,10 +111,10 @@ export async function POST(req: Request) {
       });
 
       // Subtitle
-      const subtitle =
-        description ||
-        promise ||
-        "Un ebook professionnel généré automatiquement avec E-Book Factory.";
+const subtitle =
+  description ||
+  promise ||
+  "Un ebook professionnel genere automatiquement avec E-Book Factory.";
 
       let y = writeWrapped(page, subtitle, margin, pageHeight - 200, 14, 20);
 
@@ -217,7 +217,7 @@ export async function POST(req: Request) {
 
       let y = writeWrapped(
         page,
-        "Tu viens de lire un extrait. La version complète inclut tous les chapitres, la mise en page finale, et la licence de revente illimitée.",
+"Tu viens de lire un extrait. La version complete inclut tous les chapitres, la mise en page finale et la licence de revente illimitee.",
         margin,
         pageHeight - 150,
         14,
@@ -232,13 +232,13 @@ export async function POST(req: Request) {
         color: PRIMARY,
       });
 
-      page.drawText("Débloquer l’ebook complet →", {
-        x: margin + 15,
-        y: y - 20,
-        size: 14,
-        font: fontBold,
-        color: rgb(1, 1, 1),
-      });
+page.drawText("Debloquer l'ebook complet ->", {
+  x: margin + 15,
+  y: y - 20,
+  size: 14,
+  font: fontBold,
+  color: rgb(1, 1, 1),
+});
 
       drawFooter(page, pageCount);
     }
