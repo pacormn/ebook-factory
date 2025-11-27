@@ -36,6 +36,8 @@ type Chapter = {
 export default function StructurePage() {
   const router = useRouter();
   const { title, chapters, setChapters } = useEbookStore();
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
 
   // On suppose que le store peut accepter sections (tu peux adapter le type dans ton store)
   const [localChapters, setLocalChapters] = useState<Chapter[]>(
@@ -167,6 +169,38 @@ export default function StructurePage() {
     }
   }
 
+  const [regenLoading, setRegenLoading] = useState(false);
+  
+  async function handleRegenerate() {
+    if (!title) return;
+    setRegenLoading(true);
+  
+    try {
+      const result = await generateStructure(title);
+    
+      const formatted: Chapter[] = result.map((c: any) => ({
+        id: crypto.randomUUID(),
+        title: c.title,
+        sections: Array.isArray(c.sections)
+          ? c.sections.map((s: any) => ({
+              id: crypto.randomUUID(),
+              title: s.title,
+            }))
+          : [],
+      }));
+    
+      // Mise à jour du store
+      setChapters(formatted as any);
+      setLocalChapters(formatted);
+    
+    } catch (e) {
+      console.error("Erreur regénération structure :", e);
+    }
+  
+    setRegenLoading(false);
+  }
+  
+
   // --- CRUD Chapitres & Sections ---
 
   function updateChapterTitle(id: string, value: string) {
@@ -289,6 +323,22 @@ export default function StructurePage() {
           </div>
         ) : (
           <div className="mt-12 text-left">
+            <div className="flex justify-end mt-4">
+              <Button
+                onClick={() => setShowConfirmModal(true)}
+                className="px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white"
+                disabled={regenLoading}
+              >
+                {regenLoading ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Regénération...
+                  </div>
+                ) : (
+                  "🔁 Regénérer la structure"
+                )}
+              </Button>
+            </div>
+
             <DragDropContext onDragEnd={handleDragEnd}>
               {/* CHAPTERS DnD */}
               <Droppable droppableId="chapters" type="CHAPTER">
@@ -450,6 +500,50 @@ export default function StructurePage() {
       </section>
 
       <div className="h-32" />
+
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[100]">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-8 max-w-md w-[90%] border border-gray-200 dark:border-gray-700 animate-fade-in">
+            
+            <h3 className="text-xl font-bold text-center mb-4">
+              Confirmer la régénération ?
+            </h3>
+            
+            <p className="text-gray-600 dark:text-gray-300 text-center mb-8">
+              Cette action va <span className="font-semibold text-red-600">écraser entièrement</span> 
+              la structure actuelle de ton ebook.
+            </p>
+            
+            <div className="flex items-center justify-center gap-4">
+              {/* Cancel */}
+              <Button
+                onClick={() => setShowConfirmModal(false)}
+                className="px-5 py-3 rounded-xl bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200"
+              >
+                Annuler
+              </Button>
+            
+              {/* Validate */}
+              <Button
+                onClick={async () => {
+                  setShowConfirmModal(false);
+                  await handleRegenerate();
+                }}
+                className="px-5 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white"
+              >
+                {regenLoading ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Régénération…
+                  </div>
+                ) : (
+                  "Regénérer"
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      
     </main>
   );
 }
