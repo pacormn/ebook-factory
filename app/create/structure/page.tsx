@@ -315,32 +315,18 @@ export default function StructurePage() {
         </p>
 
         {loading ? (
-<div className="flex flex-col items-center gap-6 mt-16">
+<div className="flex flex-col items-center gap-6 mt-20">
 
-  {/* Loader premium */}
-  <div className="relative w-20 h-20">
-    <div className="
-      absolute inset-0 rounded-full
-      bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500
-      blur-[6px] opacity-70 animate-spin-slow
-    "></div>
-
-    <div className="
-      absolute inset-1 rounded-full
-      bg-white/10 dark:bg-gray-900/30
-      backdrop-blur-xl border border-white/20 dark:border-gray-700/30
-      shadow-inner
-    "></div>
-
-    <div className="
-      absolute inset-3 rounded-full border-2
-      border-white/40 dark:border-white/10
-      animate-pulse-slow
-    "></div>
+  {/* Loader Stripe-Like */}
+  <div className="relative w-64 h-2 rounded-full overflow-hidden bg-white/10 dark:bg-gray-800/40 backdrop-blur-xl border border-white/20 dark:border-gray-700/30">
+    <div
+      className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500
+                 animate-loader-stripe"
+    ></div>
   </div>
 
   {/* Texte animé */}
-  <p className="text-gray-700 dark:text-gray-300 text-lg animate-pulse">
+  <p className="text-gray-700 dark:text-gray-300 text-lg animate-pulse-slow">
     Génération de la structure…
   </p>
 </div>
@@ -375,12 +361,28 @@ hover:shadow-blue-900/20 active:scale-[0.97]
                     className="space-y-4"
                   >
                     {localChapters.map((chapter, index) => (
+                      
                       <Draggable
                         key={chapter.id}
                         draggableId={chapter.id}
                         index={index}
                       >
+                        
                         {(dragProvided) => (
+                          <>
+                          <div
+  key={chapter.id}
+  ref={dragProvided.innerRef}
+  {...dragProvided.draggableProps}
+  className={`
+    rounded-2xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-gray-200 dark:border-gray-800
+    shadow-lg p-4 fade-in-chapter
+  `}
+  style={{
+    animationDelay: `${index * 80}ms`,
+  }}
+></div>
+                          
                           <div
                             ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}
@@ -496,7 +498,9 @@ hover:shadow-blue-900/20 active:scale-[0.97]
                               </Button>
                             </div>
                           </div>
+                          </>
                         )}
+                        
                       </Draggable>
                     ))}
 
