@@ -135,18 +135,24 @@ export async function POST(req: Request) {
       "Chapitres verrouillés"
     );
 
-    const pdfBytes = await pdfDoc.save();
+const pdfBytes = await pdfDoc.save();
 
-    // ✅ On transforme le Uint8Array en Blob pour satisfaire NextResponse (BodyInit)
-    const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+// Convert Uint8Array → ReadableStream
+const stream = new ReadableStream({
+  start(controller) {
+    controller.enqueue(pdfBytes);
+    controller.close();
+  },
+});
 
-    return new NextResponse(pdfBlob, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": 'inline; filename="ebook-preview.pdf"',
-      },
-    });
+return new NextResponse(stream, {
+  status: 200,
+  headers: {
+    "Content-Type": "application/pdf",
+    "Content-Disposition": 'inline; filename="ebook-preview.pdf"',
+  },
+});
+
   } catch (error) {
     console.error("PDF ERROR:", error);
     return NextResponse.json(
