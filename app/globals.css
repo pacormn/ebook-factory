@@ -8,6 +8,13 @@ html, body {
   overflow-x: hidden;
 }
 
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch; /* FIX scroll iOS */
+  position: relative;
+}
+
 
 /* ===================== */
 /* REAL GLASS NAVBAR     */
@@ -288,3 +295,5 @@ html, body {
 .cover-shimmer {
   animation: cover-shimmer 2.4s ease-in-out infinite;
 }
+
+
