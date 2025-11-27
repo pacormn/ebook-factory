@@ -211,95 +211,89 @@ export default function BuildPage() {
         ))}
 
         {/* LOCKED CHAPTERS */}
-{/* BLOC D'ACHAT PREMIUM */}
-<div className="mt-24 flex flex-col md:flex-row items-center justify-between gap-10">
+{/* BLOC D'ACHAT MOBILE-FRIENDLY */}
+<div className="mt-20 mb-10 w-full px-4">
 
-  {/* Texte + bénéfices */}
-  <div className="flex-1 bg-white/60 dark:bg-gray-800/50 backdrop-blur-xl rounded-2xl p-10 border border-gray-200 dark:border-gray-700 shadow-xl">
-    
+  {/* TEXT + BENEFITS */}
+  <div className="bg-white/70 dark:bg-gray-800/60 backdrop-blur-xl border border-gray-200 dark:border-gray-700 
+                  shadow-xl rounded-2xl p-6 md:p-10 w-full">
+
     <div className="flex items-center gap-3 mb-4">
       <Lock size={32} className="text-blue-600" />
-      <h3 className="text-3xl font-bold">Débloque le livre complet</h3>
+      <h3 className="text-2xl md:text-3xl font-bold leading-tight">
+        Débloque le livre complet
+      </h3>
     </div>
 
-    <p className="text-gray-600 dark:text-gray-300 text-lg mb-6">
-      Obtiens l'ebook entier, prêt à être <span className="font-semibold text-blue-600">revendu immédiatement</span>.
-      Une seule vente suffit pour être rentable.
+    <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg leading-relaxed mb-6">
+      Obtiens l’ebook entier, prêt à être <span className="font-semibold text-blue-600">revendu immédiatement</span>.
+      Une seule vente suffit pour rembourser ton investissement.
     </p>
 
-    {/* BÉNÉFICES */}
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+    {/* BENEFITS CARDS (1 colonne mobile) */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
       <div className="p-4 rounded-xl bg-blue-600/10 border border-blue-600/20">
-        <p className="flex items-center gap-2 text-blue-700 dark:text-blue-300 font-semibold">
-          💸 Remboursé en 1 vente
-        </p>
-        <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
-          Une seule vente de ton ebook = investissement récupéré.
+        <p className="font-semibold text-blue-700 dark:text-blue-300">💸 Remboursé en 1 vente</p>
+        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+          Gagne immédiatement après la première vente.
         </p>
       </div>
 
       <div className="p-4 rounded-xl bg-green-600/10 border border-green-600/20">
-        <p className="flex items-center gap-2 text-green-700 dark:text-green-300 font-semibold">
-          📈 +200% de marge
-        </p>
-        <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
-          Tu le revends au prix que tu veux : 10€, 19€, 29€, 49€…
+        <p className="font-semibold text-green-700 dark:text-green-300">📈 +200% marge</p>
+        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+          Revends-le 10€, 19€, 29€, 49€… sans limite.
         </p>
       </div>
 
       <div className="p-4 rounded-xl bg-purple-600/10 border border-purple-600/20">
-        <p className="flex items-center gap-2 text-purple-700 dark:text-purple-300 font-semibold">
-          🔁 Ventes illimitées
-        </p>
-        <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
-          Gagne de l’argent sans plafond, à vie.
+        <p className="font-semibold text-purple-700 dark:text-purple-300">🔁 Ventes illimitées</p>
+        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+          Génère des revenus sans plafond, à vie.
         </p>
       </div>
 
       <div className="p-4 rounded-xl bg-orange-600/10 border border-orange-600/20">
-        <p className="flex items-center gap-2 text-orange-700 dark:text-orange-300 font-semibold">
-          📄 Licence de revente incluse
-        </p>
-        <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
-          Tu as le droit légal de revendre cet ebook autant que tu veux.
+        <p className="font-semibold text-orange-700 dark:text-orange-300">📄 Licence incluse</p>
+        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+          Revente légale incluse, aucune limite.
         </p>
       </div>
     </div>
   </div>
 
   {/* PRICING CARD */}
-  <div className="flex-1 max-w-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-2xl rounded-2xl p-10 text-center relative overflow-hidden">
+  <div className="mt-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 
+                  shadow-2xl rounded-2xl p-8 w-full max-w-sm mx-auto text-center relative">
 
     {/* Glow */}
-    <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-500/30 blur-3xl rounded-full"></div>
+    <div className="absolute -top-6 -right-6 w-24 h-24 bg-blue-500/30 blur-3xl rounded-full"></div>
 
-    <h4 className="text-xl font-semibold text-gray-700 dark:text-gray-300">Prix exclusif</h4>
+    <h4 className="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">Prix exclusif</h4>
 
-    <div className="mt-4 mb-6">
-      <p className="text-6xl font-extrabold text-blue-600 drop-shadow-sm">
-        10<span className="text-4xl">€</span>
-      </p>
-      <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
+    <div className="mt-2 mb-6">
+      <p className="text-5xl font-extrabold text-blue-600 leading-none">10<span className="text-3xl">€</span></p>
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
         Paiement unique — accès immédiat
       </p>
     </div>
 
     <button
       onClick={() => router.push("/pay")}
-      className="w-full mt-4 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 
-                 text-white font-semibold text-lg shadow-xl transition-all active:scale-95"
+      className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold 
+                 rounded-xl shadow-lg transition active:scale-[0.97]"
     >
       Débloquer l’ebook complet →
     </button>
 
-    {/* Garantie */}
-    <p className="text-gray-500 dark:text-gray-400 text-xs mt-6">
-      ⚡ Paiement 100% sécurisé via Stripe — livraison instantanée
+    <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
+      🔒 Paiement sécurisé via Stripe — livraison instantanée
     </p>
   </div>
 
 </div>
+
 
 
       </section>

@@ -109,6 +109,7 @@ export default function AudiencePage() {
               border border-gray-300 dark:border-gray-700 shadow-md"
               placeholder="Ex : manque de clarté, difficulté à se lancer, manque de connaissances..."
             />
+            
           </div>
         </div>
 

@@ -5,7 +5,9 @@
 html, body {
   font-family: "Inter", sans-serif;
   transition: background-color .25s ease, color .25s ease;
+  overflow-x: hidden;
 }
+
 
 /* ===================== */
 /* REAL GLASS NAVBAR     */
