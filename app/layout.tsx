@@ -3,66 +3,85 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
+// Fonts Google optimisées
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
-
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
+// 🔵 METADATA SEO MAXIMISÉE
 export const metadata: Metadata = {
-  title: "Ebook Factory — Crée ton ebook en un clic",
+  title: {
+    default: "Ebook Factory — Crée ton ebook en 5 secondes",
+    template: "%s | Ebook Factory",
+  },
+
   description:
-    "Ebook Factory est l’outil le plus simple pour créer des ebooks uniques, prêts à vendre, en quelques secondes. Idéal pour les créateurs, formateurs et marketers.",
+    "Crée un ebook professionnel unique, prêt à vendre, en moins de 5 secondes avec l'IA. Idéal pour TikTok, dropshipping, créateurs et infopreneurs.",
+
   keywords: [
     "ebook",
-    "ebook generator",
     "create ebook",
-    "ebook business",
+    "ebook IA",
+    "ebook generator",
     "tiktok ebook",
-    "dropshipping ebook",
+    "ebook dropshipping",
     "make money online",
     "ebook factory",
+    "business digital",
+    "produit digital",
   ],
 
   metadataBase: new URL("https://ebookfactory.fr"),
 
+  // ✔️ FAVICONS — 100% compliance Google
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.png", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
   },
 
+  // 🟦 OPEN GRAPH — Facebook / Instagram / LinkedIn / Discord
   openGraph: {
-    title: "Ebook Factory — Génère ton ebook automatiquement",
+    title: "Ebook Factory — Crée ton ebook instantanément",
     description:
-      "Crée un ebook professionnel et prêt à vendre automatiquement. Aucun design, aucune rédaction nécessaire.",
+      "Génère un ebook ultra professionnel et prêt à vendre grâce à l'IA. Sans design, sans rédaction.",
     url: "https://ebookfactory.fr",
+    type: "website",
     siteName: "Ebook Factory",
+    locale: "fr_FR",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Ebook Factory Preview",
+        alt: "Aperçu Ebook Factory",
       },
     ],
-    locale: "fr_FR",
-    type: "website",
   },
 
+  // 🐦 TWITTER CARDS — X.com
   twitter: {
     card: "summary_large_image",
     title: "Ebook Factory — Crée ton ebook instantanément",
     description:
-      "Transforme tes idées en ebook prêt à vendre en quelques secondes.",
+      "Génère un ebook professionnel et vendable immédiatement en quelques secondes.",
     images: ["/og-image.png"],
   },
 
-  themeColor: "#0d74e7",
+  // 📱 Mobile + PWA feel
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
 };
 
 export default function RootLayout({
@@ -73,29 +92,47 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
+        {/* Préload de la police principale (perf + SEO) */}
+        <link
+          rel="preconnect"
+          href="https://fonts.googleapis.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+
+        {/* Police fallback élégante */}
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
           rel="stylesheet"
         />
       </head>
+
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50`}
+        className={`
+          ${geistSans.variable} 
+          ${geistMono.variable} 
+          antialiased
+          bg-white text-gray-900 
+          dark:bg-gray-950 dark:text-gray-50
+        `}
       >
-        {/* Filter for liquid glass (if you use url(#frosted) un jour) */}
+        {/* FILTRE pour glassmorphism global */}
         <svg width="0" height="0" className="absolute pointer-events-none">
           <filter id="frosted">
-            <feGaussianBlur stdDeviation="20" result="blur" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="20" />
             <feColorMatrix
-              in="blur"
               type="matrix"
               values="
                 1 0 0 0 0
                 0 1 0 0 0
                 0 0 1 0 0
-                0 0 0 18 -7"
-              result="goo"
+                0 0 0 18 -7
+              "
             />
-            <feBlend in="SourceGraphic" in2="goo" />
           </filter>
         </svg>
 
