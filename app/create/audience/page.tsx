@@ -19,12 +19,10 @@ export default function AudiencePage() {
     setAudienceProblem,
   } = useEbookStore();
 
-  const [localAudience, setLocalAudience] = useState(audience);
   const [localLevel, setLocalLevel] = useState(audienceLevel);
   const [localProblem, setLocalProblem] = useState(audienceProblem);
 
   function handleNext() {
-    setAudience(localAudience);
     setAudienceLevel(localLevel);
     setAudienceProblem(localProblem);
 
@@ -80,21 +78,6 @@ export default function AudiencePage() {
         {/* FORM */}
         <div className="mt-12 space-y-8 text-left">
 
-          {/* AUDIENCE */}
-          <div className="fade-in-up">
-            <label className="block text-sm font-semibold mb-2">
-              Pour qui écris-tu cet ebook ?
-            </label>
-            <input
-              value={localAudience}
-              onChange={(e) => setLocalAudience(e.target.value)}
-              className="w-full px-5 py-4 rounded-2xl 
-              bg-white/70 dark:bg-gray-800/60 backdrop-blur-xl 
-              border border-gray-300 dark:border-gray-700 shadow-md"
-              placeholder="Ex : Débutants en business, créateurs TikTok, freelances..."
-            />
-          </div>
-
           {/* NIVEAU */}
           <div className="fade-in-up" style={{ animationDelay: "80ms" }}>
             <label className="block text-sm font-semibold mb-2">
@@ -116,7 +99,7 @@ export default function AudiencePage() {
           {/* PROBLÈME */}
           <div className="fade-in-up" style={{ animationDelay: "160ms" }}>
             <label className="block text-sm font-semibold mb-2">
-              Problème principal de ton audience
+              Problème principal de ton audience (optionnel)
             </label>
             <textarea
               value={localProblem}
@@ -133,7 +116,7 @@ export default function AudiencePage() {
         <div className="mt-10">
           <Button
             onClick={handleNext}
-            disabled={!localAudience.trim() || !localLevel.trim()}
+            disabled={!localLevel.trim()}
             className="px-10 py-6 text-lg rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
           >
             Suivant <ArrowRight className="ml-2" />

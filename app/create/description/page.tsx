@@ -25,13 +25,11 @@ export default function DescriptionPage() {
   const [localDescription, setLocalDescription] = useState(description);
   const [localPromise, setLocalPromise] = useState(promise);
   const [localGoal, setLocalGoal] = useState(goal);
-  const [localStyle, setLocalStyle] = useState(style);
 
   function handleNext() {
     setDescription(localDescription);
     setPromise(localPromise);
     setGoal(localGoal);
-    setStyle(localStyle);
 
     router.push("/create/audience");
   }
@@ -99,7 +97,7 @@ export default function DescriptionPage() {
           {/* PROMESSE PRINCIPALE */}
           <div>
             <label className="block text-sm font-semibold mb-2">
-              Promesse principale
+              Promesse principale (optionnel)
             </label>
             <input
               value={localPromise}
@@ -112,7 +110,7 @@ export default function DescriptionPage() {
           {/* OBJECTIF DU LECTEUR */}
           <div>
             <label className="block text-sm font-semibold mb-2">
-              Objectif du lecteur
+              Objectif du lecteur (optionnel)
             </label>
             <input
               value={localGoal}
@@ -122,25 +120,6 @@ export default function DescriptionPage() {
             />
           </div>
 
-          {/* STYLE GÉNÉRAL */}
-          <div>
-            <label className="block text-sm font-semibold mb-2">
-              Style d&apos;écriture (optionnel)
-            </label>
-            <select
-              value={localStyle}
-              onChange={(e) => setLocalStyle(e.target.value)}
-              className="w-full px-5 py-4 rounded-2xl bg-white/70 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-700 shadow-md"
-            >
-              <option value="">Choisir un style</option>
-              <option value="copywriting">Copywriting vendeur</option>
-              <option value="tiktok">TikTok / dynamique</option>
-              <option value="professionnel">Professionnel</option>
-              <option value="pédagogique">Pédagogique</option>
-              <option value="storytelling">Storytelling</option>
-              <option value="simple">Simple & minimaliste</option>
-            </select>
-          </div>
         </div>
 
         {/* NEXT */}
