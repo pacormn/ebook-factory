@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
-const MODEL = "gpt-4.1";
+const MODEL = "gpt-4.1-nano";
 
 const MODEL_PRICES: Record<string, { input: number; output: number }> = {
-  "gpt-4.1": {
-    input: 0.005 / 1000,
-    output: 0.015 / 1000,
+  "gpt-4.1-nano": {
+    input: 0.001 / 1000,
+    output: 0.004 / 1000,
   },
 };
 

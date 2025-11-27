@@ -10,7 +10,7 @@ export type Chapter = {
   id: string;
   title: string;
   sections: Section[];
-  content?: string; // Pour la génération finale
+  content?: string; // Génération finale
 };
 
 type EbookState = {
@@ -21,16 +21,22 @@ type EbookState = {
   goal: string;
   style: string;
 
-  // --- Audience (pour étapes suivantes) ---
+  // --- Audience ---
   audience: string;
   audienceLevel: string;
   audienceProblem: string;
 
   // --- Structure ---
   chapters: Chapter[];
-  length: string,
 
-  // Setters
+  // --- Longueur demandée ---
+  length: string;
+
+  // --- Preview & Full book ---
+  preview: any | null;
+  fullBook: any | null;
+
+  // --- Setters ---
   setTitle: (title: string) => void;
   setDescription: (desc: string) => void;
   setPromise: (v: string) => void;
@@ -44,6 +50,8 @@ type EbookState = {
   setChapters: (chapters: Chapter[]) => void;
   setLength: (v: string) => void;
 
+  setPreview: (data: any) => void;
+  setFullBook: (data: any) => void;
 
   reset: () => void;
 };
@@ -63,9 +71,15 @@ export const useEbookStore = create<EbookState>((set) => ({
 
   // --- Structure ---
   chapters: [],
+
+  // --- Longueur ---
   length: "",
 
-  // --- Mutateurs ---
+  // --- Preview / Full book ---
+  preview: null,
+  fullBook: null,
+
+  // --- Setters ---
   setTitle: (title) => set({ title }),
   setDescription: (description) => set({ description }),
   setPromise: (promise) => set({ promise }),
@@ -77,9 +91,12 @@ export const useEbookStore = create<EbookState>((set) => ({
   setAudienceProblem: (audienceProblem) => set({ audienceProblem }),
 
   setChapters: (chapters) => set({ chapters }),
-  setLength: (v: string) => set({ length: v }),
+  setLength: (length) => set({ length }),
 
-  // --- Reset complet (utile après export PDF) ---
+  setPreview: (preview) => set({ preview }),
+  setFullBook: (fullBook) => set({ fullBook }),
+
+  // Reset complet
   reset: () =>
     set({
       title: "",
@@ -92,5 +109,7 @@ export const useEbookStore = create<EbookState>((set) => ({
       audienceProblem: "",
       chapters: [],
       length: "",
+      preview: null,
+      fullBook: null,
     }),
 }));

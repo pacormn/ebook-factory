@@ -7,7 +7,7 @@ const MODEL = "gpt-4.1-nano";
 const MODEL_PRICES: Record<string, { input: number; output: number }> = {
   "gpt-4.1-nano": {
     input: 0.001 / 1000,
-    output: 0.004 / 1000,
+    output: 0.004 / 1000, 
   },
 };
 
