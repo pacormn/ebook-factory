@@ -329,12 +329,11 @@ export default function StructurePage() {
   onClick={() => setShowConfirmModal(true)}
   disabled={regenLoading}
   className={`
-    px-6 py-3 rounded-xl text-white font-medium shadow-lg
-    bg-gradient-to-r from-orange-500 to-red-500
-    hover:from-orange-400 hover:to-red-400
-    transition-all duration-200
-    hover:shadow-orange-500/30 active:scale-[0.97]
-    hover:animate-[micro-tilt_0.35s_ease-in-out]
+px-6 py-3 rounded-xl text-white font-medium shadow-md
+bg-gradient-to-r from-slate-800 to-blue-900
+hover:from-slate-700 hover:to-blue-800
+transition-all duration-200
+hover:shadow-blue-900/20 active:scale-[0.97]
   `}
 >
   🔁 Regénérer la structure
