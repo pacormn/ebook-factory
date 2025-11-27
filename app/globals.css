@@ -175,3 +175,10 @@ html, body {
 .animate-modal-pop {
   animation: modal-pop 0.25s cubic-bezier(0.3, 0, 0.2, 1);
 }
+@keyframes micro-tilt {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(1deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-1deg); }
+  100% { transform: rotate(0deg); }
+}

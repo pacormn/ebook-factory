@@ -323,7 +323,8 @@ export default function StructurePage() {
           </div>
         ) : (
           <div className="mt-12 text-left">
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end mt-10 pr-2 md:pr-4 translate-y-[-10px]">
+
 <Button
   onClick={() => setShowConfirmModal(true)}
   disabled={regenLoading}
