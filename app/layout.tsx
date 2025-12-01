@@ -1,19 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { GeistSans, GeistMono } from "geist/font"; // ✔️ Import correct des polices Geist
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-
-// Fonts Google optimisées
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 // 🔵 METADATA SEO MAXIMISÉE
 export const metadata: Metadata = {
@@ -21,10 +9,8 @@ export const metadata: Metadata = {
     default: "Ebook Factory — Crée ton ebook en 5 secondes",
     template: "%s | Ebook Factory",
   },
-
   description:
     "Crée un ebook professionnel unique, prêt à vendre, en moins de 5 secondes avec l'IA. Idéal pour TikTok, dropshipping, créateurs et infopreneurs.",
-
   keywords: [
     "ebook",
     "create ebook",
@@ -37,10 +23,19 @@ export const metadata: Metadata = {
     "business digital",
     "produit digital",
   ],
-
   metadataBase: new URL("https://ebookfactory.fr"),
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      maxSnippet: -1,
+      maxImagePreview: "large",
+      maxVideoPreview: -1,
+    },
+  },
 
-  // ✔️ FAVICONS — 100% compliance Google
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -49,7 +44,6 @@ export const metadata: Metadata = {
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
   },
 
-  // 🟦 OPEN GRAPH — Facebook / Instagram / LinkedIn / Discord
   openGraph: {
     title: "Ebook Factory — Crée ton ebook instantanément",
     description:
@@ -68,7 +62,6 @@ export const metadata: Metadata = {
     ],
   },
 
-  // 🐦 TWITTER CARDS — X.com
   twitter: {
     card: "summary_large_image",
     title: "Ebook Factory — Crée ton ebook instantanément",
@@ -77,11 +70,12 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
   },
 
-  // 📱 Mobile + PWA feel
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#000000" },
   ],
+
+  manifest: "/manifest.json", // ✔️ Pour PWA
 };
 
 export default function RootLayout({
@@ -92,9 +86,14 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7233790737306042"
-     crossorigin="anonymous"></script>
-        {/* Préload de la police principale (perf + SEO) */}
+        {/* Google AdSense */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7233790737306042"
+          crossOrigin="anonymous"
+        ></script>
+
+        {/* Fonts preconnect */}
         <link
           rel="preconnect"
           href="https://fonts.googleapis.com"
@@ -111,12 +110,15 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
           rel="stylesheet"
         />
+        
+        {/* Meta viewport obligatoire (Next ne le rajoute pas tout seul si layout custom) */}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
 
       <body
         className={`
-          ${geistSans.variable} 
-          ${geistMono.variable} 
+          ${GeistSans.variable} 
+          ${GeistMono.variable} 
           antialiased
           bg-white text-gray-900 
           dark:bg-gray-950 dark:text-gray-50
