@@ -91,6 +91,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
+      <body><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7233790737306042"
+     crossorigin="anonymous"></script></body>
       <head>
         {/* Préload de la police principale (perf + SEO) */}
         <link
