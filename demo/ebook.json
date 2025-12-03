@@ -1,0 +1,27 @@
+{
+  "title": "Demo Ebook",
+  "subtitle": "Sous-titre exemple",
+  "themeId": "digital-business",
+  "pages": [
+    {
+      "layout": "cover",
+      "pageNumber": 1,
+      "title": "Demo Ebook",
+      "subtitle": "Un test pour l'aperçu",
+      "highlight": "Auteur Demo"
+    },
+    {
+      "layout": "content-1col",
+      "pageNumber": 2,
+      "title": "Introduction",
+      "text": "Voici un exemple de texte de démonstration pour vérifier que le rendu fonctionne correctement.",
+      "bullets": ["Point 1", "Point 2", "Point 3"]
+    },
+    {
+      "layout": "quote",
+      "pageNumber": 3,
+      "highlight": "Le succès est la somme d'efforts répétés chaque jour.",
+      "quoteAuthor": "Auteur inconnu"
+    }
+  ]
+}
