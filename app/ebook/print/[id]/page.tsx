@@ -1,4 +1,5 @@
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic"; // important pour fetch côté serveur
 
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { EbookRenderer } from "@/components/ebook/EbookRenderer";
@@ -8,8 +9,9 @@ type Props = { params: { id: string } };
 
 export default async function EbookPrintPage({ params }: Props) {
   if (!supabaseAdmin) {
+    console.error("❌ supabaseAdmin est null (clé service_role manquante ?)");
     return (
-      <div className="min-h-screen flex items-center justify-center text-white">
+      <div className="text-white p-10">
         Supabase non configuré.
       </div>
     );
@@ -22,9 +24,9 @@ export default async function EbookPrintPage({ params }: Props) {
     .single();
 
   if (error || !data) {
-    console.error("[print] Erreur Supabase fetch :", error);
+    console.error("❌ Erreur Supabase :", error);
     return (
-      <div className="min-h-screen flex items-center justify-center text-white">
+      <div className="text-white p-10">
         Ebook introuvable.
       </div>
     );
