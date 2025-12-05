@@ -6,24 +6,39 @@ export async function GET(
   req: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = use(context.params);
+  try {
+    const { id } = use(context.params);
 
-  if (!supabaseAdmin) {
+    console.log("API /ebook/[id] → ID =", id);
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+    }
+
+    if (!supabaseAdmin) {
+      console.error("Supabase admin missing");
+      return NextResponse.json({ error: "Supabase missing" }, { status: 500 });
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from("ebooks")
+      .select("data")
+      .eq("id", id)
+      .single();
+
+    console.log("SUPABASE RESULT:", { data, error });
+
+    if (error || !data) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ ebook: data.data });
+
+  } catch (e) {
+    console.error("API ERROR:", e);
     return NextResponse.json(
-      { error: "Supabase non configuré" },
+      { error: "Server error", details: String(e) },
       { status: 500 }
     );
   }
-
-  const { data, error } = await supabaseAdmin
-    .from("ebooks")
-    .select("data")
-    .eq("id", id)
-    .single();
-
-  if (error || !data) {
-    return NextResponse.json({ error: "Ebook introuvable" }, { status: 404 });
-  }
-
-  return NextResponse.json({ ebook: data.data });
 }
