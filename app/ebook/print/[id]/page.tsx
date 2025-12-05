@@ -1,37 +1,28 @@
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
-export const fetchCache = "force-no-store";
-export const runtime = "nodejs";
 
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import type { EbookStructure } from "@/types/ebook";
 import PrintClient from "../print-client";
+import type { EbookStructure } from "@/types/ebook";
 
-console.log("PAGE PRINT - BUILD TIMESTAMP", Date.now());
-
+// Typage 100% compatible Next.js 16
 type PrintPageProps = {
-  searchParams: {
-    id?: string;
+  params: {
+    id: string;
   };
 };
 
-export default async function EbookPrintPage({ searchParams }: PrintPageProps) {
-  const id = searchParams.id;
+export default async function EbookPrintPage({ params }: PrintPageProps) {
+  console.log("PARAMS:", params);
 
-  console.log("DEBUG ID FROM SEARCHPARAMS:", id);
+  const id = params.id;
 
   if (!id) {
-    console.error("Aucun ID reçu dans searchParams");
     return <div className="text-white p-10">ID manquant.</div>;
   }
 
   if (!supabaseAdmin) {
     console.error("SupabaseAdmin null");
-    return (
-      <div className="text-white p-10">
-        Supabase non configuré.
-      </div>
-    );
+    return <div className="text-white p-10">Supabase non configuré.</div>;
   }
 
   const { data, error } = await supabaseAdmin
@@ -42,11 +33,7 @@ export default async function EbookPrintPage({ searchParams }: PrintPageProps) {
 
   if (error || !data) {
     console.error("Erreur Supabase :", error);
-    return (
-      <div className="text-white p-10">
-        Ebook introuvable.
-      </div>
-    );
+    return <div className="text-white p-10">Ebook introuvable.</div>;
   }
 
   const ebook = data.data as EbookStructure;
