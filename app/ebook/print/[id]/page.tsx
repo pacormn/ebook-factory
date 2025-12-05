@@ -1,42 +1,39 @@
-"use client";
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-import { useEffect, useState, use } from "react";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import PrintClient from "../print-client";
 import type { EbookStructure } from "@/types/ebook";
 
-export default function EbookPrintPage(props: { params: Promise<{ id: string }> }) {
-  const { id } = use(props.params);
+type Props = {
+  params: { id: string };
+};
 
-  const [ebook, setEbook] = useState<EbookStructure | null>(null);
+export default async function EbookPrintPage({ params }: Props) {
+  const id = params.id;
 
-useEffect(() => {
-  async function load() {
-    try {
-      const res = await fetch(`/api/ebook/${id}`);
-      const text = await res.text();
-
-      if (!text) {
-        console.error("Réponse vide !");
-        return;
-      }
-
-      const json = JSON.parse(text);
-
-      if (json.ebook) {
-        setEbook(json.ebook);
-      }
-
-    } catch (e) {
-      console.error("Erreur JSON :", e);
-    }
+  if (!id) {
+    console.error("❌ ID manquant");
+    return <div className="text-white p-10">ID manquant.</div>;
   }
 
-  load();
-}, [id]);
+  if (!supabaseAdmin) {
+    console.error("❌ supabaseAdmin est null");
+    return <div className="text-white p-10">Supabase non configuré.</div>;
+  }
 
+  const { data, error } = await supabaseAdmin
+    .from("ebooks")
+    .select("data")
+    .eq("id", id)
+    .single();
 
-  if (!id) return <div>ID manquant</div>;
-  if (!ebook) return <div>Chargement…</div>;
+  if (error || !data) {
+    console.error("❌ Erreur Supabase :", error);
+    return <div className="text-white p-10">Ebook introuvable.</div>;
+  }
+
+  const ebook = data.data as EbookStructure;
 
   return <PrintClient ebook={ebook} />;
 }
