@@ -1,20 +1,17 @@
 import { EbookRenderer } from "@/components/ebook/EbookRenderer";
 import type { EbookStructure } from "@/types/ebook";
+import fs from "fs";
+import path from "path";
 
-// ⚠️ Assure-toi que ce fichier existe bien : /demo/ebook.json
-import rawDemo from "@/demo/ebook.json";
+export default function PrintPage({ params }: { params: { id: string } }) {
+  const filePath = path.join("/tmp", `${params.id}.json`);
 
-const demoEbook = rawDemo as unknown as EbookStructure;
+  if (!fs.existsSync(filePath)) {
+    return <div className="text-white p-10">Ebook introuvable.</div>;
+  }
 
-type PageProps = {
-  params: {
-    id: string;
-  };
-};
-
-export default function EbookPrintPage({ params }: PageProps) {
-  // Plus tard : tu iras chercher l'ebook réel par ID (DB, etc.)
-  const ebook = demoEbook;
+  const raw = fs.readFileSync(filePath, "utf8");
+  const ebook: EbookStructure = JSON.parse(raw);
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
