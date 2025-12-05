@@ -1,3 +1,5 @@
+import type { EbookThemeId } from "@/config/themes";
+
 export type PageLayoutType =
   | "cover"
   | "chapter-intro"
@@ -29,6 +31,6 @@ export type EbookPageContent = {
 export type EbookStructure = {
   title: string;
   subtitle?: string;
-  themeId: string;
+  themeId: EbookThemeId;
   pages: EbookPageContent[];
 };

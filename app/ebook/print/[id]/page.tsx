@@ -1,21 +1,24 @@
 import { EbookRenderer } from "@/components/ebook/EbookRenderer";
-import { EBOOK_THEMES } from "@/config/themes";
+import type { EbookStructure } from "@/types/ebook";
 
-// ⚠️ Tu remplaceras ça par un fetch à ta DB plus tard
-import rawData from "@/demo/ebook.json";
-import { EbookStructure } from "@/types/ebook";
+// ⚠️ Assure-toi que ce fichier existe bien : /demo/ebook.json
+import rawDemo from "@/demo/ebook.json";
 
-const demoData = rawData as unknown as EbookStructure;
+const demoEbook = rawDemo as unknown as EbookStructure;
 
+type PageProps = {
+  params: {
+    id: string;
+  };
+};
 
-export default function PrintPage() {
+export default function EbookPrintPage({ params }: PageProps) {
+  // Plus tard : tu iras chercher l'ebook réel par ID (DB, etc.)
+  const ebook = demoEbook;
+
   return (
-    <div className="bg-black min-h-screen flex items-center justify-center">
-<EbookRenderer
-  themeId={demoData.themeId as any}
-  pages={demoData.pages as any}
-/>
-
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <EbookRenderer themeId={ebook.themeId} pages={ebook.pages} scale={1} />
     </div>
   );
 }
