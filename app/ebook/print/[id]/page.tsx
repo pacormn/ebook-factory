@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import PrintClient from "../print-client";
 import type { EbookStructure } from "@/types/ebook";
 
-export default function EbookPrintPage({ params }: { params: { id: string } }) {
-  const id = params.id;
+export default function EbookPrintPage(props: { params: Promise<{ id: string }> }) {
+  const { id } = use(props.params);
 
   const [ebook, setEbook] = useState<EbookStructure | null>(null);
 
