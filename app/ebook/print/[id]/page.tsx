@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import PrintClient from "../print-client";
 import type { EbookStructure } from "@/types/ebook";
 
