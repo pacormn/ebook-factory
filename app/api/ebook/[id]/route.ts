@@ -20,17 +20,17 @@ export async function GET(
       return NextResponse.json({ error: "Supabase missing" }, { status: 500 });
     }
 
-    const { data, error } = await supabaseAdmin
-      .from("ebooks")
-      .select("data")
-      .eq("id", id)
-      .single();
+  const { data, error } = await supabaseAdmin
+    .from("ebooks")
+    .select("data")
+    .eq("id", id)
+    .single();
 
     console.log("SUPABASE RESULT:", { data, error });
 
-    if (error || !data) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
+  if (error || !data) {
+    return NextResponse.json({ error: "not_found" }, { status: 404 });
+  }
 
     return NextResponse.json({ ebook: data.data });
 
