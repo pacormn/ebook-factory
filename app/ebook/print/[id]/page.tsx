@@ -1,5 +1,7 @@
-export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+export const runtime = "nodejs";
 
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import PrintClient from "./print-client";
@@ -12,7 +14,15 @@ type PrintPageProps = {
 };
 
 export default async function EbookPrintPage({ params }: PrintPageProps) {
+  console.log("DEBUG PARAMS ID:", params.id);  // 👈 Ajout debugging
+
+  if (!params.id) {
+    console.error("Aucun ID reçu dans params");
+    return <div className="text-white p-10">ID manquant.</div>;
+  }
+
   if (!supabaseAdmin) {
+    console.error("SupabaseAdmin null");
     return <div className="text-white p-10">Supabase non configuré.</div>;
   }
 
