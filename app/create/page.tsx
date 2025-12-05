@@ -40,7 +40,7 @@ export default function CreatePage() {
     }
 
     // 🔥 Redirection vers l'aperçu
-    router.push(`/ebook/print/${data.ebookId}`);
+    router.push(`/ebook/print?id=${data.ebookId}`);
   };
 
   return (
