@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import AdsLoader from "@/components/AdsLoader";
 
 // Fonts Google optimisées
 const geistSans = Geist({
@@ -92,7 +93,6 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7233790737306042"></script>
         {/* Préload de la police principale (perf + SEO) */}
         <link
           rel="preconnect"
@@ -136,8 +136,8 @@ export default function RootLayout({
             />
           </filter>
         </svg>
-
-        <ThemeProvider>{children}</ThemeProvider>
+  <AdsLoader />  {/* CHARGEMENT CLIENT SEULEMENT → NE CASSE PLUS LES ROUTES */}
+  <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
