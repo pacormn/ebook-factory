@@ -11,11 +11,18 @@ export default function EbookPrintPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     async function load() {
-      const res = await fetch(`/api/ebook/${id}`);
-      const json = await res.json();
+      try {
+        const res = await fetch(`/api/ebook/${id}`);
+        const json = await res.json();
 
-      if (json?.ebook) {
+        if (!json || !json.ebook) {
+          console.error("Aucun ebook trouvé pour cet ID");
+          return;
+        }
+
         setEbook(json.ebook);
+      } catch (e) {
+        console.error("Erreur chargement ebook: ", e);
       }
     }
 
