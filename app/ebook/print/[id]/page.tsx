@@ -1,48 +1,28 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState } from "react";
 import PrintClient from "../print-client";
 import type { EbookStructure } from "@/types/ebook";
 
-export default function EbookPrintPage(props: { params: Promise<{ id: string }> }) {
-  // ✔ TA méthode conservée
-  let { id } = use(props.params);
+export default function EbookPrintPage({ params }: { params: { id: string } }) {
+  const id = params.id;
 
   const [ebook, setEbook] = useState<EbookStructure | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) return;
-
     async function load() {
-      try {
-        const res = await fetch(`/api/ebook/${id}`, { cache: "no-store" });
-        const text = await res.text();
+      const res = await fetch(`/api/ebook/${id}`);
+      const json = await res.json();
 
-        if (!text) {
-          setError("Réponse vide de l'API");
-          return;
-        }
-
-        const json = JSON.parse(text);
-
-        if (!json.ebook) {
-          setError("Ebook introuvable");
-          return;
-        }
-
+      if (json?.ebook) {
         setEbook(json.ebook);
-      } catch (e) {
-        console.error(e);
-        setError("Erreur lors du chargement");
       }
     }
 
-    load();
+    if (id) load();
   }, [id]);
 
-  if (!id) return <div>ID manquant (params vide)</div>;
-  if (error) return <div>{error}</div>;
+  if (!id) return <div>ID manquant</div>;
   if (!ebook) return <div>Chargement…</div>;
 
   return <PrintClient ebook={ebook} />;
