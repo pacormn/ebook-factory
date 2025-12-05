@@ -98,13 +98,23 @@ export default function CreatePage() {
         </div>
 
         {/* Bouton Générer */}
-        <button
-          onClick={generateEbook}
-          disabled={loading}
-          className="px-6 py-3 bg-yellow-400 text-black font-semibold rounded-xl w-full"
-        >
-          {loading ? "Génération…" : "Générer l’Ebook"}
-        </button>
+<button
+  onClick={generateEbook}
+  disabled={loading}
+  className={`px-6 py-3 rounded-xl w-full font-semibold transition
+    ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-yellow-400 hover:bg-yellow-300 text-black"}
+  `}
+>
+  {loading ? (
+    <span className="flex items-center justify-center gap-3">
+      <span className="animate-spin h-5 w-5 border-2 border-black border-t-transparent rounded-full"></span>
+      Génération en cours…
+    </span>
+  ) : (
+    "Générer l’Ebook"
+  )}
+</button>
+
       </div>
     </div>
   );
