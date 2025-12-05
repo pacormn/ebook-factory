@@ -1,39 +1,30 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState } from "react";
 import PrintClient from "../print-client";
 import type { EbookStructure } from "@/types/ebook";
 
-export default function EbookPrintPage(props: { params: Promise<{ id: string }> }) {
-  const { id } = use(props.params);
+export default function EbookPrintPage({ params }: { params: { id: string } }) {
+  const id = params.id;
 
   const [ebook, setEbook] = useState<EbookStructure | null>(null);
 
-useEffect(() => {
-  async function load() {
-    try {
-      const res = await fetch(`/api/ebook/${id}`);
-      const text = await res.text();
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch(`/api/ebook/${id}`);
+        const json = await res.json();
 
-      if (!text) {
-        console.error("Réponse vide !");
-        return;
+        if (json?.ebook) {
+          setEbook(json.ebook);
+        }
+      } catch (e) {
+        console.error("Erreur chargement ebook:", e);
       }
-
-      const json = JSON.parse(text);
-
-      if (json.ebook) {
-        setEbook(json.ebook);
-      }
-
-    } catch (e) {
-      console.error("Erreur JSON :", e);
     }
-  }
 
-  load();
-}, [id]);
-
+    if (id) load();
+  }, [id]);
 
   if (!id) return <div>ID manquant</div>;
   if (!ebook) return <div>Chargement…</div>;
