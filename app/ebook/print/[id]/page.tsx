@@ -1,17 +1,40 @@
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { EbookRenderer } from "@/components/ebook/EbookRenderer";
 import type { EbookStructure } from "@/types/ebook";
-import fs from "fs";
-import path from "path";
 
-export default function PrintPage({ params }: { params: { id: string } }) {
-  const filePath = path.join("/tmp", `${params.id}.json`);
+type Props = {
+  params: {
+    id: string;
+  };
+};
 
-  if (!fs.existsSync(filePath)) {
-    return <div className="text-white p-10">Ebook introuvable.</div>;
+export const runtime = "nodejs";
+
+export default async function EbookPrintPage({ params }: Props) {
+  if (!supabaseAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        Supabase non configuré.
+      </div>
+    );
   }
 
-  const raw = fs.readFileSync(filePath, "utf8");
-  const ebook: EbookStructure = JSON.parse(raw);
+  const { data, error } = await supabaseAdmin
+    .from("ebooks")
+    .select("data")
+    .eq("id", params.id)
+    .single();
+
+  if (error || !data) {
+    console.error("[print] Erreur fetch ebook :", error);
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        Ebook introuvable.
+      </div>
+    );
+  }
+
+  const ebook = data.data as EbookStructure;
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
