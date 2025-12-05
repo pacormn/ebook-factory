@@ -1,14 +1,10 @@
+export const runtime = "nodejs";
+
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { EbookRenderer } from "@/components/ebook/EbookRenderer";
 import type { EbookStructure } from "@/types/ebook";
 
-type Props = {
-  params: {
-    id: string;
-  };
-};
-
-export const runtime = "nodejs";
+type Props = { params: { id: string } };
 
 export default async function EbookPrintPage({ params }: Props) {
   if (!supabaseAdmin) {
@@ -26,7 +22,7 @@ export default async function EbookPrintPage({ params }: Props) {
     .single();
 
   if (error || !data) {
-    console.error("[print] Erreur fetch ebook :", error);
+    console.error("[print] Erreur Supabase fetch :", error);
     return (
       <div className="min-h-screen flex items-center justify-center text-white">
         Ebook introuvable.
