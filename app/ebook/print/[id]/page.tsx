@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import type { EbookStructure } from "@/types/ebook";
-import PrintClient from "./print-client";
+import PrintClient from "../print-client";
 
 console.log("PAGE PRINT - BUILD TIMESTAMP", Date.now());
 
