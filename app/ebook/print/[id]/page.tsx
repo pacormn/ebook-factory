@@ -1,42 +1,30 @@
-export const dynamic = "force-dynamic";
+"use client";
 
+import { use } from "react";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import PrintClient from "../print-client";
 import type { EbookStructure } from "@/types/ebook";
 
-// Typage 100% compatible Next.js 16
-type PrintPageProps = {
-  params: {
-    id: string;
-  };
-};
+export default function EbookPrintPage(props: { params: Promise<{ id: string }> }) {
+  const { id } = use(props.params);
 
-export default async function EbookPrintPage({ params }: PrintPageProps) {
-  console.log("PARAMS:", params);
+  if (!id) return <div>ID manquant</div>;
 
-  const id = params.id;
+  async function load() {
+    const { data, error } = await supabaseAdmin
+      .from("ebooks")
+      .select("data")
+      .eq("id", id)
+      .single();
 
-  if (!id) {
-    return <div className="text-white p-10">ID manquant.</div>;
+    if (error || !data) return null;
+
+    return data.data as EbookStructure;
   }
 
-  if (!supabaseAdmin) {
-    console.error("SupabaseAdmin null");
-    return <div className="text-white p-10">Supabase non configuré.</div>;
-  }
+  const ebook = use(load());
 
-  const { data, error } = await supabaseAdmin
-    .from("ebooks")
-    .select("data")
-    .eq("id", id)
-    .single();
-
-  if (error || !data) {
-    console.error("Erreur Supabase :", error);
-    return <div className="text-white p-10">Ebook introuvable.</div>;
-  }
-
-  const ebook = data.data as EbookStructure;
+  if (!ebook) return <div>Ebook introuvable</div>;
 
   return <PrintClient ebook={ebook} />;
 }
